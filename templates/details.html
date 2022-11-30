@@ -1,0 +1,16 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1 class="lead my-5">detail...</h1>
+        <div class="card p-3 mb-5">
+            <ul class="card-body list-group list-group-flush">
+                <li class="list-group-item">{{ detail.id }}</li>
+                <li class="list-group-item">{{ detail.name }}</li>
+                <li class="list-group-item">{{ detail.email }}</li>
+                <li class="list-group-item">{{ detail.username }}</li>
+            </ul>
+        </div>
+
+{% endblock %}

@@ -1,0 +1,78 @@
+
+{% extends "base.html" %}
+{% block title %} list schedule {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-4">list service schedule..</h1>
+
+    <div class="row mt-4">
+    {% if odj_list %}
+    {% for obj in odj_list %}
+    <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-8 col-sm-10">
+        <div class="card p-3 mb-5">
+
+            <ul class="card-header list-group list-group-horizontal">
+                <li class="list-group-item">
+                    <sup class="float-start">id:</sup>
+                    <span class="me-3">{{ obj.id }}</span>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">owner:</sup>
+                    {{ obj.sch_s_owner }}
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">sch_service:</sup>
+                    {{ obj.sch_s_service_id }}
+                </li>
+            </ul>
+
+            <ul class="card-header list-group list-group-horizontal">
+                <li class="list-group-item">
+                    <sup class="float-start">name:</sup>
+                    <span>{{ obj.name }}</span>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">type:</sup>
+                    <span>{{ obj.type }}</span>
+                </li>
+            </ul>
+
+            <ul class="card-body list-group list-group-flush">
+                <li class="list-group-item">
+                    <sup class="float-start">date:</sup>
+                   <span> {{ obj.date }}</span>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">there_is:</sup>
+                    <span>{{ obj.there_is }}</span>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">title:</sup>
+                    <p>{{ obj.title }}</p>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">description:</sup>
+                    <p>{{ obj.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">created:</sup>
+                    <time>{{ obj.created_at }}</time>
+                </li>
+            </ul>
+
+            <p class="card-footer">
+            <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/details/{{ obj.sch_s_service_id }}/{{ obj.id }}" role="button">
+                view details &raquo;
+            </a>
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+
+        {% else %}
+        <span class="mt-5">no information available</span>
+    {% endif %}
+    </div>
+
+{% endblock %}

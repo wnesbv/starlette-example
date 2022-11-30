@@ -1,0 +1,47 @@
+
+{% extends "base.html" %}
+{% block title %} new group {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-4">new group</h1>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="lead">new group</h3>
+        </div>
+
+        <div class="card-body border-bottom py-3">
+
+            <form method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <input
+                        required
+                        type="text"
+                        class="form-control"
+                        name="title"
+                        value="{{ title }}"
+                        placeholder="group title"
+                    />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">description</label>
+                    <input
+                        required
+                        type="text"
+                        class="form-control"
+                        name="description"
+                        value="{{ description }}"
+                        placeholder="group description"
+                    />
+                </div>
+
+                <button type="submit" class="btn btn-outline-primary btn-sm">
+                    submit
+                </button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

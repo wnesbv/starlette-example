@@ -1,0 +1,25 @@
+
+{% extends "base.html" %}
+{% block title %} update {% endblock%}
+
+{% block content %}
+
+    <h1 class="lead my-5">update message</h1>
+
+    <div class="row mb-3">
+
+    <form method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+
+    <textarea class="shadow-sm form-control" id="message" name="message" maxlength="333" spellcheck>{{ detail.message }}</textarea>
+
+    </div>
+
+    <button type="submit" class="btn btn-outline-primary btn-sm mt-3">
+        submit
+    </button>
+    </form>
+
+    </div>
+
+{% endblock %}

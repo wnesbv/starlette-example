@@ -1,0 +1,60 @@
+
+{% extends "admin/base.html" %}
+{% block title %} admin item {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead">list item..</h1>
+    <div class="p-5 bg-light">
+        <p>item count {{ odj_count | max }}</p>
+    </div>
+
+    <div class="mt-3">
+        <div class="row">
+
+        {% if odj_list %}
+        {% for obj in odj_list %}
+        <div class="card p-3 mb-5">
+            <ul class="card-header list-group list-group-horizontal">
+                <li class="list-group-item">
+                    <sup class="float-start">id:</sup>
+                    {{ obj.id }}
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">owner:</sup>
+                    {{ obj.item_owner }}
+                </li>
+            </ul>
+            <ul class="card-body list-group list-group-flush">
+                <li class="list-group-item">
+                    <sup class="float-start">title:</sup>
+                    {{ obj.title }}
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">description:</sup>
+                    {{ obj.description | striptags() | truncate(190, True, '...', 5) | safe }}
+                </li>
+            </ul>
+            <ul class="card-body list-group list-group-horizontal">
+                <li class="list-group-item">
+                    <time>{{ obj.created_at }}</time>
+                </li>
+            </ul>
+
+            <p class="card-footer">
+                <a class="btn btn-outline-primary btn-sm" href="/admin/item/details/{{ obj.id }}" role="button">View details &raquo;</a>
+            </p>
+
+        </div>
+
+        {% endfor %}
+
+            {% else %}
+            <span class="mt-5">no information available</span>
+        {% endif %}
+
+        </div>
+        <hr>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+
+{% extends "base.html" %}
+{% block title %} list item {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead">list group..</h1>
+
+    <div class="p-5 bg-light">
+
+        <h2 class="lead">list group..</h2>
+
+        <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+
+    </div>
+
+    <div class="row">
+        {% if odj_list %}
+        {% for obj in odj_list %}
+        <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-8 col-sm-10 mr-auto card p-3 mb-5">
+
+            <ul class="card-header list-group list-group-horizontal">
+                <li class="list-group-item">
+                    <sup class="float-start">id:</sup>
+                    {{ obj.id }}
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">owner:</sup>
+                    {{ obj.admin_group }}
+                </li>
+            </ul>
+            <ul class="card-body list-group list-group-flush">
+                <li class="list-group-item">{{ obj.title }}</li>
+                <li class="list-group-item">
+                    {{ obj.description | striptags() | truncate(190, True, '...', 5) | safe }}
+                </li>
+                <li class="list-group-item">
+                    <time>{{ obj.created_at }}</time>
+                </li>
+            </ul>
+
+            <p class="card-footer">
+            <a class="btn btn-outline-primary btn-sm" href="/chat/group/{{ obj.id }}" role="button">View details &raquo;</a>
+            </p>
+
+        </div>
+
+        {% endfor %}
+
+            {% else %}
+            <span class="mt-5">no groups created</span>
+        {% endif %}
+    </div>
+
+
+{% endblock %}

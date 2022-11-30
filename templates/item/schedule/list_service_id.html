@@ -1,0 +1,72 @@
+
+{% extends "base.html" %}
+{% block title %} list id service schedule{% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-4">list id service schedule..</h1>
+
+    <div class="row mt-4">
+
+    {% for obj in odj_list %}
+    <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-8 col-sm-10">
+        <div class="ms-2 card p-3 mb-5">
+
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">id:</sup>
+                <span class="me-3">
+                    {{ obj.id }}
+                </span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">service_owner:</sup>
+                {{ obj.service_owner }}
+            </li>
+        </ul>
+
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">service_belongs:</sup>
+                <span>{{ obj.service_belongs }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">title:</sup>
+                <p>{{ obj.title }}</p>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">description:</sup>
+                <p>
+                    {{ obj.description | striptags() | truncate(190, True, '...', 5) | safe }}
+                </p>
+            </li>
+        </ul>
+
+        <p class="card-footer">
+            <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/list/{{ obj.id }}" role="button">
+                view service schedule &raquo;
+            </a>
+        </p>
+        <p class="card-footer">
+        <a class="btn btn-primary btn-sm me-2" href="/item/dump_{{ obj.id }}" role="button">
+            export csv &raquo;
+        </a>
+        <a class="btn btn-primary btn-sm me-2" href="/item/dump-csv/{{ obj.id }}" role="button">
+            my dump csv &raquo;
+        </a>
+        </p>
+
+        <p class="card-footer">
+        <a class="btn btn-outline-primary btn-sm" href="/item/import-csv/{{ obj.id }}" role="button">
+            import csv &raquo;
+        </a>
+        </p>
+
+        </div>
+    </div>
+
+    {% endfor %}
+
+    </div>
+
+{% endblock %}

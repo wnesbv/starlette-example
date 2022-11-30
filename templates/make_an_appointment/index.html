@@ -1,0 +1,36 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1 class="lead my-5">search reserve</h1>
+
+    <form class="card p-3" method="POST">
+        <div class="row m-2">
+            <div class="col-sm">
+                <sup class="float-start">start</sup>
+                <input
+                    class="form-control my-2"
+                    type="datetime-local"
+                    name="time_start"
+                    value="{{ time_start }}"
+                />
+                <div class="form-text">2022-07-20T00:00:00</div>
+            </div>
+            <div class="col-sm">
+                <sup class="float-start">end</sup>
+                <input
+                    class="form-control my-2"
+                    type="datetime-local"
+                    name="time_end"
+                    value="{{ time_end }}"
+                />
+                <div class="form-text">2022-07-25T24:00:00</div>
+            </div>
+        </div>
+        <div class="m-2">
+            <button type="submit" class="btn btn-outline-primary">search</button>
+        </div>
+    </form>
+
+{% endblock %}

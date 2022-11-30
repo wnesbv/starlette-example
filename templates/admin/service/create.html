@@ -1,0 +1,66 @@
+
+{% extends "admin/base.html" %}
+{% block title %} admin new service {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-4">admin new service</h1>
+    <form class="card p-3" method="POST" enctype="multipart/form-data">
+        <div class="card-header mb-3">
+            <select
+                name="service_belongs"
+                class="form-control shadow">
+                <option value="">item select</option>
+
+                {% for obj in odj_item %}
+                    <option value="{{ obj.id }}">
+                        {{ obj.id }}
+                    </option>
+                {% endfor %}
+
+            </select>
+        </div>
+        <div class="m-2">
+            <sup class="float-start">title</sup>
+            <input
+                type="text"
+                required
+                name="title"
+                value="{{ title }}"
+                placeholder="service 01"
+                class="form-control my-2"
+            />
+        </div>
+        <div class="m-2">
+        <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ description }}</textarea>
+            <div id="help" class="form-text">help text</div>
+        </div>
+        <div class="m-2">
+            <input
+                type="file"
+                required
+                name="file"
+                value="{{ file }}"
+                class="form-control"
+            />
+        </div>
+        <div class="m-2">
+        <button type="submit" class="btn btn-outline-primary btn-sm">
+            submit
+        </button>
+        </div>
+    </form>
+
+{% endblock %}
+
+
+{% block script %}
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jodit/3.17.1/jodit.min.css"/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jodit/3.17.1/jodit.min.js"></script>
+
+<script>
+    const editor = Jodit.make('textarea');
+</script>
+
+{% endblock %}

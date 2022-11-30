@@ -1,0 +1,38 @@
+
+{% extends "base.html" %}
+{% block title %} new comment {% endblock%}
+
+{% block content %}
+
+    <h1 class="lead my-4">new comment</h1>
+
+    {% if request.user.is_authenticated %}
+
+    <div class="card">
+        <div class="card-body py-3">
+            <form method="POST">
+                <div class="my-2">
+                    <label for="comment" class="form-label">
+                        <sub>comment form</sub>
+                    </label>
+
+                    <textarea
+                        required
+                        id="comment"
+                        class="form-control"
+                        name="opinion"
+                        rows="3"
+                        >{{ opinion }}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-outline-primary btn-sm">
+                    submit
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,114 @@
+
+{% extends "admin/base.html" %}
+{% block title %} user {{ detail.name }} {% endblock %}
+
+{% block content %}
+
+<h1 class="lead my-4">admin detail user...</h1>
+
+<div class="flex_cont">
+    <div class="card p-3 mb-5">
+
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item">
+            <sup class="float-start">id:</sup>
+            {{ detail.id }}...
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">name:</sup>
+            <span class="me-3">
+                {{ detail.name }}
+            </span>
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">username:</sup>
+            <span>{{ detail.username }}</span>
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">email:</sup>
+            <span>{{ detail.email }}</span>
+        </li>
+    </ul>
+
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">password:</sup>
+            {{ detail.password }}
+        </li>
+    </ul>
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item">
+            <sup class="float-start">email_verified:</sup>
+            {{ detail.email_verified }}
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">is_active:</sup>
+            {{ detail.is_active }}
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">is_admin:</sup>
+            {{ detail.is_admin }}
+        </li>
+    </ul>
+    <ul class="card-footer list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">last_login_date:</sup>
+            <time>{{ detail.last_login_date }}</time>
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">created_at:</sup>
+            <time>{{ detail.created_at }}</time>
+        </li>
+    </ul>
+
+    </div>
+
+    {% if detail.file %}
+    <div class="col-xxl-5 col-sm-10 ms-3">
+        <img class="w-100 shadow-sm mb-5" src="/static/upload/{{ detail.file.path }}">
+    </div>
+    {% endif %}
+</div>
+
+<div class="card mt-2">
+    <div class="card-header">
+        <a class="btn btn-outline-primary btn-sm me-2" href="/admin/user/update/{{ detail.id }}" role="button">
+            <i class="bi bi-pencil"></i> &raquo;
+        </a>
+        <a class="btn btn-outline-danger btn-sm" href="/admin/user/delete/{{ detail.id }}" role="button">
+            <i class="bi bi-trash3"></i> &raquo;
+        </a>
+    </div>
+</div>
+
+
+{% if sch_list %}
+    {% for sch in sch_list %}
+
+    <div class="card mt-5">
+        <div class="card-header">
+            <h2 class="lead">
+                {{ sch.id }} {{ sch.title }}
+            </h2>
+        </div>
+        <div class="card-body">
+            <div id="{{ sch.title }}"></div>
+        </div>
+        <div class="card-footer">
+            <p>
+                {{ sch.by_points }}
+            </p>
+        </div>
+    </div>
+
+    {% include "item/rent/calendar_js.html" %}
+
+    {% endfor %}
+
+        {% else %}
+        <div class="mt-5"><p>no information available</p></div>
+{% endif %}
+
+{% endblock %}
+
+

@@ -1,0 +1,55 @@
+
+{% extends "base.html" %}
+{% block title %} list participant {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-5">list participant..</h1>
+
+    <div class="row">
+        {% if odj_list %}
+        {% for obj in odj_list %}
+        <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-8 col-sm-10 mr-auto card p-3 mb-5">
+            <ul class="list-group list-group-flush card-body">
+                <li class="list-group-item">
+                    <sup class="float-start">id:</sup>
+                    {{ obj.id }}
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">participant:</sup>
+                    <p>{{ obj.participant }}</p>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">description:</sup>
+                    <p>
+                    {{ obj.explanations_person | striptags() | truncate(190, True, '...', 5) | safe }}
+                    </p>
+                </li>
+            </ul>
+            <ul class="list-group list-group-flush card-footer">
+                <li class="list-group-item">
+                    <sup class="float-start">created_at:</sup>
+                    <time>{{ obj.created_at }}</time>
+                </li>
+            </ul>
+            <div class="card-footer">
+            <a class="btn btn-outline-success btn-sm" href="/participant/{{ obj.id }}" role="button">
+                add participant &raquo;
+            </a>
+            </div>
+            <div class="card-footer">
+            <a class="btn btn-outline-danger btn-sm" href="/participant/delete/{{ obj.id }}" role="button">
+                delete participant &raquo;
+            </a>
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+            {% else %}
+            <span class="mt-5">no participant</span>
+        {% endif %}
+    </div>
+
+{% endblock %}

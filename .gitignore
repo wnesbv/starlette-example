@@ -1,0 +1,6 @@
+*.pyc
+*.db
+*.sqlite3
+*env
+.env
+upload

@@ -1,0 +1,35 @@
+
+{% extends "base.html" %}
+{% block title %} update reserve service {{ detail.id}} {% endblock%}
+
+{% block content %}
+
+<h1 class="lead my-5">update reserve service</h1>
+
+<form class="row" method="POST">
+    <div class="list-group col-sm mb-3">
+        <span class="list-group-item">
+            <sup class="float-start">reserve time</sup>
+            <input
+                class="mt-2"
+                type="datetime-local"
+                name="reserve_time"
+                value="{{ detail.reserve_time }}"
+            />
+        </span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">description</label>
+        <textarea
+            class="form-control"
+            name="description"
+            maxlength="333"
+            spellcheck
+        >{{ detail.description }}</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-outline-primary btn-sm">submit</button>
+</form>
+
+{% endblock %}

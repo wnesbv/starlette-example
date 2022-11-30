@@ -1,0 +1,85 @@
+
+{% extends "admin/base.html" %}
+{% block title %} admin detail {{ detail.title }} {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-4">admin detail item</h1>
+    <div class="flex_cont">
+        <div class="card p-3 mb-5">
+
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">id:</sup>
+                {{ detail.id }}
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">owner item:</sup>
+                {{ detail.item_owner }}
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">created:</sup>
+                <time>{{ detail.created_at }}</time>
+            </li>
+        </ul>
+
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">title:</sup>
+                {{ detail.title }}
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">description:</sup>
+                {{ detail.description | safe }}
+            </li>
+        </ul>
+
+        <ul class="card-footer list-group list-group-horizontal">
+            {% for sv in all_service %}
+            <li class="list-group-item">
+                <sup class="float-start">service:</sup>
+                <a class="page-link" href="/admin/service/details/{{ sv.id }}">{{ sv.title }}
+                </a>
+            </li>
+            {% endfor %}
+
+            {% for rent in all_rent %}
+            <li class="list-group-item">
+                <sup class="float-start">rent:</sup>
+                <a class="page-link" href="/admin/rent/details/{{ rent.id }}">{{ rent.title }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+
+        </div>
+
+        {% if detail.file %}
+        <div class="col-xxl-5 col-sm-10 ms-3">
+            <img class="w-100 shadow-sm mb-5" src="/static/upload/{{ detail.file.path }}">
+        </div>
+        {% endif %}
+
+    </div>
+
+    <div class="card mt-2">
+        <div class="card-header">
+            <a class="btn btn-outline-primary btn-sm me-2" href="/admin/item/update/{{ detail.id }}" role="button">
+                <i class="bi bi-pencil"></i> &raquo;
+            </a>
+            <a class="btn btn-outline-danger btn-sm" href="/admin/item/delete/{{ detail.id }}" role="button">
+                <i class="bi bi-trash3"></i> &raquo;
+            </a>
+        </div>
+        <div class="card-footer">
+        <a class="btn btn-outline-primary btn-sm" href="/admin/comment/item/create/{{ detail.id }}">create comment</a>
+        </div>
+    </div>
+
+
+    {% include "comment/cmt_item.html" %}
+
+
+    <div class="my-5">{{ detail.file }}</div>
+
+{% endblock %}

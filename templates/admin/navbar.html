@@ -1,0 +1,255 @@
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light px-5">
+    <div class="container-fluid">
+        <img
+            src="{{ url_for('static', path='images/starlette__short_logo__dark.svg') }}"
+            alt="logo"
+            height="32"
+        />
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin">admin</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/">home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/item/list/">item</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/chat/group/list">group</a>
+                </li>
+
+                {#  #}
+                <li class="nav-item dropdown">
+                    <a
+                        class="nav-link dropdown-toggle"
+                        href="#"
+                        id="navbarDropdown"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        reserve
+                    </a>
+
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li class="nav-item">
+                            <a class="dropdown-item" href="/reserve/">reserve</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="dropdown-item" href="/reserve/list">reserve-list</a>
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a
+                        class="nav-link dropdown-toggle"
+                        href="#"
+                        id="navbarDropdown"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        service
+                    </a>
+
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li class="nav-item">
+                            <a class="dropdown-item" href="/item/service/list">service list</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="dropdown-item" href="/item/service/create">service create</a>
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a
+                        class="nav-link dropdown-toggle"
+                        href="#"
+                        id="navbarDropdown"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        rent
+                    </a>
+
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li class="nav-item">
+                            <a class="dropdown-item" href="/item/rent/list">rent list</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="dropdown-item" href="/item/rent/create">rent create</a>
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a
+                        class="nav-link dropdown-toggle"
+                        href="#"
+                        id="navbarDropdown"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        schedule
+                    </a>
+
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li class="nav-item">
+                            <a class="dropdown-item" href="/item/schedule/list">schedule list</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="dropdown-item" href="/item/schedule/create">schedule create</a>
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+
+                    </ul>
+                </li>
+                {#  #}
+
+                <li class="nav-item dropdown">
+                    <a
+                        class="nav-link dropdown-toggle"
+                        href="#"
+                        id="navbarDropdown"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        api
+                    </a>
+
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li>
+                            <a class="dropdown-item" href="/api/list">
+                                <sup class="ms-2">list api</sup>
+                            </a>
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a
+                        class="nav-link dropdown-toggle"
+                        href="#"
+                        id="navbarDropdown"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        account
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+                        <li>
+                            <a class="dropdown-item" href="/account/register">
+                                <i class="bi bi-person"></i>
+                                <sup class="ms-2">register</sup>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/account/login">
+                                <i class="bi bi-person-check"></i>
+                                <sup class="ms-2">login</sup>
+                            </a>
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" href="/account/logout">logout</a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <span class="nav-link">
+                        <i class="bi bi-person-check"></i>
+                        {{ request.user.email}}
+                    </span>
+                </li>
+
+            </ul>
+
+            <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a
+                        class="nav-link dropdown-toggle"
+                        href="#"
+                        id="navbarDropdown"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        to create
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li>
+                            <a class="dropdown-item" href="/item/create"
+                                >create item</a
+                            >
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/chat/group/create/"
+                                >create chat group</a
+                            >
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <form class="d-flex" action="/search/">
+                <input
+                    class="form-control me-2"
+                    name="query"
+                    type="search"
+                    placeholder="search to item"
+                    aria-label="search"
+                />
+                <button class="btn btn-outline-success" type="submit">
+                    search
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>

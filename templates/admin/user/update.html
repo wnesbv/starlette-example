@@ -1,0 +1,100 @@
+
+{% extends "admin/base.html" %}
+{% block title %} admin update {{ detail.name }} {% endblock%}
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="lead">admin user create</h3>
+        </div>
+
+        <div class="card-body border-bottom py-3">
+
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <input
+                    required
+                    type="text"
+                    class="form-control"
+                    name="name"
+                    value="{{ detail.name }}"
+                    placeholder="name"
+                />
+            </div>
+            <div class="mb-3">
+                <input
+                    required
+                    type="text"
+                    class="form-control"
+                    name="username"
+                    value="{{ detail.username }}"
+                    placeholder="username"
+                />
+            </div>
+            <div class="mb-3">
+                <input
+                    required
+                    type="email"
+                    class="form-control"
+                    name="email"
+                    value="{{ detail.email }}"
+                    placeholder="email"
+                />
+            </div>
+            <div class="mb-3">
+                <input
+                    required
+                    type="password"
+                    class="form-control"
+                    name="password"
+                    value="{{ detail.password }}"
+                    placeholder="password"
+                />
+            </div>
+
+            <div class="mb-3">
+                <select required name="email_verified" id="email_verified">
+                    <option value=False>False</option>
+                    <option value=True selected>True</option>
+                </select>
+                <label for="email_verified">email_verified</label>
+            </div>
+            <div class="mb-3">
+                <select required name="is_active" id="is_active">
+                    <option value=False>False</option>
+                    <option value=True selected>True</option>
+                </select>
+                <label for="is_active">is_active</label>
+            </div>
+            <div class="mb-3">
+                <select required name="is_admin" id="is_admin">
+                    <option value=False selected>False</option>
+                    <option value=True>True</option>
+                </select>
+                <label for="is_admin">is_admin</label>
+            </div>
+
+            <button type="submit" class="btn btn-outline-primary btn-sm">
+                submit
+            </button>
+
+        </form>
+
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block script %}
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jodit/3.17.1/jodit.min.css"/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jodit/3.17.1/jodit.min.js"></script>
+
+<script>
+    const editor = Jodit.make('textarea');
+</script>
+
+{% endblock %}
+

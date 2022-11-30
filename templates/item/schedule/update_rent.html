@@ -1,0 +1,59 @@
+
+{% extends "base.html" %}
+{% block title %} update {{ detail.title }} {% endblock %}
+
+{% block calendar_css %}
+{% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-4">update schedule rent</h1>
+
+    <form class="card p-3" method="POST">
+        <div class="row m-2">
+            <div class="list-group col-sm">
+            <sup class="float-start">start</sup>
+            <span class="list-group-item mt-2">
+                <input type="datetime-local" name="start"value="{{ detail.start }}">
+            </span>
+            <div class="form-text">2022-07-20T00:00:00</div>
+            </div>
+            <div class="list-group col-sm">
+            <sup class="float-start">end</sup>
+            <span class="list-group-item mt-2">
+                <input type="datetime-local" name="end" value="{{ detail.end }}">
+            </span>
+            <div class="form-text">2022-07-25T24:00:00</div>
+            </div>
+        </div>
+        <div class="m-2">
+            <sup class="float-start">title</sup>
+            <input
+                type="text"
+                required
+                name="title"
+                value="{{ detail.title }}"
+                class="form-control my-2"
+            />
+        </div>
+        <div class="m-2">
+            <sup class="float-start">description</sup>
+            <textarea
+                required
+                class="form-control my-2"
+                name="description"
+                maxlength="333"
+                spellcheck
+            >{{ detail.description }}</textarea>
+        </div>
+        <div class="m-2">
+        <button type="submit" class="btn btn-outline-primary btn-sm">
+            submit
+        </button>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block calendar_js %}
+{% endblock %}
