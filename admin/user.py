@@ -120,22 +120,22 @@ async def item_create(
             is_active = form["is_active"]
             is_admin = form["is_admin"]
             #..
-            new_user = User()
-            new_user.name = name
-            new_user.username = username
-            new_user.email = email
-            new_user.password = password
+            new = User()
+            new.name = name
+            new.username = username
+            new.email = email
+            new.password = password
             #
-            new_user.email_verified = strtobool(email_verified)
-            new_user.is_active = strtobool(is_active)
-            new_user.is_admin = strtobool(is_admin)
+            new.email_verified = strtobool(email_verified)
+            new.is_active = strtobool(is_active)
+            new.is_admin = strtobool(is_admin)
             #..
-            session.add(new_user)
-            session.refresh(new_user)
+            session.add(new)
+            session.refresh(new)
             await session.commit()
             #..
             response = RedirectResponse(
-                f"/admin/user/details/{ new_user.id }",
+                f"/admin/user/details/{ new.id }",
                 status_code=302,
             )
             return response
@@ -153,8 +153,8 @@ async def item_update(
     async with async_session() as session:
         #..
         admin = await in_admin(request, session)
-        #..
         detail = await in_user(request, session)
+        #..
         context = {
             "request": request,
             "detail": detail,
@@ -212,15 +212,17 @@ async def item_update(
 async def item_delete(
     request
 ):
+
     id = request.path_params["id"]
     template = "/admin/user/delete.html"
 
     async with async_session() as session:
-        #..
-        admin = await in_admin(request, session)
-        #..
+
         if request.method == "GET":
+            #..
+            admin = await in_admin(request, session)
             detail = await in_user(request, session)
+            #..
             if admin:
                 return templates.TemplateResponse(
                     template,
@@ -232,7 +234,7 @@ async def item_delete(
             return PlainTextResponse(
                 "You are banned - this is not your account..!"
             )
-        #...
+        # ...
         if request.method == "POST":
             #..
             query = (

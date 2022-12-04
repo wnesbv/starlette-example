@@ -1,3 +1,4 @@
+
 import json
 
 from sqlalchemy import select, update as sqlalchemy_update, delete, func
@@ -23,7 +24,9 @@ templates = Jinja2Templates(directory="templates")
 @requires("authenticated", redirect="user_login")
 # ...
 async def item_list(request):
+
     template = "/admin/rent/list.html"
+
     async with async_session() as session:
         # ..
         admin = await in_admin(request, session)
@@ -94,7 +97,9 @@ async def item_details(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def item_create(request):
+
     template = "/item/rent/create.html"
+
     async with async_session() as session:
         if request.method == "GET":
             # ..

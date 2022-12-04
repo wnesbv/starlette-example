@@ -15,16 +15,13 @@ from json2html import json2html
 
 from db_config.storage_config import engine, async_session
 
-from mail.email import send_mail
-
 from account.models import User
 from item.models import Service, ScheduleService
+from item.img import BASE_DIR
 
 from options_select.opt_slc import (
     details_schedule_service,
 )
-
-from item.img import BASE_DIR
 
 from .opt_slc import(
     in_admin,
@@ -46,11 +43,11 @@ async def user_list(
     template = "/admin/schedule_service/user_list.html"
 
     async with async_session() as session:
-        #..
+        # ..
         admin = await in_admin(request, session)
-        #..
+        # ..
         if admin:
-            #..
+            # ..
             stmt = await session.execute(
                 select(User.id)
                 .join(Service.service_sch_s)
@@ -61,7 +58,7 @@ async def user_list(
                 .where(User.id.in_(result))
             )
             odj_list = sv.scalars().all()
-            #..
+            # ..
             context = {
                 "request": request,
                 "odj_list": odj_list,
@@ -71,26 +68,28 @@ async def user_list(
             )
     await engine.dispose()
 
+
 @requires("authenticated", redirect="user_login")
 # ...
 async def item_list(
     request
 ):
+
     user = request.path_params["user"]
     template = "/admin/schedule_service/list.html"
 
     async with async_session() as session:
-        #..
+        # ..
         admin = await in_admin(request, session)
-        #..
+        # ..
         if admin:
-            #..
+            # ..
             stmt = await session.execute(
                 select(Service)
                 .where(Service.service_owner == user)
             )
             odj_list = stmt.scalars().all()
-            #..
+            # ..
             context = {
                 "request": request,
                 "odj_list": odj_list,
@@ -112,11 +111,11 @@ async def item_details(
     async with async_session() as session:
 
         if request.method == "GET":
-            #..
+            # ..
             admin = await in_admin(request, session)
-            #..
+            # ..
             if admin:
-                #..
+                # ..
                 obj_list = await details_schedule_service(request, session)
                 # ..
                 obj = [
@@ -132,13 +131,13 @@ async def item_details(
                     for to in obj_list
                 ]
                 sch_json = json.dumps(obj, default=str)
-                #..
+                # ..
                 table_attributes = "style='width:100%', class='table table-bordered'"
                 sch_json = json2html.convert(
                     json = sch_json,
                     table_attributes=table_attributes
                 )
-                #..
+                # ..
                 context = {
                     "request": request,
                     "sch_json": sch_json,
@@ -152,15 +151,17 @@ async def item_details(
 async def item_create(
     request
 ):
+
     template = "/admin/schedule_service/create.html"
+
     async with async_session() as session:
 
         if request.method == "GET":
-            #..
+            # ..
             admin = await in_admin(request, session)
             odj_service = await all_service(session)
             odj_rent = await all_rent(session)
-            #..
+            # ..
             if admin:
                 return templates.TemplateResponse(
                     template, {
@@ -169,40 +170,36 @@ async def item_create(
                         "odj_service": odj_service,
                     }
                 )
-        #...
+        # ...
         if request.method == "POST":
-            #..
+            # ..
             form = await request.form()
-            #...
+            # ...
             title = form["title"]
             description = form["description"]
-            #...
+            # ...
             by_points = form["by_points"]
             by_choose = form["by_choose"]
-            #...
+            # ...
             sch_service = form["sch_service"]
             sch_rent = form["sch_rent"]
-            #..
+            # ..
             sch_owner = request.user.user_id
-            #..
+            # ..
             new = ScheduleService()
             new.title = title
             new.description = description
             new.by_choose = by_choose
             new.by_points = by_points
             new.sch_owner = sch_owner
-            #..
+            # ..
             new.sch_service = sch_service
             new.sch_rent = sch_rent
-
+            # ..
             session.add(new)
             session.refresh(new)
             await session.commit()
-
-            await send_mail(
-                f"A new object has been created - {new}: {title}"
-            )
-
+            # ..
             response = RedirectResponse(
                 f"/admin/schedule-service/details/{ new.id }",
                 status_code=302,
@@ -221,9 +218,9 @@ async def item_update(
     template = "/admin/schedule_service/update.html"
 
     async with async_session() as session:
-        #..
+        # ..
         admin = await in_admin(request, session)
-        #..
+        # ..
         detail = await in_schedule_sv(request, session)
         context = {
             "request": request,
@@ -240,13 +237,13 @@ async def item_update(
             )
         # ...
         if request.method == "POST":
-            #..
+            # ..
             form = await request.form()
-            #..
+            # ..
             detail.title = form["title"]
             detail.description = form["description"]
             detail.by_points = form["by_points"]
-            #..
+            # ..
             query = (
                 sqlalchemy_update(ScheduleService)
                 .where(ScheduleService.id == id)
@@ -255,11 +252,7 @@ async def item_update(
             )
             await session.execute(query)
             await session.commit()
-
-            await send_mail(
-                f"changes were made at the facility - {detail}: {detail.title}"
-            )
-            #..
+            # ..
             response = RedirectResponse(
                 f"/admin/schedule_service/details/{ detail.id }",
                 status_code=302,
@@ -280,10 +273,10 @@ async def item_delete(
     async with async_session() as session:
 
         if request.method == "GET":
-            #..
+            # ..
             admin = await in_admin(request, session)
             detail = await in_schedule_sv(request, session)
-            #..
+            # ..
             if admin:
                 return templates.TemplateResponse(
                     template,
@@ -297,14 +290,14 @@ async def item_delete(
             )
         # ...
         if request.method == "POST":
-            #..
+            # ..
             query = (
                 delete(ScheduleService)
                 .where(ScheduleService.id == id)
             )
             await session.execute(query)
             await session.commit()
-            #..
+            # ..
             response = RedirectResponse(
                 "/admin/item/list",
                 status_code=302,
@@ -316,11 +309,13 @@ async def item_delete(
 @requires("authenticated", redirect="user_login")
 # ...
 async def delete_service_csv(request):
+
     async with async_session() as session:
+
         if request.method == "GET":
-            #..
+            # ..
             admin = await in_admin(request, session)
-            #..
+            # ..
             if admin:
                 directory = (
                     BASE_DIR

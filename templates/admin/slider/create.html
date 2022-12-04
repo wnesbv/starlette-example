@@ -1,0 +1,40 @@
+
+{% extends "base.html" %}
+{% block title %} new slider {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-4">new slider</h1>
+    <form class="card p-3" method="POST" enctype="multipart/form-data">
+        <div class="m-2">
+            <sup class="float-start">title</sup>
+            <input
+                type="text"
+                required
+                name="title"
+                value="{{ title }}"
+                placeholder="slider 01"
+                class="form-control my-2"
+            />
+        </div>
+        <div class="m-2">
+        <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ description }}</textarea>
+            <div id="help" class="form-text">help text</div>
+        </div>
+        <div class="m-2">
+            <input
+                type="file"
+                required
+                name="file"
+                value="{{ file }}"
+                class="form-control"
+            />
+        </div>
+        <div class="m-2">
+        <button type="submit" class="btn btn-outline-primary btn-sm">
+            submit
+        </button>
+        </div>
+    </form>
+
+{% endblock %}

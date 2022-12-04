@@ -21,10 +21,11 @@ async def all_list(
     request
 ):
     template = "/admin/index.html"
+
     async with async_session() as session:
-        #..
+        # ..
         admin = await in_admin(request, session)
-        #..
+        # ..
         if admin:
             return templates.TemplateResponse(
                 template, {"request": request,}
@@ -42,21 +43,22 @@ async def item_list(
 ):
     template = "/admin/list.html"
     async with async_session() as session:
-        #..
+        # ..
         admin = await in_admin(request, session)
-        #..
+        # ..
         if admin:
-            #..
+            # ..
             stmt = await session.execute(
-                select(Item).order_by(Item.created_at)
+                select(Item)
+                .order_by(Item.created_at)
             )
             odj_list = stmt.scalars().all()
-            #..
+            # ..
             stmt = await session.execute(
                 select(func.count(Item.id))
             )
             odj_count = stmt.scalars().all()
-            #..
+            # ..
             context = {
                 "request": request,
                 "odj_list": odj_list,
@@ -79,29 +81,29 @@ async def item_details(
     id = request.path_params["id"]
     template = "/admin/details.html"
     async with async_session() as session:
-        #..
+        # ..
         admin = await in_admin(request, session)
-        #..
+        # ..
         if admin:
-            #..
+            # ..
             cmt_list = await item_comment(request, session)
-            #..
+            # ..
             detail = await in_item(request, session)
-            #..
+            # ..
             opt_service = await session.execute(
                 select(Service)
                 .join(Item.item_rent)
                 .where(Service.service_belongs==id)
             )
             all_service = opt_service.scalars().unique()
-            #..
+            # ..
             opt_rent = await session.execute(
                 select(Rent)
                 .join(Item.item_rent)
                 .where(Rent.rent_belongs==id)
             )
             all_rent = opt_rent.scalars().unique()
-            #..
+            # ..
             context = {
                 "request": request,
                 "detail": detail,
@@ -124,10 +126,10 @@ async def item_create(
     async with async_session() as session:
 
         if request.method == "GET":
-            #..
+            # ..
             admin = await in_admin(request, session)
             owner_all = await all_user(session)
-            #..
+            # ..
             if admin:
                 return templates.TemplateResponse(
                     template, {
@@ -135,33 +137,33 @@ async def item_create(
                         "owner_all": owner_all,
                     }
                 )
-        #...
+        # ...
         if request.method == "POST":
-            #..
+            # ..
             form = await request.form()
-            #..
+            # ..
             item_owner = form["item_owner"]
-            #..
+            # ..
             title = form["title"]
             description = form["description"]
-            #..
+            # ..
             file_obj = FileType.create_from(
                 file=form["file"].file,
                 original_filename=form["file"].filename
             )
-            #..
-            new_item = Item(file=file_obj)
-            new_item.title = title
-            new_item.file_obj = file_obj
-            new_item.item_owner = item_owner
-            new_item.description = description
-            #..
-            session.add(new_item)
-            session.refresh(new_item)
+            # ..
+            new = Item(file=file_obj)
+            new.title = title
+            new.file_obj = file_obj
+            new.item_owner = item_owner
+            new.description = description
+            # ..
+            session.add(new)
+            session.refresh(new)
             await session.commit()
-            #..
+            # ..
             response = RedirectResponse(
-                f"/admin/item/details/{ new_item.id }",
+                f"/admin/item/details/{ new.id }",
                 status_code=302,
             )
             return response
@@ -175,11 +177,12 @@ async def item_update(
 ):
     id = request.path_params["id"]
     template = "/admin/update.html"
+
     async with async_session() as session:
-        #..
+        # ..
         admin = await in_admin(request, session)
         detail = await in_item(request, session)
-        #..
+        # ..
         context = {
             "request": request,
             "detail": detail,
@@ -195,19 +198,17 @@ async def item_update(
             )
         # ...
         if request.method == "POST":
-            #..
+            # ..
             form = await request.form()
-            #..
+            # ..
             title = form["title"]
             description = form["description"]
-            detail.title = title
-            detail.description = description
-            #..
+            # ..
             file_obj = FileType.create_from(
                 file=form["file"].file,
                 original_filename=form["file"].filename
             )
-            #..
+            # ..
             file_query = (
                 sqlalchemy_update(Item)
                 .where(Item.id == id)
@@ -220,7 +221,7 @@ async def item_update(
             )
             await session.execute(file_query)
             await session.commit()
-            #..
+            # ..
             response = RedirectResponse(
                 f"/admin/item/details/{ detail.id }",
                 status_code=302,
@@ -236,13 +237,14 @@ async def item_delete(
 ):
     id = request.path_params["id"]
     template = "/admin/delete.html"
+
     async with async_session() as session:
 
         if request.method == "GET":
-            #..
+            # ..
             admin = await in_admin(request, session)
             detail = await in_item(request, session)
-            #..
+            # ..
             if admin:
                 return templates.TemplateResponse(
                     template,
@@ -254,15 +256,15 @@ async def item_delete(
             return PlainTextResponse(
                 "You are banned - this is not your account..!"
             )
-        #...
+        # ...
         if request.method == "POST":
-            #..
+            # ..
             query = (
                 delete(Item).where(Item.id == id)
             )
             await session.execute(query)
             await session.commit()
-            #..
+            # ..
             response = RedirectResponse(
                 "/admin/item/list",
                 status_code=302,

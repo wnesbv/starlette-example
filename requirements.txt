@@ -1,4 +1,6 @@
 starlette[full]
+SQLAlchemy
+aiosqlite
 pydantic
 uvicorn
 aiofiles
@@ -11,8 +13,6 @@ PyJWT
 python-magic-bin
 Pillow
 websockets
-databases[sqlite]
-databases[postgresql]
 gunicorn
 asyncpg
 whitenoise

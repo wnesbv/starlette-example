@@ -13,7 +13,7 @@
 
         $('.sld_trigger').click(() => {
             setTimeout(() => {
-                $('.sld_img').append($('.card_item:first'));
+                $('.sl_content').append($('.card_item:first'));
             }, 800);
         });
 

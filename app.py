@@ -59,22 +59,23 @@ async def homepage(
 
     async with async_session() as session:
 
+        stmt_sl = await session.execute(
+            select(Slider)
+        )
+        odj_sl = stmt_sl.scalars().all()
+        # ..
         if not request.user.is_authenticated:
             response = templates.TemplateResponse(
-                template, {"request": request}
+                template, {"request": request, "odj_sl": odj_sl}
             )
             return response
+
         stmt = await session.execute(
             select(User)
             .where(User.id==request.user.user_id)
         )
         odj_list = stmt.scalars().all()
-
-        stmt_sl = await session.execute(
-            select(Slider)
-        )
-        odj_sl = stmt_sl.scalars().all()
-
+        # ..
         context = {
             "request": request,
             "odj_list": odj_list,

@@ -1,3 +1,4 @@
+
 import json
 
 from sqlalchemy import select, update as sqlalchemy_update, delete, func, and_
@@ -29,7 +30,9 @@ templates = Jinja2Templates(directory="templates")
 @requires("authenticated", redirect="user_login")
 # ...
 async def item_list(request):
+
     template = "/admin/service/list.html"
+
     async with async_session() as session:
         # ..
         admin = await in_admin(request, session)
@@ -145,20 +148,20 @@ async def item_create(request):
                 file=form["file"].file, original_filename=form["file"].filename
             )
             # ..
-            new_item = Service(file=file_obj)
-            new_item.title = title
-            new_item.description = description
-            new_item.file_obj = file_obj
-            new_item.service_owner = service_owner
+            new = Service(file=file_obj)
+            new.title = title
+            new.description = description
+            new.file_obj = file_obj
+            new.service_owner = service_owner
             # ..
-            new_item.service_belongs = int(service_belongs)
-
-            session.add(new_item)
-            session.refresh(new_item)
+            new.service_belongs = int(service_belongs)
+            # ..
+            session.add(new)
+            session.refresh(new)
             await session.commit()
             # ..
             response = RedirectResponse(
-                f"/admin/service/details/{ new_item.id }",
+                f"/admin/service/details/{ new.id }",
                 status_code=302,
             )
             return response

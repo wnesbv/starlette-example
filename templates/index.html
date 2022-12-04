@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/static/slider/slider.css">
 
     <section class="promo_slider">
-        <div class="sld_img">
+        <div class="sl_content">
             {% for item in odj_sl %}
                 <div id="item-{{ item.id }}" class="card_item">
                     {% if item.file %}
@@ -47,13 +47,14 @@
                         </span>
 
                         <div class="content_text">
-                            <q>{{ item.description }}</q>
-                            <a class="page-link" href="">
+                            {{ item.description }}
+                            <hr>
+                            <a class="btn btn-outline-primary btn-sm" href="">
                                 {{ item.title }}
                             </a>
                         </div>
 
-                        <span class="publish_date uk-text-meta">
+                        <span class="publish_date">
                             <time>{{ item.created_at }}</time>
                         </span>
                     </div>

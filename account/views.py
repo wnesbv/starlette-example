@@ -66,19 +66,19 @@ async def user_register(
                     status_code=HTTP_400_BAD_REQUEST, detail="Уже зарегистрирован"
                 )
 
-            new_user = User()
-            new_user.username = username
-            new_user.email = email
-            new_user.password = password
+            new = User()
+            new.username = username
+            new.email = email
+            new.password = password
 
-            session.add(new_user)
-            session.refresh(new_user)
+            session.add(new)
+            session.refresh(new)
             await session.commit()
 
             context = {
-                "id": new_user.id,
-                "username": new_user.username,
-                "email": new_user.email,
+                "id": new.id,
+                "username": new.username,
+                "email": new.email,
             }
 
             #..

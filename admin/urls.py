@@ -1,6 +1,7 @@
+
 from starlette.routing import Route
 
-from . import user, item, rent, service, schedule_rent, schedule_service, comment
+from . import user, item, rent, slider, service, schedule_rent, schedule_service, comment
 
 
 routes = [
@@ -115,4 +116,12 @@ routes = [
     ),
     # ..
     Route("/comment/delete/{id:int}", comment.cmt_delete, methods=["GET", "POST"]),
+    # ...
+    Route("/slider/list", slider.slider_list),
+    Route("/slider/details/{id:int}", slider.slider_details),
+    Route("/slider/create/", slider.slider_create, methods=["GET", "POST"]),
+    Route("/slider/update/{id:int}", slider.slider_update, methods=["GET", "POST"]),
+    Route("/slider/delete/{id:int}", slider.slider_delete, methods=["GET", "POST"]),
+    Route("/slider/file-update/{id:int}", slider.slider_file_update, methods=["GET", "POST"]),
+    Route("/slider/file-delete/{id:int}", slider.slider_file_delete, methods=["GET"]),
 ]
