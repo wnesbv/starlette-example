@@ -140,7 +140,7 @@
         opacity: 0;
     }
 
-/* text p */
+/* content_text publish_date */
 
     .card_item .content .content_text{
         width: calc(36% - 1.8em);
@@ -244,19 +244,29 @@
         height: 100%;
         top: 0;
         left: 0;
+        z-index: 1;
         position: absolute;
         background-color: #FFFFFF;
-        transition: all .8s ease-out;
+        transition: clip-path .8s ease-out;
         -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
                 clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
     }
     .card_item.active .content .item_name::before,
     .card_item.active .content .content_text::before,
     .card_item.active .content .publish_date::before{
-        background-color: #e9ecef;
-        transition: all .8s linear 3s;
+        background-color: #f8f9fa;
+        transition: clip-path .8s linear 3s;
         -webkit-clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
                 clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+    }
+
+/* plug_time */
+
+    .card_item.plug_time .content .item_name::before,
+    .card_item.plug_time .content .content_text::before,
+    .card_item.plug_time .content .publish_date::before{
+        background-color: #ffffff;
+        animation: unopen_polygon .8s linear 1 forwards 3s;
     }
     .card_item .content .item_name::after,
     .card_item .content .content_text::after,
@@ -267,24 +277,14 @@
         top: 0;
         left: auto;
         right: 0;
+        z-index: 9;
         position: absolute;
         background-color: #FDC850;
-    }
-
-/* plug_time */
-
-    .card_item.plug_time .content .item_name::before,
-    .card_item.plug_time .content .content_text::before,
-    .card_item.plug_time .content .publish_date::before{
-        background-color: #f8f9fa;
-        transition: all .8s linear 3s;
-        -webkit-clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
-                clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
     }
     .card_item.plug_time .content .item_name::after,
     .card_item.plug_time .content .content_text::after,
     .card_item.plug_time .content .publish_date::after{
-        animation: left_right 1s ease-in-out 2s;
+        animation: left_right 1.6s ease-in-out 1 forwards 2s;
     }
 
 /* sld_trigger */
@@ -486,6 +486,13 @@
     .card_item:first-of-type .content::before{
         animation: translateX_100 .8s ease-in 1 forwards, unopen_polygon .8s ease 1 forwards 1s;
         will-change: transform;
+    }
+    .card_item.active .content .item_name::before,
+    .card_item.active .content .content_text::before,
+    .card_item.active .content .publish_date::before{
+        transition: none;
+        background-color: #fff;
+        animation: unopen_polygon 4s ease-in 1 forwards;
     }
 }
 
