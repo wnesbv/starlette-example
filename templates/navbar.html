@@ -226,6 +226,12 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li>
+                            <span class="dropdown-item">
+                                <i class="bi bi-person-check"></i>
+                                {{ request.user.email}}
+                            </span>
+                        </li>
+                        <li>
                             <a class="dropdown-item" href="/account/register">
                                 <i class="bi bi-person"></i>
                                 <sup class="ms-2">register</sup>
@@ -248,13 +254,6 @@
                             >
                         </li>
                     </ul>
-                </li>
-
-                <li class="nav-item">
-                    <span class="nav-link">
-                        <i class="bi bi-person-check"></i>
-                        {{ request.user.email}}
-                    </span>
                 </li>
             </ul>
 

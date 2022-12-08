@@ -47,7 +47,7 @@
                         </span>
 
                         <div class="content_text">
-                            {{ item.description }}
+                            {{ item.description | truncate(180, True, '...', 5) }}
                             <hr>
                             <a class="btn btn-outline-primary btn-sm" href="">
                                 {{ item.title }}
