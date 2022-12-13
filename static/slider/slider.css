@@ -78,7 +78,7 @@
 /* .inner first-of-type before after */
 
     .card_item:first-of-type .content .inner::before{
-        animation: scaleX_1_0 .8s ease 1 forwards 2.2s;
+        animation: scaleX_1_0 .8s ease 1 forwards 2.4s;
 
         will-change: transform;
     }
@@ -416,12 +416,20 @@
         height: 56%;
         top: 44%;
     }
-    .card_item.plug_time .content,
-    .card_item.active .content{
+
+/*  */
+    .card_item.active .content,
+    .card_item.plug_time .content{
         width: 100%;
         height: 100%;
         top: 0;
     }
+    .card_item .content::before{
+        width: 100%;
+        left: 0;
+    }
+
+/*  */
     .card_item .content .inner{
         width: 100%;
         height: 100%;
@@ -436,13 +444,8 @@
         top: 0;
         right: 0;
     }
-    .card_item .content .item_name,
-    .card_item .content .content_text,
-    .card_item .content .publish_date{
-        left: 0;
-        padding: 1em;
-        background-color: #fff;
-    }
+
+/*  */
     .card_item .content .content_text{
         width: 80%;
         top: 33%;
@@ -450,12 +453,10 @@
     .card_item .content .publish_date{
         top: 90%;
     }
+
+/*  */
     .card_item:nth-of-type(2) .content::before{
         background-position: center center;
-    }
-    .card_item .content::before{
-        width: 100%;
-        left: 0;
     }
     .card_item:nth-of-type(2){
         height: 44%;
@@ -477,12 +478,19 @@
     }
 
 /*  */
+    .card_item .content .item_name,
+    .card_item .content .content_text,
+    .card_item .content .publish_date{
+        left: 0;
+        padding: 1em;
+        background-color: #fff;
+        animation: translateX_100 .8s linear 1 both 2s
+    }
     .card_item .content .item_name::before,
     .card_item .content .content_text::before,
     .card_item .content .publish_date::before{
         transition: none;
     }
-
     .card_item.active .content .item_name::before,
     .card_item.active .content .content_text::before,
     .card_item.active .content .publish_date::before{
@@ -490,6 +498,16 @@
         transition: none;
         background-color: #f8f9fa;
         animation: unopen_polygon .8s linear 1 forwards 3s;
+    }
+
+/*  */
+    .card_item:first-of-type .content .inner::before{
+        animation: scaleX_1_0 .8s linear 1 forwards 2s;
+    }
+    .card_item.plug_time .content .item_name::after,
+    .card_item.plug_time .content .content_text::after,
+    .card_item.plug_time .content .publish_date::after{
+        animation: left_right 1.6s linear 1 forwards 2.4s;
     }
 
     .sld_trigger {
