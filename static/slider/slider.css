@@ -1,6 +1,5 @@
 
 /*  */
-
     .promo_slider{
         width: 100%;
         height: 75vh;
@@ -241,21 +240,18 @@
         width: 100%;
         height: 100%;
         top: 0;
-        left: 0;
+        right: 0;
         z-index: 1;
         position: absolute;
-        background-color: #FFFFFF;
-        transition: clip-path .8s ease-out;
-        -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
-                clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        background-color: #f8f9fa;
+        transition: width .8s linear, background-color .4s linear 3s;
     }
     .card_item.active .content .item_name::before,
     .card_item.active .content .content_text::before,
     .card_item.active .content .publish_date::before{
-        background-color: #f8f9fa;
-        transition: clip-path .8s linear 3s;
-        -webkit-clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
-                clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+        width: 0;
+        background-color: #fff;
+        transition: width .8s linear 3s, background-color .4s linear 3s;
     }
 
 /* plug_time */
@@ -445,7 +441,7 @@
     .card_item .content .publish_date{
         left: 0;
         padding: 1em;
-        background-color: #f8f9fa;
+        background-color: #fff;
     }
     .card_item .content .content_text{
         width: 80%;
@@ -458,16 +454,8 @@
         background-position: center center;
     }
     .card_item .content::before{
-        content: '';
         width: 100%;
         left: 0;
-    }
-    .sld_trigger {
-        width: 6em;
-        left: 85%;
-    }
-    .inner_shadow{
-        display: none;
     }
     .card_item:nth-of-type(2){
         height: 44%;
@@ -487,13 +475,31 @@
         animation: translateX_100 .8s ease-in 1 forwards, unopen_polygon .8s ease 1 forwards 1s;
         will-change: transform;
     }
+
+/*  */
+    .card_item .content .item_name::before,
+    .card_item .content .content_text::before,
+    .card_item .content .publish_date::before{
+        transition: none;
+    }
+
     .card_item.active .content .item_name::before,
     .card_item.active .content .content_text::before,
     .card_item.active .content .publish_date::before{
+        width: 100%;
         transition: none;
-        background-color: #fff;
-        animation: unopen_polygon 4s ease-in 1 forwards;
+        background-color: #f8f9fa;
+        animation: unopen_polygon .8s linear 1 forwards 3s;
     }
+
+    .sld_trigger {
+        width: 6em;
+        left: 85%;
+    }
+    .inner_shadow{
+        display: none;
+    }
+
 }
 
 
