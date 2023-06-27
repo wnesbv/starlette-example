@@ -1,0 +1,56 @@
+
+{% extends "base.html" %}
+{% block title %} list dump {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-4">list service dump..</h1>
+
+    <div class="row mt-4">
+
+    {% for obj in odj_list %}
+    <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-8 col-sm-10">
+        <div class="card p-3 mb-5">
+
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">dump id:</sup>
+                <span class="me-3">{{ obj.id }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">owner:</sup>
+                {{ obj.dump_s_owner }}
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">service:</sup>
+                {{ obj.dump_s_service_id }}
+            </li>
+        </ul>
+
+        <ul class="card-body list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">dump title:</sup>
+                <time>
+                    {{ obj.title.strftime('%Y-%m-%d-%H-%M-%S') }}
+                </time>
+            </li>
+        </ul>
+
+        <p class="card-footer">
+        <a class="btn btn-primary btn-sm" href="/static/service/{{ obj.title.strftime('%Y-%m-%d-%H-%M-%S') }}.csv">
+            download {{ obj.title.strftime('%Y-%m-%d-%H-%M-%S') }} &raquo;
+        </a>
+        </p>
+        <p class="card-footer">
+        <a class="btn btn-danger btn-sm" href="/item/dump/{{ obj.id }}" role="button">
+            delete user csv &raquo;
+        </a>
+        </p>
+
+        </div>
+    </div>
+    {% endfor %}
+
+    </div>
+
+{% endblock %}

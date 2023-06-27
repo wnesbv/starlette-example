@@ -1,0 +1,21 @@
+
+{% extends "admin/base.html" %}
+{% block title %} admin schedule service {% endblock %}
+
+{% block content %}
+
+<h1 class="lead my-3">admin schedule service detail</h1>
+
+<div class="flex_cont">
+    <div class="card p-3 mb-5">
+
+        <div class="card-footer mt-3">
+            {{ sch_json | safe }}
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+

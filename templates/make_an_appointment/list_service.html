@@ -1,0 +1,57 @@
+
+{% extends "base.html" %}
+{% block title %} list service reserve {% endblock %}
+
+{% block content %}
+
+<h1 class="lead my-4">list reserve service..</h1>
+
+<div class="flex_cont">
+
+{% if obj_list %}
+{% for obj in obj_list %}
+<div class="col-xxl-5 col-sm-10">
+    <div class="card p-3 me-2 mb-3">
+
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item">
+            <sup class="float-start">id:</sup>
+            <span class="me-3">{{ obj.id }}</span>
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">owner reserve:</sup>
+            <span>{{ obj.rsf_owner }}</span>
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">reserve service:</sup>
+            {{ obj.rsf_service_id }}
+        </li>
+    </ul>
+
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item">
+            <sup class="float-start">rsv time:</sup>
+            <time>{{ obj.reserve_time }}</time>
+        </li>
+    </ul>
+
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">description:</sup>
+                <p>{{ obj.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+        </li>
+    </ul>
+
+    <div class="card-footer">
+        <a class="page-link" href="/reserve/detail-service/{{ obj.id }}">
+            detail
+        </a>
+    </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+</div>
+
+{% endblock %}

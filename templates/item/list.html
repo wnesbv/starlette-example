@@ -1,0 +1,57 @@
+
+{% extends "base.html" %}
+{% block title %} list item {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-4">list item..</h1>
+
+    <div class="p-4 bg-light">
+        <h2 class="lead">list item..</h2>
+        <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+    </div>
+
+    <div class="row mt-4">
+    {% if odj_list %}
+    {% for obj in odj_list %}
+    <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-8 col-sm-10">
+        <div class="card p-3 mb-2">
+
+            <ul class="card-header list-group list-group-horizontal">
+                <li class="list-group-item">
+                    <sup class="float-start">id:</sup>
+                    <span>{{ obj.id }}</span>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">owner:</sup>
+                    <span>{{ obj.item_owner }}</span>
+                </li>
+            </ul>
+
+            <ul class="list-group list-group-flush">
+
+                <li class="list-group-item">
+                    <sup class="float-start">title:</sup>
+                    <p>{{ obj.title }}</p>
+                </li>
+                <li class="list-group-item">
+                    <p>{{ obj.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+                </li>
+                <li class="list-group-item">
+                    <time>{{ obj.created_at }}</time>
+                </li>
+            </ul>
+
+            <p class="card-footer">
+                <a class="btn btn-outline-primary btn-sm" href="/item/details/{{ obj.id }}" role="button">View details &raquo;</a>
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+
+        {% else %}
+        <span class="mt-5">no information available</span>
+    {% endif %}
+    </div>
+
+{% endblock %}

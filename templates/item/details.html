@@ -1,0 +1,101 @@
+
+{% extends "base.html" %}
+{% block title %} detail {{ detail.title }} {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-3">detail item</h1>
+    <div class="flex_cont">
+        <div class="col-xxl-6 col-sm-10 card p-3">
+
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">id:</sup>
+                {{ detail.id }}
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">owner item:</sup>
+                {{ detail.item_owner }}
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">created:</sup>
+                <time>{{ detail.created_at }}</time>
+            </li>
+        </ul>
+
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">title:</sup>
+                <p>{{ detail.title }}</p>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">description:</sup>
+                <p>{{ detail.description | safe }}</p>
+            </li>
+        </ul>
+
+        {% if all_service %}
+        <ul class="card-footer list-group list-group-horizontal">
+            {% for sv in all_service %}
+            <li class="list-group-item">
+            <sup class="float-start mb-2">service:</sup>
+            <a class="page-link mt-2" href="/item/service/details/{{ sv.id }}">{{ sv.title }}
+            </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        
+        {% if all_rent %}
+        <ul class="card-footer list-group list-group-horizontal">
+            {% for rent in all_rent %}
+            <li class="list-group-item">
+            <sup class="float-start">rent:</sup>
+            <a class="page-link mt-2" href="/item/rent/details/{{ rent.id }}">{{ rent.title }}
+            </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        </div>
+
+        {% if request.user.user_id == detail.item_owner %}
+        {% if detail.file %}
+        <div class="col-xxl-5 col-sm-10 ms-3">
+
+        <img class="w-100 shadow-sm mb-2" src="/static/upload/{{ detail.file.path }}" alt="img">
+
+        <a class="btn btn-outline-primary btn-sm" href="/item/file-update/{{ detail.id }}" role="button">
+            image <i class="bi bi-pencil"></i> &raquo;
+        </a>
+
+        </div>
+        {% else %}
+        <div class="w-100 my-3">
+            <a class="btn btn-outline-primary btn-sm" href="/item/file-update/{{ detail.id }}" role="button">
+                image <i class="bi bi-pencil"></i> &raquo;
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+    <div class="card mt-2">
+        <div class="card-header">
+            <a class="btn btn-outline-primary btn-sm me-2" href="/item/update/{{ detail.id }}" role="button">
+                <i class="bi bi-pencil"></i> &raquo;
+            </a>
+            <a class="btn btn-outline-danger btn-sm" href="/item/delete/{{ detail.id }}" role="button">
+                <i class="bi bi-trash3"></i> &raquo;
+            </a>
+            <a class="btn btn-outline-primary btn-sm float-end" href="/comment/item/create/{{ detail.id }}">create comment</a>
+        </div>
+    </div>
+    {% endif %}
+
+    {% include "comment/cmt_item.html" %}
+
+
+    <div class="my-5">{{ detail.file }}</div>
+
+{% endblock %}

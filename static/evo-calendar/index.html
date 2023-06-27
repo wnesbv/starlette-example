@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <title>My Evo Calendar</title>
+
+<link rel="stylesheet" type="text/css" href="css/evo-calendar.css"/>
+<link rel="stylesheet" type="text/css" href="css/evo-calendar.midnight-blue.css"/>
+
+</head>
+<body>
+
+    <div id="demoEvoCalendar"></div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="js/evo-calendar.js"></script>
+
+<script>
+
+$(document).ready(() => {
+    $('#demoEvoCalendar').evoCalendar({
+        sidebarToggler: true,
+        sidebarDisplayDefault: true,
+        eventListToggler: true,
+        eventDisplayDefault: true,
+
+        calendarEvents: [{
+            id: 'd8jai7s',
+            name: "Author's Birthday",
+            description: "Author's note: Thank you for using EvoCalendar! :)",
+            date: 'June/10/2022',
+            type: 'birthday',
+            everyYear: !0,
+        },],
+    });
+});
+
+</script>
+
+
+</body>
+
+</html>

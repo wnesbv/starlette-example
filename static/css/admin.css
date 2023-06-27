@@ -1,0 +1,35 @@
+
+
+.list-group-item{
+    position: relative;
+    display: block;
+    padding: 1rem 1rem .25rem 1rem;
+    color: #212529;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1pxsolidrgba(0,0,0,.125);
+}
+
+.flex_cont{
+    min-height: 44vh;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    align-content: flex-start;
+}
+.base_main{
+    min-height: 80vh;
+}
+.li_comment{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    align-content: space-between;
+}
+a{
+    text-decoration: none;
+}

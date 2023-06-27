@@ -1,0 +1,58 @@
+
+{% extends "admin/base.html" %}
+{% block title %} admin update {{ detail.title }} {% endblock%}
+
+{% block content %}
+
+    <h1 class="lead my-5">admin update service</h1>
+
+    <div class="row">
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <input
+                type="text"
+                required
+                placeholder="title"
+                name="title"
+                value="{{ detail.title }}"
+                class="form-control"
+            />
+        </div>
+
+        <div class="mb-3">
+        <label class="form-label">description</label>
+        <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ detail.description }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <input
+                type="file"
+                name="file"
+                class="form-control"
+                value="{{ detail.file }}"
+                placeholder="item image"
+            />
+        </div>
+
+        <button type="submit" class="btn btn-outline-primary btn-sm">
+            submit
+        </button>
+    </form>
+
+    </div>
+
+{% endblock %}
+
+
+{% block script %}
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jodit/3.17.1/jodit.min.css"/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jodit/3.17.1/jodit.min.js"></script>
+
+<script>
+    const editor = Jodit.make('textarea');
+</script>
+
+{% endblock %}
+

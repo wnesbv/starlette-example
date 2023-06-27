@@ -1,0 +1,29 @@
+
+<script>
+
+var ws = new WebSocket("ws://127.0.0.1:8000/chat/two_ws");
+
+ws.onopen = function (event) {
+    console.log("Connected to websocket. Channel MySimpleChat is open now.");
+};
+
+ws.onmessage = function (event) {
+    var messages = document.getElementById("messages");
+    var message = document.createElement("div");
+
+    var data = JSON.parse(event.data);
+    message.innerHTML = `<strong>${data.owner_msg} :</strong> ${data.message}`;
+    messages.appendChild(message);
+};
+function sendMessage(event) {
+    var owner_msg;
+    var message = document.getElementById("message");
+    var data = {
+        owner_msg: owner_msg,
+        message: message.value,
+    };
+    console.log("Message send %s", data);
+    ws.send(JSON.stringify(data));
+    event.preventDefault();
+}
+</script>

@@ -1,0 +1,51 @@
+
+{% extends "base.html" %}
+{% block title %} reserve service {{ obj.title }} {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-4">detail reserve service</h1>
+    <div class="card p-3 mb-3">
+
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">reserve id:</sup>
+                <span class="me-3">{{ obj.id }}</span>
+            <li class="list-group-item">
+                <sup class="float-start">owner reserve:</sup>
+                <span>{{ obj.rsf_owner }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">reserve service:</sup>
+                <span>{{ obj.rsf_service_id }}</span>
+            </li>
+        </ul>
+
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">reserve time:</sup>
+                <time>{{ obj.reserve_time }}</time>
+            </li>
+        </ul>
+
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">description:</sup>
+                <p>{{ obj.description }}</p>
+            </li>
+        </ul>
+
+        <div class="card mt-2">
+            <div class="card-header">
+                <a class="btn btn-outline-primary btn-sm me-2" href="/reserve/update-service/{{ obj.id }}" role="button">
+                    <i class="bi bi-pencil"></i> &raquo;
+                </a>
+                <a class="btn btn-outline-danger btn-sm" href="/reserve/delete/{{ obj.id }}" role="button">
+                    <i class="bi bi-trash3"></i> &raquo;
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

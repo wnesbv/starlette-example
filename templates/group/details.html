@@ -1,0 +1,172 @@
+
+{% extends "base.html" %}
+{% block title %} group - {{ detail.title }} {% endblock %}
+
+{% block content %}
+
+<h1 class="lead my-3">detail...</h1>
+
+<div class="card p-3 mb-3">
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item">
+            <sup class="float-start">group id:</sup>
+            {{ detail.id }}
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">admin group:</sup>
+            {{ detail.admin_group }}
+        </li>
+    </ul>
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">title:</sup>
+            {{ detail.title }}
+        </li>
+        <li class="list-group-item">{{ detail.description }}</li>
+    </ul>
+    <ul class="card-footer">
+        <li class="list-group-item">
+            <sup class="float-start">created:</sup>
+            <time>{{ detail.created_at }}</time>
+        </li>
+    </ul>
+</div>
+
+
+{# {% if request.user.is_authenticated and request.user.user_id == detail.admin_group %} #}
+
+<div class="my-3">
+    <div class="card">
+        <div class="card-header">
+            <a
+                class="btn btn-outline-primary btn-sm me-2 border-r"
+                href="/participant/list/{{ detail.id }}"
+                role="button"
+            >
+                participant list &raquo;
+            </a>
+            <a
+                class="btn btn-outline-primary btn-sm me-2 border-r"
+                href="/participant/create/{{ detail.id }}"
+                role="button"
+            >
+                participant &raquo;
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="mt-2">
+    <div class="card">
+        <div class="card-header">
+            <a
+                class="btn btn-outline-primary btn-sm me-2 border-r"
+                href="/chat/group/update/{{ detail.id }}"
+                role="button"
+            >
+                <i class="bi bi-pencil"></i> &raquo;
+            </a>
+            <a
+                class="btn btn-outline-danger btn-sm"
+                href="/chat/group/delete/{{ detail.id }}"
+                role="button"
+            >
+                <i class="bi bi-trash3"></i> &raquo;
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<div class="mb-5">
+
+<div class="card mt-2">
+
+    <div class="card-header">
+        <h2 class="lead">group channel</h2>
+    </div>
+
+    <div class="card-body">
+    <div class="p-3">
+        <ul class="w-100 list-group list-group-flush">
+
+            {% if group_chat %}
+            {% for chat in group_chat %}
+
+            <li class="list-group-item">
+
+                <span {% if chat.owner_msg == request.user.user_id %}class="w-75 float-end"{% else %}class="w-75" {% endif %}>
+
+                    <span class="me-2">{{ chat.owner_msg }}</span>
+
+                    <span>{{ chat.message }}</span>
+
+                    <span class="float-end">
+                        <time class="mx-2">
+                            {{ chat.created_at.strftime('%Y-%m-%d%H:%M:%S') }}
+                        </time>
+
+                        {% if request.user.is_authenticated %}
+                        <a
+                            class="btn btn-outline-primary btn-sm me-2"
+                            href="/chat/update/{{ chat.id }}"
+                            role="button"
+                        >
+                            <i class="bi bi-pencil"></i> &raquo;
+                        </a>
+                        <a
+                            class="btn btn-outline-danger btn-sm"
+                            href="/chat/delete/{{ chat.id }}"
+                            role="button"
+                        >
+                            <i class="bi bi-trash3"></i> &raquo;
+                        </a>
+                        {% endif %}
+                    </span>
+
+                </span>
+
+            </li>
+
+            {% endfor %}
+            {% endif %}
+
+        </ul>
+
+        <div id="messages"></div>
+
+        <form onsubmit="sendMessage(event)" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="message" class="form-label">message</label>
+                <textarea
+                    class="shadow-sm form-control p-3"
+                    id="message"
+                    name="message"
+                    maxlength="333"
+                    spellcheck
+                    minlength="7"
+                    maxlength="200"
+                    required
+                ></textarea>
+            </div>
+            <button type="submit" class="btn btn-outline-primary btn-sm mt-3">
+                submit
+            </button>
+        </form>
+
+        <div id="target"></div>
+
+    </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
+{% include "group/js_chat.html" %}
+
+{% block scroll_bottom  %}
+<script>
+$('html, body').animate({scrollTop: $("#target").offset().top}, 2000);
+</script>
+{% endblock %}

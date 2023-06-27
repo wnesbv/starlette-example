@@ -1,0 +1,32 @@
+
+{% extends "base.html" %}
+{% block title %} admin update slider {{ detail.title }} {% endblock%}
+
+{% block content %}
+
+    <h1 class="lead my-4">update slider</h1>
+
+    <form class="card p-3" method="POST" enctype="multipart/form-data">
+        <div class="m-2">
+            <sup class="float-start">title</sup>
+            <input
+                type="text"
+                required
+                name="title"
+                value="{{ detail.title }}"
+                class="form-control my-2"
+            />
+        </div>
+        <div class="m-2">
+        <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ detail.description }}</textarea>
+        </div>
+
+        <div class="m-2">
+        <button type="submit" class="btn btn-outline-primary btn-sm">
+            submit
+        </button>
+        </div>
+    </form>
+
+{% endblock %}
+

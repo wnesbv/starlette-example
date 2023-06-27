@@ -1,0 +1,60 @@
+
+{% extends "base.html" %}
+{% block title %} reserve time {{ srv.id }}  {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-4">reserve time...</h1>
+    <div class="card p-3">
+        <h2 class="lead">service</h2>
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">service id:</sup>
+                <span>{{ srv.id }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">owner service:</sup>
+                <span>{{ srv.service_owner }}</span>
+            </li>
+        </ul>
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">service title:</sup>
+                <p class="mt-2">{{ srv.title }}</p>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">service description:</sup>
+                <p class="mt-2">{{ srv.description }}</p>
+            </li>
+        </ul>
+
+        <h2 class="lead">reserve</h2>
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">schedule id:</sup>
+                <span>{{ sch.id }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">there is:</sup>
+                <time>{{ there_is }}</time>
+            </li>
+        </ul>
+
+        <form class="card-body m-2" method="POST">
+            <sup class="float-start">description</sup>
+            <input
+                type="text"
+                name="description"
+                placeholder="description"
+                class="form-control my-2"
+            />
+            <div class="card-footer mt-2">
+            <button type="submit" class="btn btn-outline-primary btn-sm">
+                submit
+            </button>
+            </div>
+        </form>
+    </div>
+
+
+{% endblock %}

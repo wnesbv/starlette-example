@@ -1,0 +1,37 @@
+
+{% extends "base.html" %}
+{% block title %} update {{ detail.title }} {% endblock%}
+
+{% block content %}
+
+    <h1 class="lead my-4">update group</h1>
+
+    <form class="card p-3" method="POST" enctype="multipart/form-data">
+        <div class="m-2">
+            <sup class="float-start mb-2">title</sup>
+            <input
+                type="text"
+                required
+                name="title"
+                value="{{ detail.title }}"
+                class="form-control"
+            />
+        </div>
+
+        <div class="m-2">
+            <input
+                type="text"
+                required
+                name="description"
+                class="form-control"
+                value="{{ detail.description }}"
+            />
+        </div>
+        <div class="m-2">
+        <button type="submit" class="btn btn-outline-primary btn-sm">
+            submit
+        </button>
+        </div>
+    </form>
+
+{% endblock %}

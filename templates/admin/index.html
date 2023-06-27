@@ -1,0 +1,59 @@
+
+{% extends "admin/base.html" %}
+{% block content %}
+
+<h1 class="display-6 my-2">Hello, world!</h1>
+<div class="my-3">
+
+<div class="card p-3 mb-5">
+<ul class="card-body list-group list-group-flush">
+    <li class="list-group-item">
+        <a href="/admin/user/list">user</a>
+        <a class="btn btn-outline-primary btn-sm float-end" href="/admin/user/create/" role="button">create &raquo;</a>
+    </li>
+    {# item #}
+    <li class="list-group-item">
+        <a href="/admin/item/list">item</a>
+        <a class="btn btn-outline-primary btn-sm float-end" href="/admin/item/create/" role="button">create &raquo;</a>
+    </li>
+    {# rent #}
+    <li class="list-group-item">
+        <a href="/admin/rent/list">rent</a>
+        <a class="btn btn-outline-primary btn-sm float-end" href="/admin/rent/create/" role="button">create &raquo;</a>
+    </li>
+    {# service #}
+    <li class="list-group-item">
+        <a href="/admin/service/list">service</a>
+        <a class="btn btn-outline-primary btn-sm float-end" href="/admin/service/create/" role="button">create &raquo;</a>
+    </li>
+    {# schedule #}
+    <li class="list-group-item">
+        <a href="/admin/schedule-rent/list">schedule rent</a>
+        <a class="btn btn-outline-primary btn-sm float-end" href="/admin/schedule-rent/create/" role="button">create schedule rent &raquo;</a>
+
+        <a class="btn btn-outline-danger btn-sm me-2 float-end" href="/admin/rent-delete-csv" role="button">
+            dump rent delete all csv &raquo;
+        </a>
+
+    </li>
+    <li class="list-group-item">
+        <a href="/admin/schedule-service/user-list/">schedule service</a>
+        <a class="btn btn-outline-primary btn-sm float-end" href="/admin/schedule-service/create/" role="button">create schedule service &raquo;</a>
+
+        <a class="btn btn-outline-danger btn-sm me-2 float-end" href="/admin/service-delete-csv" role="button">
+            dump service delete all csv &raquo;
+        </a>
+
+    </li>
+    {# slider #}
+    <li class="list-group-item">
+        <a href="/admin/slider/list">slider</a>
+        <a class="btn btn-outline-primary btn-sm float-end" href="/admin/slider/create/" role="button">create &raquo;</a>
+    </li>
+
+</ul>
+
+</div>
+</div>
+
+{% endblock %}

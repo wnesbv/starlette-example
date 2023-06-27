@@ -1,0 +1,23 @@
+
+{% extends "admin/base.html" %}
+{% block title %} admin delete item {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead mt-4">admin delete...</h1>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="lead">delete item</h3>
+        </div>
+
+        <div class="card-body py-3">
+            <form method="POST">
+                <button class="btn btn-outline-danger btn-sm" type="submit">
+                    delete
+                </button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

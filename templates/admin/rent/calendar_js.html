@@ -1,0 +1,37 @@
+<script>
+const listjson{{ sch.id }} = JSON.stringify({{ sch.by_points | safe }});
+const objlist{{ sch.id }} = JSON.parse(listjson{{ sch.id }});
+document.addEventListener('DOMContentLoaded', () => {
+    const calendarEl = document.getElementById('{{ sch.title }}');
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        // headerToolbar: {
+        //     left: 'prev,next today',
+        //     center: 'title',
+        //     right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+        // },
+        firstDay: '1',
+        initialDate: '2022-06-10',
+        editable: false,
+        navLinks: false,
+        dayMaxEvents: true,
+        events: objlist{{ sch.id }}
+
+        // events: [
+        //     {
+        //         title: 'event01',
+        //         start: '2022-06-20T00:00:00',
+        //         end: '2022-06-25T24:00:00',
+        //     },
+        //     {
+        //         title: 'event02',
+        //         start: '2022-06-26T00:00:00',
+        //         end: '2022-06-30T24:00:00',
+        //     },
+        // ],
+
+    });
+    calendar.render();
+});
+
+</script>

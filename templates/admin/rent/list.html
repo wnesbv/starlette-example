@@ -1,0 +1,60 @@
+
+{% extends "admin/base.html" %}
+{% block title %} admin list rent {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-3">admin list rent..</h1>
+
+    <div class="p-3 bg-light">
+        <p>user count {{ odj_count | max }}</p>
+    </div>
+
+    <div class="row">
+
+    {% if odj_list %}
+    {% for obj in odj_list %}
+    <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-8 col-sm-10 mr-auto card p-3 mb-5">
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">id:</sup>
+                <span class="me-3">{{ obj.id }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">owner:</sup>
+                <span>{{ obj.rent_owner }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">rent belongs:</sup>
+                <span>{{ obj.rent_belongs }}</span>
+            </li>
+        </ul>
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">title:</sup>
+                <p>{{ obj.title }}</p>
+            </li>
+            <li class="list-group-item">
+                <p>{{ obj.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+            </li>
+            <li class="list-group-item">
+                <time>{{ obj.created_at }}</time>
+            </li>
+        </ul>
+
+        <p class="card-footer">
+        <a class="btn btn-outline-primary btn-sm" href="/admin/rent/details/{{ obj.id }}" role="button">View details &raquo;</a>
+        </p>
+
+    </div>
+
+    {% endfor %}
+
+        {% else %}
+        <span class="mt-5">no information available</span>
+
+    {% endif %}
+
+    </div>
+
+{% endblock %}

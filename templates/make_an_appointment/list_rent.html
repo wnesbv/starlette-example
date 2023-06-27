@@ -1,0 +1,64 @@
+
+{% extends "base.html" %}
+{% block title %} list rent reserve {% endblock %}
+
+{% block content %}
+
+<h1 class="lead my-4">list reserve rent..</h1>
+
+<div class="flex_cont">
+    {% if obj_list %}
+    {% for obj in obj_list %}
+    <div class="col-xxl-5 col-sm-10">
+        <div class="card p-3 me-2 mb-3">
+
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">id:</sup>
+                <span class="me-3">{{ obj.id }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">owner reserve:</sup>
+                <span>{{ obj.rrf_owner }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">reserve item:</sup>
+                <span>{{ obj.rrf_item_id }}</span>
+            </li>
+        </ul>
+
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">start:</sup>
+                <time>{{ obj.time_start.strftime("%d-%m-%YT %H:%M") }}</time>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">end:</sup>
+                <time>{{ obj.time_end.strftime("%d-%m-%Y %H:%M") }}</time>
+            </li>
+        </ul>
+
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">description:</sup>
+                <p>{{ obj.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">period:</sup>
+                <p>{{ obj.reserve_period }}</p>
+            </li>
+        </ul>
+
+        <div class="card-footer">
+            <a class="page-link" href="/reserve/detail-rent/{{ obj.id }}">
+                detail
+            </a>
+        </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+</div>
+
+{% endblock %}

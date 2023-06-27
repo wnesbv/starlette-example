@@ -1,0 +1,50 @@
+
+{% extends "base.html" %}
+{% block title %} admin list slider {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-3">list slider..</h1>
+
+    <div class="row mt-3">
+    {% if odj_list %}
+    {% for obj in odj_list %}
+    <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-8 col-sm-10">
+        <div class="card p-3 mb-2">
+
+            <ul class="card-header">
+                <li class="list-group-item">
+                    <sup class="float-start">id:</sup>
+                    <span>{{ obj.id }}</span>
+                </li>
+            </ul>
+
+            <ul class="card-body list-group list-group-flush">
+                <li class="list-group-item">
+                    <sup class="float-start">title:</sup>
+                    <p>{{ obj.title }}</p>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">description:</sup>
+                    <p>{{ obj.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">created:</sup>
+                    <time>{{ obj.created_at }}</time>
+                </li>
+            </ul>
+
+            <p class="card-footer">
+                <a class="btn btn-outline-primary btn-sm" href="/admin/slider/details/{{ obj.id }}" role="button">View details &raquo;</a>
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+
+        {% else %}
+        <span class="mt-5">no information available</span>
+
+    {% endif %}
+    </div>
+
+{% endblock %}
