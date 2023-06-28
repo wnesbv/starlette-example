@@ -125,6 +125,7 @@ async def img_creat(
 @requires("authenticated", redirect="user_login")
 # ...
 async def user_update(request):
+
     id = request.path_params["id"]
     template = "/auth/update.html"
 
@@ -135,15 +136,15 @@ async def user_update(request):
                 User.id == id,
             )
         )
-        result = stmt.scalars().first()
+        obj = stmt.scalars().first()
         # ..
         context = {
             "request": request,
-            "result": result,
+            "obj": obj,
         }
         # ...
         if request.method == "GET":
-            if result and request.user.user_id == result.id:
+            if obj and request.user.user_id == obj.id:
                 return templates.TemplateResponse(template, context)
 
             return PlainTextResponse("You are banned - this is not your account..!")
@@ -154,6 +155,7 @@ async def user_update(request):
             # ..
             name = form["name"]
             image_url = form["image_url"]
+            del_obj = form.get("del_bool")
             # ...
             if image_url.filename == "":
                 query = (
@@ -161,15 +163,37 @@ async def user_update(request):
                     .where(User.id == id)
                     .values(
                         name=name,
-                        image_url=result.image_url,
+                        image_url=obj.image_url,
+                        modified_at=datetime.now()
                     )
                     .execution_options(synchronize_session="fetch")
                 )
                 await session.execute(query)
                 await session.commit()
 
+                if del_obj:
+
+                    if Path(f".{obj.image_url}").exists():
+                        Path.unlink(f".{obj.image_url}")
+
+                    fle_not = (
+                        sqlalchemy_update(User)
+                        .where(User.id == id)
+                        .values(
+                            image_url=None,
+                            modified_at=datetime.now()
+                        )
+                        .execution_options(synchronize_session="fetch")
+                    )
+                    await session.execute(fle_not)
+                    await session.commit()
+
+                    return RedirectResponse(
+                        f"/account/details/{id}",
+                        status_code=302,
+                    )
                 return RedirectResponse(
-                    f"/account/details/{result.id}",
+                    f"/account/details/{id }",
                     status_code=302,
                 )
 
@@ -178,7 +202,8 @@ async def user_update(request):
                 .where(User.id == id)
                 .values(
                     name=name,
-                    image_url = await img_creat(request, image_url)
+                    image_url = await img_creat(request, image_url),
+                    modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
             )
@@ -186,7 +211,7 @@ async def user_update(request):
             await session.commit()
 
             return RedirectResponse(
-                f"/account/details/{result.id}",
+                f"/account/details/{id}",
                 status_code=302,
             )
 
