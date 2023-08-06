@@ -31,7 +31,6 @@ from options_select.opt_slc import(
 )
 
 from .models import ScheduleRent
-from .img import BASE_DIR
 
 
 templates = Jinja2Templates(directory="templates")

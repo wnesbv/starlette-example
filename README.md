@@ -10,3 +10,5 @@ https://xdsoft.net/jodit/docs/
 https://github.com/accent-starlette/starlette-files
 
 https://github.com/Sobolev5/channel-box
+
+pip install msvc-runtime

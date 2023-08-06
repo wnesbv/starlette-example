@@ -10,10 +10,13 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 from db_config.storage_config import engine, async_session
 
 from item.models import Slider
-from item.img import FileType, BASE_DIR
 
 from .opt_slc import in_admin
 from .opt_slider import all_count, all_slider, in_slider
+
+
+BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
+root_directory = BASE_DIR / "static/upload"
 
 
 templates = Jinja2Templates(directory="templates")
@@ -104,15 +107,12 @@ async def slider_create(request):
             # ..
             title = form["title"]
             description = form["description"]
+            file = form["file"]
             # ..
-            file_obj = FileType.create_from(
-                file=form["file"].file, original_filename=form["file"].filename
-            )
-            # ..
-            new = Slider(file=file_obj)
+            new = Slider()
             new.title = title
             new.description = description
-            new.file_obj = file_obj
+            new.file = file
             # ..
             session.add(new)
             session.refresh(new)
@@ -204,17 +204,13 @@ async def slider_file_update(
         if request.method == "POST":
             #..
             form = await request.form()
-            #..
-            file_obj = FileType.create_from(
-                file=form["file"].file,
-                original_filename=form["file"].filename
-            )
+            file = form["file"]
             #..
             file_query = (
                 sqlalchemy_update(Slider)
                 .where(Slider.id == id)
                 .values(
-                    file=file_obj,
+                    file=file,
                 )
                 .execution_options(synchronize_session="fetch")
             )

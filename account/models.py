@@ -3,12 +3,11 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import Column, Boolean, String, DateTime, JSON
+from sqlalchemy import Column, Boolean, String, DateTime
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db_config.storage_config import Base
-from item.img import FileType, BASE_DIR
 
 
 class User(Base):
@@ -20,7 +19,7 @@ class User(Base):
         String(120), nullable=False, unique=True, index=True
     )
     password: Mapped[str] = mapped_column(String, nullable=False)
-    image_url: Mapped[str] = mapped_column(String, nullable=True)
+    file: Mapped[str] = mapped_column(String, nullable=True)
     # ...
     email_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=False)

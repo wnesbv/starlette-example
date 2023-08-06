@@ -45,9 +45,6 @@ routes = [
     Route("/create/", item.item_create, methods=["GET", "POST"]),
     Route("/update/{id:int}", item.item_update, methods=["GET", "POST"]),
     Route("/delete/{id:int}", item.item_delete, methods=["GET", "POST"]),
-    #
-    Route("/file-update/{id:int}", item.item_file_update, methods=["GET", "POST"]),
-    Route("/file-delete/{id:int}", item.file_delete, methods=["GET"]),
     # ..
     Route("/rent/list", rent.rent_list),
     Route("/rent/details/{id:int}", rent.rent_details),
@@ -60,9 +57,6 @@ routes = [
     Route("/service/create/", service.service_create, methods=["GET", "POST"]),
     Route("/service/update/{id:int}", service.service_update, methods=["GET", "POST"]),
     Route("/service/delete/{id:int}", service.delete, methods=["GET", "POST"]),
-    #
-    Route("/service/file-update/{id:int}", service.file_update, methods=["GET", "POST"]),
-    Route("/service/file-delete/{id:int}", service.file_delete, methods=["GET"]),
     # ..
     Route("/schedule-rent/list", schedule_rent.list_rent),
     Route(

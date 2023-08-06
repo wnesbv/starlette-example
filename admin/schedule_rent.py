@@ -16,7 +16,6 @@ from json2html import json2html
 from db_config.storage_config import engine, async_session
 
 from item.models import ScheduleRent, ScheduleService
-from item.img import BASE_DIR
 
 from options_select.opt_slc import details_schedule_rent
 
@@ -27,6 +26,9 @@ from .opt_slc import(
     all_rent,
 )
 
+
+BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
+root_directory = BASE_DIR / "static/upload"
 
 templates = Jinja2Templates(directory="templates")
 

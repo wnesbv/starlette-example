@@ -21,12 +21,12 @@ from db_config.settings import settings
 from db_config.storage_config import engine, async_session
 
 from account.models import User
-from item.img import FileType, BASE_DIR
 from mail.verify import verify_mail
 
 from .token import (
     mail_verify,
 )
+from options_select import file_img
 
 
 key = settings.SECRET_KEY
@@ -95,39 +95,14 @@ async def user_register(request):
     await engine.dispose()
 
 
-async def img_creat(
-    request, image_url
-):
-
-    save_path = f"./static/upload/{request.user.email}"
-    file_path = f"{save_path}/{image_url.filename}"
-
-    ext = PurePosixPath(image_url.filename).suffix
-    if ext not in (".png", ".jpg", ".jpeg"):
-        raise HTTPException(
-            status_code=400,
-            detail="Format files: png, jpg, jpeg ..!",
-        )
-    if Path(file_path).exists():
-        raise HTTPException(
-            status_code=400,
-            detail="Error..! File exists..!"
-        )
-
-    os.makedirs(save_path, exist_ok=True)
-
-    with open(f"{file_path}", "wb") as fle:
-        fle.write(image_url.file.read())
-
-    return file_path.replace(".", "", 1)
-
-
 @requires("authenticated", redirect="user_login")
 # ...
 async def user_update(request):
 
     id = request.path_params["id"]
     template = "/auth/update.html"
+    mdl = "user"
+    basewidth = 256
 
     async with async_session() as session:
         # ..
@@ -136,15 +111,15 @@ async def user_update(request):
                 User.id == id,
             )
         )
-        obj = stmt.scalars().first()
+        i = stmt.scalars().first()
         # ..
         context = {
             "request": request,
-            "obj": obj,
+            "i": i,
         }
         # ...
         if request.method == "GET":
-            if obj and request.user.user_id == obj.id:
+            if i and request.user.user_id == i.id:
                 return templates.TemplateResponse(template, context)
 
             return PlainTextResponse("You are banned - this is not your account..!")
@@ -154,16 +129,17 @@ async def user_update(request):
             form = await request.form()
             # ..
             name = form["name"]
-            image_url = form["image_url"]
+            file = form["file"]
             del_obj = form.get("del_bool")
-            # ...
-            if image_url.filename == "":
+            # ..
+
+            if file.filename == "":
                 query = (
                     sqlalchemy_update(User)
                     .where(User.id == id)
                     .values(
                         name=name,
-                        image_url=obj.image_url,
+                        file=i.file,
                         modified_at=datetime.now()
                     )
                     .execution_options(synchronize_session="fetch")
@@ -172,15 +148,14 @@ async def user_update(request):
                 await session.commit()
 
                 if del_obj:
-
-                    if Path(f".{obj.image_url}").exists():
-                        Path.unlink(f".{obj.image_url}")
+                    if Path(f".{i.file}").exists():
+                        Path.unlink(f".{i.file}")
 
                     fle_not = (
                         sqlalchemy_update(User)
                         .where(User.id == id)
                         .values(
-                            image_url=None,
+                            file=None,
                             modified_at=datetime.now()
                         )
                         .execution_options(synchronize_session="fetch")
@@ -196,17 +171,20 @@ async def user_update(request):
                     f"/account/details/{id }",
                     status_code=302,
                 )
-
+            # ..
             file_query = (
                 sqlalchemy_update(User)
                 .where(User.id == id)
                 .values(
                     name=name,
-                    image_url = await img_creat(request, image_url),
+                    file=file_img.img_creat(request, file, mdl),
                     modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
             )
+            # ..
+            file_img.img_size(request, file, mdl, basewidth)
+            # ..
             await session.execute(file_query)
             await session.commit()
 
@@ -215,49 +193,6 @@ async def user_update(request):
                 status_code=302,
             )
 
-    await engine.dispose()
-
-
-async def user_list(request):
-    template = "/auth/list.html"
-
-    async with async_session() as session:
-        # ..
-        stmt = await session.execute(select(User))
-        result = stmt.scalars().all()
-        # ..
-        context = {
-            "request": request,
-            "result": result,
-        }
-        # ...
-        if request.method == "GET":
-            return templates.TemplateResponse(template, context)
-    await engine.dispose()
-
-
-async def user_detail(request):
-    id = request.path_params["id"]
-    template = "/auth/details.html"
-
-    async with async_session() as session:
-        # ..
-        stmt = await session.execute(
-            select(User).where(
-                User.id == id,
-            )
-        )
-        result = stmt.scalars().first()
-        # ..
-        context = {
-            "request": request,
-            "result": result,
-        }
-        # ...
-        if request.method == "GET":
-            if result:
-                return templates.TemplateResponse(template, context)
-        return RedirectResponse("/account/list", status_code=302)
     await engine.dispose()
 
 
@@ -368,4 +303,48 @@ async def resend_email(request):
             )
 
         return templates.TemplateResponse(template, {"request": request})
+    await engine.dispose()
+
+
+
+async def user_list(request):
+    template = "/auth/list.html"
+
+    async with async_session() as session:
+        # ..
+        stmt = await session.execute(select(User))
+        result = stmt.scalars().all()
+        # ..
+        context = {
+            "request": request,
+            "result": result,
+        }
+        # ...
+        if request.method == "GET":
+            return templates.TemplateResponse(template, context)
+    await engine.dispose()
+
+
+async def user_detail(request):
+    id = request.path_params["id"]
+    template = "/auth/details.html"
+
+    async with async_session() as session:
+        # ..
+        stmt = await session.execute(
+            select(User).where(
+                User.id == id,
+            )
+        )
+        result = stmt.scalars().first()
+        # ..
+        context = {
+            "request": request,
+            "result": result,
+        }
+        # ...
+        if request.method == "GET":
+            if result:
+                return templates.TemplateResponse(template, context)
+        return RedirectResponse("/account/list", status_code=302)
     await engine.dispose()

@@ -14,7 +14,7 @@
 
                 {% for obj in odj_item %}
                     <option value="{{ obj.id }}">
-                        {{ obj.id }}
+                        id {{ obj.id }} title {{ obj.title }}
                     </option>
                 {% endfor %}
 
@@ -26,7 +26,6 @@
                 type="text"
                 required
                 name="title"
-                value="{{ title }}"
                 placeholder="service 01"
                 class="form-control my-2"
             />
@@ -38,9 +37,7 @@
         <div class="m-2">
             <input
                 type="file"
-                required
                 name="file"
-                value="{{ file }}"
                 class="form-control"
             />
         </div>

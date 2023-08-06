@@ -10,8 +10,8 @@ from starlette.responses import HTMLResponse
 from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 
-from channel_box import channel_box
-from channel_box import ChannelBoxEndpoint
+from starlette.endpoints import WebSocketEndpoint
+from channel_box import Channel, ChannelBox
 
 from db_config.settings import settings
 from db_config.storage_config import engine, async_session
@@ -24,7 +24,7 @@ templates = Jinja2Templates(directory="templates")
 
 
 # ..One
-class ChannelOne(ChannelBoxEndpoint):
+class ChannelOne(WebSocketEndpoint):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -90,7 +90,7 @@ class ChannelOne(ChannelBoxEndpoint):
 
 
 # ..Two
-class ChannelTwo(ChannelBoxEndpoint):
+class ChannelTwo(WebSocketEndpoint):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -151,7 +151,7 @@ class Chat(HTTPEndpoint):
 
 class Message(HTTPEndpoint):
     async def get(self, request):
-        await channel_box.channel_send(
+        await ChannelBox.channel_send(
             channel_name="MySimpleChat",
             payload={
                 "username": "Message HTTPEndpoint",
@@ -164,23 +164,23 @@ class Message(HTTPEndpoint):
 
 class Channels(HTTPEndpoint):
     async def get(self, request):
-        channels = await channel_box.channels()
+        channels = await ChannelBox.channels()
         return HTMLResponse(f"{channels}")
 
 
 class ChannelsFlush(HTTPEndpoint):
     async def get(self, request):
-        await channel_box.channels_flush()
+        await ChannelBox.channels_flush()
         return JSONResponse({"flush": "success"})
 
 
 class History(HTTPEndpoint):
     async def get(self, request):
-        history = await channel_box.history()
+        history = await ChannelBox.history()
         return HTMLResponse(f"{history}")
 
 
 class HistoryFlush(HTTPEndpoint):
     async def get(self, request):
-        await channel_box.history_flush()
+        await ChannelBox.history_flush()
         return JSONResponse({"flush": "success"})

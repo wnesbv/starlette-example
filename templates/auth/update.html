@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %} update {{ obj.email }}{% endblock %}
+{% block title %} update {{ i.email }}{% endblock %}
 
 {% block content %}
 
-<h1 class="lead my-4">update user {{ obj.email }}</h1>
+<h1 class="lead my-4">update user {{ i.email }}</h1>
 
 <form class="card p-3" method="POST" enctype="multipart/form-data">
     <div class="m-2">
@@ -12,20 +12,20 @@
             type="text"
             required
             name="name"
-            value="{{ obj.name }}"
+            value="{{ i.name }}"
             class="form-control my-2"
         />
     </div>
 
     <div class="m-2">
-        <input type="file" name="image_url" class="form-control" />
+        <input type="file" name="file" class="form-control" />
     </div>
 
-    {% if obj.image_url %}
+    {% if i.file %}
     <figure class="list-group-item list-group-item-danger d-inline-block p-3">
         <figcaption><sup>image</sup></figcaption>
 
-        <img width="128" src="{{ obj.image_url }}" />
+        <img width="128" src="{{ i.file }}" />
         <input
             type="checkbox"
             name="del_bool"

@@ -5,8 +5,8 @@
 {% block content %}
 
 <h1 class="lead my-3">detail user {{ result.email }}</h1>
-<div class="flex_cont">
-    <div class="card p-3">
+
+<div class="card p-3">
 
     <ul class="card-header list-group list-group-horizontal">
         <li class="list-group-item">
@@ -30,15 +30,14 @@
         </li>
     </ul>
 
-    </div>
-
-    {% if result.image_url %}
-    <div class="col-xxl-5 col-sm-10 ms-3">
-    <img class="w-100 shadow-sm mb-2" src="{{ result.image_url }}" alt="img">
+    {% if result.file %}
+    <div class="card-footer">
+    <img class="shadow-sm mb-2" src="{{ result.file }}" alt="img">
     </div>
     {% endif %}
 
 </div>
+
 
 {% if request.user.user_id == result.id %}
 <div class="card mt-2">

@@ -2,13 +2,11 @@ from __future__ import annotations
 
 from datetime import datetime, date
 
-from sqlalchemy import Column, String, Text, ForeignKey, Date, DateTime, JSON
+from sqlalchemy import Column, String, Text, ForeignKey, Date, DateTime
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db_config.storage_config import Base
-
-from .img import FileType
 
 
 class Slider(Base):
@@ -16,7 +14,7 @@ class Slider(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     title: Mapped[str] = mapped_column(Text, nullable=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
-    file = Column(FileType.as_mutable(JSON), nullable=True)
+    file: Mapped[str] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
@@ -27,7 +25,7 @@ class Item(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String, unique=True, index=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
-    file = Column(FileType.as_mutable(JSON), nullable=True)
+    file: Mapped[str] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
@@ -64,7 +62,7 @@ class Rent(Base):
     title: Mapped[str] = mapped_column(String(30), unique=True, index=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
     # ...
-    file = Column(FileType.as_mutable(JSON), nullable=True)
+    file: Mapped[str] = mapped_column(String, nullable=True)
     # ...
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
@@ -105,7 +103,7 @@ class Service(Base):
     title: Mapped[str] = mapped_column(String(30), unique=True, index=True)
     description: Mapped[str] = mapped_column(Text(200), nullable=True)
     # ...
-    file = Column(FileType.as_mutable(JSON), nullable=True)
+    file: Mapped[str] = mapped_column(String, nullable=True)
     # ...
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)

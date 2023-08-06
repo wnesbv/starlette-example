@@ -21,7 +21,7 @@ from middleware import JWTAuthenticationBackend
 
 
 #...
-# from db_startup.db import on_app_startup
+#from db_startup.db import on_app_startup
 #...
 
 
@@ -31,7 +31,7 @@ app = Starlette(
     debug = settings.DEBUG,
     routes = routes,
     #...
-    # on_startup=[on_app_startup],
+    #on_startup=[on_app_startup],
     # on_shutdown=[on_app_shutdown],
     #...
     middleware=[
@@ -148,4 +148,4 @@ def messages(request):
 
 if __name__ == "__main__":
 
-    uvicorn.run(app, host="127.0.0.1", port=8000, debug=settings.DEBUG)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

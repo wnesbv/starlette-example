@@ -1,33 +1,50 @@
 
 {% extends "base.html" %}
-{% block title %} update {{ detail.title }} {% endblock%}
+{% block title %} update {{ i.title }} {% endblock%}
 
 {% block content %}
 
-    <h1 class="lead my-4">update item</h1>
+<h1 class="lead my-4">update item</h1>
 
-    <form class="card p-3" method="POST" enctype="multipart/form-data">
-        <div class="m-2">
-            <sup class="float-start mb-2">title</sup>
-            <input
-                type="text"
-                required
-                name="title"
-                value="{{ detail.title }}"
-                class="form-control my-2"
-            />
-        </div>
+<form class="card p-3" method="POST" enctype="multipart/form-data">
+    <div class="m-2">
+        <sup class="float-start mb-2">title</sup>
+        <input
+            type="text"
+            name="title"
+            value="{{ i.title }}"
+            class="form-control my-2"
+        />
+    </div>
 
-        <div class="m-2">
-        <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ detail.description }}</textarea>
-        </div>
+    <div class="m-2">
+    <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ i.description }}</textarea>
+    </div>
 
-        <div class="m-2">
-        <button type="submit" class="btn btn-outline-primary btn-sm">
-            submit
-        </button>
-        </div>
-    </form>
+    <div class="m-2">
+        <input type="file" name="file" class="form-control" />
+    </div>
+
+    {% if i.file %}
+    <figure class="list-group-item list-group-item-danger d-inline-block p-3">
+        <figcaption><sup>image</sup></figcaption>
+
+        <img width="128" src="{{ i.file }}" />
+        <input
+            type="checkbox"
+            name="del_bool"
+            class="ms-2 form-check-input"
+        />
+        <sup class="m-2">delete</sup>
+    </figure>
+    {% endif %}
+
+    <div class="m-2">
+    <button type="submit" class="btn btn-outline-primary btn-sm">
+        submit
+    </button>
+    </div>
+</form>
 
 {% endblock %}
 

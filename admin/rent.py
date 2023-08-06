@@ -10,7 +10,6 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 from db_config.storage_config import engine, async_session
 
 from item.models import Rent, ScheduleRent
-from item.img import FileType
 from .opt_slc import (
     all_item,
     in_admin,
@@ -121,18 +120,15 @@ async def item_create(request):
             # ..
             title = form["title"]
             description = form["description"]
+            file = form["file"]
             rent_belongs = form["rent_belongs"]
             # ..
             rent_owner = request.user.user_id
             # ..
-            file_obj = FileType.create_from(
-                file=form["file"].file, original_filename=form["file"].filename
-            )
-            # ..
-            new = Rent(file=file_obj)
+            new = Rent()
             new.title = title
             new.description = description
-            new.file_obj = file_obj
+            new.file = file
             new.rent_owner = rent_owner
             # ..
             new.rent_belongs = int(rent_belongs)
@@ -177,15 +173,16 @@ async def item_update(request):
             # ..
             title = form["title"]
             description = form["description"]
-            # ..
-            file_obj = FileType.create_from(
-                file=form["file"].file, original_filename=form["file"].filename
-            )
+            file = form["file"]
             # ..
             file_query = (
                 sqlalchemy_update(Rent)
                 .where(Rent.id == id)
-                .values(file=file_obj, title=title, description=description)
+                .values(
+                    file=file,
+                    title=title,
+                    description=description
+                )
                 .execution_options(synchronize_session="fetch")
             )
             await session.execute(file_query)

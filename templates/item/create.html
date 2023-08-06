@@ -19,16 +19,15 @@
         </div>
         <div class="m-2">
         <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ description }}</textarea>
-            <div id="help" class="form-text">help text</div>
+        <div id="help" class="form-text">up to 200 characters</div>
         </div>
         <div class="m-2">
             <input
                 type="file"
-                required
                 name="file"
-                value="{{ file }}"
                 class="form-control"
             />
+            <div id="help" class="form-text">image ~ 1020px</div>
         </div>
         <div class="m-2">
         <button type="submit" class="btn btn-outline-primary btn-sm">

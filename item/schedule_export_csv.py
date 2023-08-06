@@ -26,7 +26,10 @@ from options_select.opt_slc import (
 )
 
 from .models import DumpService
-from .img import BASE_DIR
+
+
+BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
+root_directory = BASE_DIR / "static/upload"
 
 
 templates = Jinja2Templates(directory="templates")

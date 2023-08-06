@@ -4,57 +4,59 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">list user..</h1>
+<h1 class="lead my-4">list user..</h1>
 
-    <div class="p-4 bg-light">
-        <h2 class="lead">list user..</h2>
-        <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-    </div>
+<div class="p-4 bg-light">
+    <h2 class="lead">list user..</h2>
+    <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+</div>
 
-    <div class="row mt-4">
-    {% if result %}
-    {% for i in result %}
-    <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-8 col-sm-10">
-        <div class="card p-3 mb-2">
+<div class="row mt-4">
+{% if result %}
+{% for i in result %}
 
-            <ul class="card-header list-group list-group-horizontal">
-                <li class="list-group-item">
-                    <sup class="float-start">id:</sup>
-                    <span>{{ i.id }}</span>
-                </li>
-                <li class="list-group-item">
-                    <sup class="float-start">name:</sup>
-                    <span>{{ i.name }}</span>
-                </li>
-            </ul>
+<div class="col-xxl-3 col-xl-4 col-lg-6 col-md-8 col-sm-10">
+<div class="card p-3 mb-2">
 
-            <ul class="list-group list-group-flush">
+<ul class="card-header list-group list-group-horizontal">
+    <li class="list-group-item">
+        <sup class="float-start">id:</sup>
+        <span>{{ i.id }}</span>
+    </li>
+    <li class="list-group-item">
+        <sup class="float-start">name:</sup>
+        <span>{{ i.name }}</span>
+    </li>
+</ul>
 
-                <li class="list-group-item">
-                    <sup class="float-start">email:</sup>
-                    <p>{{ i.email }}</p>
-                </li>
+<ul class="list-group list-group-flush">
 
-                {% if i.file %}
-                <div class="col-xxl-5 col-sm-10 ms-3">
-                <img width="120" class="w-100 shadow-sm mb-2" src="/static/upload/{{ i.file.path }}" alt="img">
-                {% endif %}
+    <li class="list-group-item">
+        <sup class="float-start">email:</sup>
+        <p>{{ i.email }}</p>
+    </li>
+    <li class="list-group-item">
+        <time>{{ i.created_at }}</time>
+    </li>
+</ul>
 
-                <li class="list-group-item">
-                    <time>{{ i.created_at }}</time>
-                </li>
-            </ul>
+{% if i.file %}
+<figure>
+<img width="120" class="w-100 shadow-sm mb-2" src="{{ i.file }}" alt="img">
+</figure>
+{% endif %}
 
-            <p class="card-footer">
-                <a class="btn btn-outline-primary btn-sm" href="/account/details/{{ i.id }}" role="button">View details &raquo;</a>
-            </p>
-        </div>
-    </div>
-    {% endfor %}
+<p class="card-footer">
+    <a class="btn btn-outline-primary btn-sm" href="/account/details/{{ i.id }}" role="button">view details &raquo;</a>
+</p>
+</div>
+</div>
 
-        {% else %}
-        <span class="mt-5">no information available</span>
-    {% endif %}
-    </div>
+{% endfor %}
+
+    {% else %}
+    <span class="mt-5">no information available</span>
+{% endif %}
+</div>
 
 {% endblock %}

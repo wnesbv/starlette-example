@@ -183,7 +183,7 @@ async def delete_rsf(request):
 
         if request.method == "GET":
             # ..
-            detail = await in_rrf(request, session)
+            detail = await in_rsf(request, session)
             if detail:
                 return templates.TemplateResponse(
                     template,

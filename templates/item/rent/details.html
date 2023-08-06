@@ -1,6 +1,6 @@
 
 {% extends "base.html" %}
-{% block title %} rent {{ detail.title }} {% endblock %}
+{% block title %} rent {{ i.title }} {% endblock %}
 
 {% block calendar_css %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css">
@@ -9,23 +9,23 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">detail rent...</h1>
+    <h1 class="lead my-4">i rent...</h1>
     <div class="flex_cont">
         <div class="card p-3 mb-3">
 
         <ul class="card-header list-group list-group-horizontal">
             <li class="list-group-item">
                 <sup class="float-start">id:</sup>
-                {{ detail.id }}...
+                {{ i.id }}...
             </li>
             <li class="list-group-item">
                 <sup class="float-start">owner:</sup>
-                <span>{{ detail.rent_owner }}</span>
+                <span>{{ i.rent_owner }}</span>
             </li>
             <li class="list-group-item">
                 <sup class="float-start">rent to item:</sup>
                 <span class="me-3">
-                    {{ detail.rent_belongs }}
+                    {{ i.rent_belongs }}
                 </span>
             </li>
         </ul>
@@ -33,26 +33,26 @@
         <ul class="card-body list-group list-group-flush">
             <li class="list-group-item">
                 <sup class="float-start">title:</sup>
-                {{ detail.title }}
+                {{ i.title }}
             </li>
             <li class="list-group-item">
                 <sup class="float-start">description:</sup>
-                {{ detail.description | safe }}
+                {{ i.description | safe }}
             </li>
         </ul>
 
         <ul class="card-footer">
             <li class="list-group-item">
                 <sup class="float-start">created:</sup>
-                <time>{{ detail.created_at }}</time>
+                <time>{{ i.created_at }}</time>
             </li>
         </ul>
         </div>
 
-        {% if detail.file %}
-        <div class="col-xxl-5 col-sm-10 ms-3">
-            <img class="w-100 shadow-sm mb-5" src="/static/upload/{{ detail.file.path }}">
-        </div>
+        {% if i.file %}
+        <figure>
+            <img class="w-100 shadow-sm mb-5" src="{{ i.file }}">
+        </figure>
         {% endif %}
 
         <h2 class="container lead">schedule</h2>
@@ -104,13 +104,13 @@
 {% if request.user.is_authenticated %}
 <div class="card mt-2">
     <div class="card-header">
-        <a class="btn btn-outline-primary btn-sm me-2" href="/item/rent/update/{{ detail.id }}" role="button">
+        <a class="btn btn-outline-primary btn-sm me-2" href="/item/rent/update/{{ i.id }}" role="button">
             <i class="bi bi-pencil"></i> &raquo;
         </a>
-        <a class="btn btn-outline-danger btn-sm" href="/item/rent/delete/{{ detail.id }}" role="button">
+        <a class="btn btn-outline-danger btn-sm" href="/item/rent/delete/{{ i.id }}" role="button">
             <i class="bi bi-trash3"></i> &raquo;
         </a>
-        <a class="btn btn-outline-primary btn-sm float-end" href="/comment/rent/create/{{ detail.id }}">create comment</a>
+        <a class="btn btn-outline-primary btn-sm float-end" href="/comment/rent/create/{{ i.id }}">create comment</a>
     </div>
 </div>
 {% endif %}

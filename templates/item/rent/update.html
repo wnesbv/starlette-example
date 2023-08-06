@@ -1,6 +1,6 @@
 
 {% extends "base.html" %}
-{% block title %} update rent {{ detail.title }} {% endblock%}
+{% block title %} update rent {{ i.title }} {% endblock%}
 
 {% block content %}
 
@@ -11,25 +11,38 @@
             <sup class="float-startl">title</sup>
             <input
                 type="text"
-                required
                 name="title"
-                value="{{ detail.title }}"
+                value="{{ i.title }}"
                 class="form-control my-2"
             />
         </div>
 
         <div class="m-2">
-        <textarea class="form-control my-2" name="description" maxlength="333" spellcheck>{{ detail.description }}</textarea>
+        <textarea class="form-control my-2" name="description" maxlength="333" spellcheck>{{ i.description }}</textarea>
         </div>
+        
         <div class="mb-3">
             <input
                 type="file"
-                required
                 name="file"
-                value="{{ detail.file }}"
                 class="form-control"
             />
         </div>
+
+        {% if i.file %}
+        <figure class="list-group-item list-group-item-danger d-inline-block p-3">
+            <figcaption><sup>image</sup></figcaption>
+
+            <img width="128" src="{{ i.file }}" />
+            <input
+                type="checkbox"
+                name="del_bool"
+                class="ms-2 form-check-input"
+            />
+            <sup class="m-2">delete</sup>
+        </figure>
+        {% endif %}
+
         <div class="m-2">
         <button type="submit" class="btn btn-outline-primary btn-sm">
             submit

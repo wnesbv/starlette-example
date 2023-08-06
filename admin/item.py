@@ -8,7 +8,6 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 from db_config.storage_config import engine, async_session
 
 from item.models import Item, Service, Rent
-from item.img import FileType
 from .opt_slc import in_admin, all_user, item_comment, in_item
 
 
@@ -146,15 +145,11 @@ async def item_create(
             # ..
             title = form["title"]
             description = form["description"]
+            file = form["file"]
             # ..
-            file_obj = FileType.create_from(
-                file=form["file"].file,
-                original_filename=form["file"].filename
-            )
-            # ..
-            new = Item(file=file_obj)
+            new = Item(f)
             new.title = title
-            new.file_obj = file_obj
+            new.file = file
             new.item_owner = item_owner
             new.description = description
             # ..
@@ -203,17 +198,13 @@ async def item_update(
             # ..
             title = form["title"]
             description = form["description"]
-            # ..
-            file_obj = FileType.create_from(
-                file=form["file"].file,
-                original_filename=form["file"].filename
-            )
+            file = form["file"]
             # ..
             file_query = (
                 sqlalchemy_update(Item)
                 .where(Item.id == id)
                 .values(
-                    file=file_obj,
+                    file=file,
                     title=title,
                     description=description
                 )
