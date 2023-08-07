@@ -1,50 +1,27 @@
 
+
 <script>
 
-var ws = new WebSocket("ws://127.0.0.1:8000/chat/one_ws");
 
-ws.onopen = function (e) {
-    var userdata = {
-        owner_msg: "{{ request.user.email }}",
-        message: "joined",
-        id_group: "{{ id_group }}",
-    };
-    ws.send(JSON.stringify(userdata));
-};
+var ws = new WebSocket("ws://127.0.0.1:8000/chat/one_ws/{{ id_group }}");
+let btnmsg = document.querySelector("#btnmsg");
+let messageinput = document.getElementById("messageinput");
+let msg = document.querySelector("#msg");
 
 ws.onmessage = function (event) {
-    var messages = document.getElementById("messages");
-    var message = document.createElement("div");
-    var receive_user = "{{ request.user.user_id }}";
 
-    var i = JSON.parse(event.data);
+    let data = JSON.parse(event.data);
 
-    if (`${i.message.length}` <= 6) {
-        message.innerHTML = `<div class="shadow w-75 list-group-item float-end my-1">${i.message}<span class="mx-2">${i.owner_msg}:</span><time class="me-2">${i.now_time}</time>group: "{{ id_group }}"</div>`;
-        messages.appendChild(message);
-    } else if (receive_user == i.name) {
-        message.innerHTML = `<div class="shadow w-75 list-group-item float-end my-2"><sub>${i.owner_msg}</sub><span class="mx-2">${i.message}</span><time>${i.now_time}</time></div>`;
-        messages.appendChild(message);
-    } else {
-        message.innerHTML = `<div class="shadow w-75 list-group-item float-start my-2"><sub>${i.owner_msg}</sub><span class="mx-2">${i.message}</span><time>${i.now_time}</time></div>`;
-        messages.appendChild(message);
-    }
+    let { message } = data;
+    let { owner_msg } = data;
+    msg.innerHTML += '<div class="shadow w-75 list-group-item float-end my-1">' + data.message + '<span class="mx-2">' + data.owner_msg + '</span></div>';
+    console.log("data", msg.innerHTML);
 };
 
-function sendMessage(event) {
-    var name;
-    var owner_msg;
-    var id_group = "{{ id_group }}";
-    var message = document.getElementById("message");
-    var data = {
-        name: name,
-        owner_msg: owner_msg,
-        id_group: id_group,
-        message: message.value,
-    };
+btnmsg.addEventListener("click", (event) => {
+    message = messageinput.value;
+    ws.send(JSON.stringify({"message": message}));
+    messageinput.value = "";
+});
 
-    ws.send(JSON.stringify(data));
-    message.value = "";
-    event.preventDefault();
-}
 </script>

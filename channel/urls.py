@@ -4,10 +4,10 @@ from starlette.routing import WebSocketRoute
 from .views import (
     ChannelOne,
     ChannelTwo,
-    Chat,
+    all_chat,
     Message,
-    Channels,
-    ChannelsFlush,
+    Groups,
+    GroupsFlush,
     History,
     HistoryFlush,
 )
@@ -17,13 +17,13 @@ from .chat import chat_update, chat_delete
 
 routes = [
 
-    WebSocketRoute("/one_ws", ChannelOne),
+    WebSocketRoute("/one_ws/{id:int}", ChannelOne),
     WebSocketRoute("/two_ws", ChannelTwo),
     # ..
-    Route("/all", Chat),
-    Route("/message", Message),
-    Route("/channels", Channels),
-    Route("/channels-flush", ChannelsFlush),
+    Route("/all", all_chat, methods=["GET", "POST"]),
+    Route("/text", Message),
+    Route("/channels", Groups),
+    Route("/channels-flush", GroupsFlush),
     Route("/history", History),
     Route("/history-flush", HistoryFlush),
     # ...

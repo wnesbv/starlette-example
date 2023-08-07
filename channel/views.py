@@ -1,5 +1,6 @@
 
 from datetime import datetime
+import json
 
 from sqlalchemy.future import select
 
@@ -31,29 +32,34 @@ class ChannelOne(WebSocketEndpoint):
         self.expires = 16000
         self.encoding = "json"
 
-
     async def on_connect(self, websocket):
-        channel_name = websocket.query_params.get(
-            "channel_name", "MySimpleChat"
-        )
-        await self.channel_get_or_create(channel_name, websocket)
+        group_name = websocket.path_params["id"]
+        print(" group_name..!", group_name)
+        print(" websocket dict..", dict(websocket))
+
+        if group_name:
+            channel = Channel(websocket, expires=60*60, encoding="json")
+            status = await ChannelBox.channel_add(group_name, channel)
+            print(" status..", status)
         await websocket.accept()
-        print(websocket['path'])
+        print("websocket path..", websocket['path'])
 
 
     async def on_receive(self, websocket, data):
-        id_group = data["id_group"]
+        message = data["message"]
+        print(" message..", message)
         name = websocket.user.user_id
         owner_msg = websocket.user.email
-        message = data["message"]
-        now_time = datetime.now().strftime(settings.TIME_FORMAT)
+        #now_time = datetime.now().strftime(settings.TIME_FORMAT)
+
+        group_name = websocket.path_params["id"]
 
         async with async_session() as session:
             # ..
             stmt = await session.execute(
                 select(PersonParticipant).where(
                     PersonParticipant.participant == name,
-                    PersonParticipant.group_participant == id_group,
+                    PersonParticipant.group_participant == group_name,
                 )
             )
             odj_true = stmt.scalars().first()
@@ -62,7 +68,7 @@ class ChannelOne(WebSocketEndpoint):
                 select(MessageChat)
                 .join(GroupChat)
                 .where(
-                    MessageChat.id_group == id_group,
+                    MessageChat.id_group == group_name,
                     GroupChat.admin_group == name,
                 )
             )
@@ -71,17 +77,16 @@ class ChannelOne(WebSocketEndpoint):
             if odj_admin or odj_true and message.strip():
                 # ..
                 payload = {
-                    "name": name,
                     "owner_msg": owner_msg,
                     "message": message,
-                    "now_time": now_time,
                 }
-                await self.channel_send(payload, history=True)
+
+                await ChannelBox.group_send(group_name, payload, history=True)
                 # ..
                 new = MessageChat()
                 new.owner_msg = owner_msg
                 new.message = message
-                new.id_group = int(id_group)
+                new.id_group = int(group_name)
                 new.created_at = datetime.now()
                 # ..
                 session.add(new)
@@ -98,18 +103,27 @@ class ChannelTwo(WebSocketEndpoint):
         self.encoding = "json"
 
     async def on_connect(self, websocket):
-        channel_name = websocket.query_params.get(
-            "channel_name", "MySimpleChat"
-        )  # channel name */ws?channel_name=MySimpleChat
+        group_name="MySimpleChat"
+        if group_name:
+            # define user channel
+            channel = Channel(websocket, expires=60*60, encoding="json")
+            status = await ChannelBox.channel_add(group_name, channel)
+            print(" group_name..", group_name)
+            print(" status..", status)
+            # add user channel to named group
 
-        await self.channel_get_or_create(channel_name, websocket)
         await websocket.accept()
-        print(f" headers.. {websocket.headers['cookie']}")
+        print(" headers..", websocket.headers['cookie'])
+        print(" websocket..", websocket['path'])
+
 
 
     async def on_receive(self, websocket, data):
+
         message = data["message"]
         owner_msg = websocket.user.email
+        print(" owner_msg..", owner_msg)
+        print(" message..", message)
 
         async with async_session() as session:
             if message.strip():
@@ -117,7 +131,8 @@ class ChannelTwo(WebSocketEndpoint):
                     "owner_msg": owner_msg,
                     "message": message,
                 }
-                await self.channel_send(payload, history=True)
+                group_name="MySimpleChat"
+                await ChannelBox.group_send(group_name, payload, history=True)
                 # ..
                 new = OneChat()
                 new.message = message
@@ -129,30 +144,32 @@ class ChannelTwo(WebSocketEndpoint):
         await engine.dispose()
 
 
-# ..Two
-class Chat(HTTPEndpoint):
-    # ..
-    @requires("authenticated", redirect="user_login")
-    # ..
-    async def get(self, request):
+# ..
+@requires("authenticated", redirect="user_login")
+# ..
+async def all_chat(request):
+
+    if request.method == "GET":
         template = "/chat/chat.html"
+
         async with async_session() as session:
             stmt = await session.execute(
                 select(OneChat)
             )
             result = stmt.scalars().all()
-            context = {
-                "request": request,
-                "result": result,
-            }
-            return templates.TemplateResponse(template, context)
         await engine.dispose()
+
+        context = {
+            "request": request,
+            "result": result,
+        }
+        return templates.TemplateResponse(template, context)
 
 
 class Message(HTTPEndpoint):
     async def get(self, request):
-        await ChannelBox.channel_send(
-            channel_name="MySimpleChat",
+        await ChannelBox.group_send(
+            group_name="MySimpleChat",
             payload={
                 "username": "Message HTTPEndpoint",
                 "message": "hello from Message",
@@ -162,15 +179,15 @@ class Message(HTTPEndpoint):
         return JSONResponse({"message": "success"})
 
 
-class Channels(HTTPEndpoint):
+class Groups(HTTPEndpoint):
     async def get(self, request):
-        channels = await ChannelBox.channels()
-        return HTMLResponse(f"{channels}")
+        groups = await ChannelBox.groups()
+        return HTMLResponse(f"{groups}")
 
 
-class ChannelsFlush(HTTPEndpoint):
+class GroupsFlush(HTTPEndpoint):
     async def get(self, request):
-        await ChannelBox.channels_flush()
+        await ChannelBox.groups_flush()
         return JSONResponse({"flush": "success"})
 
 

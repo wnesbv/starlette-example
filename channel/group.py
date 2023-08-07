@@ -35,38 +35,41 @@ async def group_list(request):
     await engine.dispose()
 
 
+# ..
 @requires("authenticated", redirect="user_login")
 # ..
 async def group_details(request):
 
-    id = request.path_params["id"]
-    id_group = request.path_params["id"]
-    template = "/group/details.html"
+    if request.method == "GET":
+        
+        id = request.path_params["id"]
+        id_group = request.path_params["id"]
+        template = "/group/details.html"
 
-    async with async_session() as session:
-        # ..
-        stmt = await session.execute(
-            select(GroupChat)
-            .where(GroupChat.id == id)
-        )
-        detail = stmt.scalars().first()
-        # ..
-        stmt_chat = await session.execute(
-            select(MessageChat)
-            .where(
-                MessageChat.id_group == id
+        async with async_session() as session:
+            # ..
+            stmt = await session.execute(
+                select(GroupChat)
+                .where(GroupChat.id == id)
             )
-        )
-        group_chat = stmt_chat.scalars()
-        context = {
-            "request": request,
-            "detail": detail,
-            "id_group": id_group,
-            "group_chat": group_chat,
-        }
+            detail = stmt.scalars().first()
+            # ..
+            stmt_chat = await session.execute(
+                select(MessageChat)
+                .where(
+                    MessageChat.id_group == id
+                )
+            )
+            group_chat = stmt_chat.scalars()
+            context = {
+                "request": request,
+                "detail": detail,
+                "id_group": id_group,
+                "group_chat": group_chat,
+            }
 
-        return templates.TemplateResponse(template, context)
-    await engine.dispose()
+            return templates.TemplateResponse(template, context)
+        await engine.dispose()
 
 
 @requires("authenticated", redirect="user_login")

@@ -77,9 +77,6 @@
     </div>
 </div>
 
-
-<div class="mb-5">
-
 <div class="card mt-2">
 
     <div class="card-header">
@@ -87,7 +84,6 @@
     </div>
 
     <div class="card-body">
-    <div class="p-3">
         <ul class="w-100 list-group list-group-flush">
 
             {% if group_chat %}
@@ -133,14 +129,16 @@
 
         </ul>
 
-        <div id="messages"></div>
+        <div class="p-3"> 
+            <div id="msg"></div>
+        </div>
 
-        <form onsubmit="sendMessage(event)" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="message" class="form-label">message</label>
+        <div class="card-body">   
+            <form class="p-3" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
                 <textarea
                     class="shadow-sm form-control p-3"
-                    id="message"
+                    id="messageinput"
                     name="message"
                     maxlength="333"
                     spellcheck
@@ -148,25 +146,25 @@
                     maxlength="200"
                     required
                 ></textarea>
-            </div>
-            <button type="submit" class="btn btn-outline-primary btn-sm mt-3">
-                submit
-            </button>
-        </form>
+                </div>
+                
+                <input id="btnmsg"  type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
+
+            </form>
+            <div id="target"></div>
+        </div>
 
         <div id="target"></div>
 
     </div>
-    </div>
-</div>
+
 </div>
 
 {% endblock %}
 
+{% block js_chat %}
 {% include "group/js_chat.html" %}
+{% endblock %}
 
 {% block scroll_bottom  %}
-<script>
-$('html, body').animate({scrollTop: $("#target").offset().top}, 2000);
-</script>
 {% endblock %}

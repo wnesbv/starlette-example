@@ -4,87 +4,50 @@
 
 {% block content %}
 
-<div class="container mt-4">
-    <div class="card">
+<h1 class="lead">{{ request.user }}</h1>
 
-        <div class="card-header">
-            <h5 class="mt-2">
-                MySimpleChat channel (open in different browsers)
-            </h5>
-            <h5>channel-box == 0.4.0</h5>
-            <ul>
-                <li>
-                    <a class="page-link" href="/chat/message" target="_blank"
-                        >Send message from another view</a
-                    >
-                </li>
-                <li>
-                    <a class="page-link" href="/chat/channels" target="_blank"
-                        >Show channels</a
-                    >
-                </li>
-                <li>
-                    <a class="page-link" href="/chat/channels-flush" target="_blank"
-                        >Flush channels</a
-                    >
-                </li>
-                <li>
-                    <a class="page-link" href="/chat/history" target="_blank"
-                        >Show history</a
-                    >
-                </li>
-                <li>
-                    <a class="page-link" href="/chat/history-flush" target="_blank"
-                        >Flush history</a
-                    >
-                </li>
-            </ul>
-        </div>
-
-        <div class="card-body">
-
-            <div class="p-3">
-                <div id="messages"></div>
-            </div>
-
-            <div>
-                <ul>
-                    {% for i in result %}
-                    <li>{{ i.message }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div class="p-3">
-                <form onsubmit="sendMessage(event)">
-
-                    <div class="mb-3">
-                        <label for="message" class="form-label">Message</label>
-                        <input
-                            type="message"
-                            class="form-control"
-                            id="message"
-                            aria-describedby="username"
-                            value="Lorem ipsum"
-                        />
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        Submit
-                    </button>
-                </form>
-                <div id="target"></div>
-            </div>
-
-        </div>
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mt-2">MyChat group (open in different browsers)</h5>
+        <ul>
+            <li><a href="/chat/text" target="_blank">Send message from another view</a></li>
+            <li><a href="/chat/channels" target="_blank">Show groups</a></li>
+            <li><a href="/chat/channels-flush" target="_blank">Flush groups</a></li>
+            <li><a href="/chat/history" target="_blank">Show history</a></li>
+            <li><a href="/chat/history-flush" target="_blank">Flush history</a></li>
+        </ul>
     </div>
+
+    <div class="p-3"> 
+        <div id="msg"></div>
+    </div>
+
+    <ul>
+        {% for i in result %}
+        <li>{{ i.message }}</li>
+        {% endfor %}
+    </ul>
+
+    <div class="card-body">   
+        <form class="p-3" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <input name="message" type="text" class="form-control" id="messageinput" value="Lorem ipsum">
+            </div>
+            
+            <input id="btnmsg"  type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
+
+        </form>
+        <div id="target"></div>
+    </div>
+    
 </div>
+
 
 {% endblock %}
 
+{% block js_chat %}
 {% include "chat/js_chat.html" %}
+{% endblock %}
 
 {% block scroll_bottom  %}
-<script>
-$('html, body').animate({scrollTop: $("#target").offset().top}, 2000);
-</script>
 {% endblock %}
