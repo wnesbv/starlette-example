@@ -126,7 +126,9 @@ async def item_update(request):
                 query = (
                     sqlalchemy_update(Item)
                     .where(Item.id == id)
-                    .values(title=title, description=description, file=i.file)
+                    .values(
+                        title=title, description=description, file=i.file
+                    )
                     .execution_options(synchronize_session="fetch")
                 )
                 await session.execute(query)

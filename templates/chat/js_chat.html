@@ -2,11 +2,11 @@
 
 <script>
 
-
 let ws = new WebSocket("ws://127.0.0.1:8000/chat/two_ws");
 let btnmsg = document.querySelector("#btnmsg");
 let messageinput = document.getElementById("messageinput");
 let msg = document.querySelector("#msg");
+
 
 ws.onmessage = function (event) {
 

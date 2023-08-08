@@ -31,18 +31,40 @@ class ChannelOne(WebSocketEndpoint):
 
         self.expires = 16000
         self.encoding = "json"
+        self.channel = None
+        self.group_name = None
 
     async def on_connect(self, websocket):
-        group_name = websocket.path_params["id"]
-        print(" group_name..!", group_name)
+
+        self.group_name = websocket.path_params["id"]
+        print(" group_name..!", self.group_name)
         print(" websocket dict..", dict(websocket))
 
-        if group_name:
-            channel = Channel(websocket, expires=60*60, encoding="json")
-            status = await ChannelBox.channel_add(group_name, channel)
+        if self.group_name:
+            self.channel = Channel(websocket, expires=60*60, encoding="json")
+            status = await ChannelBox.channel_add(self.group_name, self.channel)
             print(" status..", status)
+
         await websocket.accept()
-        print("websocket path..", websocket['path'])
+
+        print(" add channel..!", self.channel)
+        print(" sec-websocket-key..", websocket.headers["sec-websocket-key"])
+
+        groups = await ChannelBox.groups()
+
+        i = len(groups.get(self.group_name))
+        print(
+            " groups..", f"{groups}"
+        )
+        print(
+            " len..", i
+        )
+
+
+    async def on_disconnect(self, websocket, close_code):
+
+        await ChannelBox.channel_remove(self.group_name, self.channel)
+        print("on_disconnect", self.channel)
 
 
     async def on_receive(self, websocket, data):
@@ -52,14 +74,12 @@ class ChannelOne(WebSocketEndpoint):
         owner_msg = websocket.user.email
         #now_time = datetime.now().strftime(settings.TIME_FORMAT)
 
-        group_name = websocket.path_params["id"]
-
         async with async_session() as session:
             # ..
             stmt = await session.execute(
                 select(PersonParticipant).where(
                     PersonParticipant.participant == name,
-                    PersonParticipant.group_participant == group_name,
+                    PersonParticipant.group_participant == self.group_name,
                 )
             )
             odj_true = stmt.scalars().first()
@@ -68,7 +88,7 @@ class ChannelOne(WebSocketEndpoint):
                 select(MessageChat)
                 .join(GroupChat)
                 .where(
-                    MessageChat.id_group == group_name,
+                    MessageChat.id_group == self.group_name,
                     GroupChat.admin_group == name,
                 )
             )
@@ -81,12 +101,12 @@ class ChannelOne(WebSocketEndpoint):
                     "message": message,
                 }
 
-                await ChannelBox.group_send(group_name, payload, history=True)
+                await ChannelBox.group_send(self.group_name, payload, history=True)
                 # ..
                 new = MessageChat()
                 new.owner_msg = owner_msg
                 new.message = message
-                new.id_group = int(group_name)
+                new.id_group = int(self.group_name)
                 new.created_at = datetime.now()
                 # ..
                 session.add(new)
@@ -101,21 +121,37 @@ class ChannelTwo(WebSocketEndpoint):
 
         self.expires = 16000
         self.encoding = "json"
+        self.channel = None
+        self.group_name = None
 
     async def on_connect(self, websocket):
-        group_name="MySimpleChat"
-        if group_name:
-            # define user channel
-            channel = Channel(websocket, expires=60*60, encoding="json")
-            status = await ChannelBox.channel_add(group_name, channel)
-            print(" group_name..", group_name)
-            print(" status..", status)
-            # add user channel to named group
+        self.group_name="MySimpleChat"
+
+        if self.group_name:
+
+            self.channel = Channel(websocket, expires=60*60, encoding="json")
+            await ChannelBox.channel_add(self.group_name, self.channel)
+
+            print(" add channel..!", self.channel)
+            print(" sec-websocket-key..", websocket.headers["sec-websocket-key"])
+
+            groups = await ChannelBox.groups()
+
+            i = len(groups.get(self.group_name))
+            print(
+                " groups..", f"{groups}"
+            )
+            print(
+                " len..", i
+            )
 
         await websocket.accept()
-        print(" headers..", websocket.headers['cookie'])
-        print(" websocket..", websocket['path'])
 
+
+    async def on_disconnect(self, websocket, close_code):
+
+        await ChannelBox.channel_remove(self.group_name, self.channel)
+        print("on_disconnect", self.channel)
 
 
     async def on_receive(self, websocket, data):
@@ -131,8 +167,7 @@ class ChannelTwo(WebSocketEndpoint):
                     "owner_msg": owner_msg,
                     "message": message,
                 }
-                group_name="MySimpleChat"
-                await ChannelBox.group_send(group_name, payload, history=True)
+                await ChannelBox.group_send(self.group_name, payload, history=True)
                 # ..
                 new = OneChat()
                 new.message = message
