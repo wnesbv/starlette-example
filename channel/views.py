@@ -1,7 +1,7 @@
 
 from datetime import datetime
 import json
-
+from collections import defaultdict
 from sqlalchemy.future import select
 
 from starlette.endpoints import HTTPEndpoint
@@ -26,6 +26,9 @@ templates = Jinja2Templates(directory="templates")
 
 # ..One
 class ChannelOne(WebSocketEndpoint):
+
+    is_who = defaultdict(set)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -37,34 +40,49 @@ class ChannelOne(WebSocketEndpoint):
     async def on_connect(self, websocket):
 
         self.group_name = websocket.path_params["id"]
-        print(" group_name..!", self.group_name)
-        print(" websocket dict..", dict(websocket))
+        # print(" group_name..!", self.group_name)
+        # print(" websocket dict..", dict(websocket))
 
         if self.group_name:
             self.channel = Channel(websocket, expires=60*60, encoding="json")
             status = await ChannelBox.channel_add(self.group_name, self.channel)
             print(" status..", status)
 
+        # ..
         await websocket.accept()
+        # ..
 
         print(" add channel..!", self.channel)
         print(" sec-websocket-key..", websocket.headers["sec-websocket-key"])
 
+        # ..
         groups = await ChannelBox.groups()
 
-        i = len(groups.get(self.group_name))
+        is_user = len(groups.get(self.group_name))
         print(
             " groups..", f"{groups}"
         )
         print(
-            " len..", i
+            " len..", is_user
         )
+
+        # ..
+        self.is_who[self.group_name].add(str(websocket.user.email))
+        print(" add is_who..!", self.is_who)
+        payload = {
+            "owner_msg": list(self.is_who[self.group_name]),
+            "message": is_user,
+            "created_at": datetime.now().strftime("%H:%M:%S"),
+        }
+        await ChannelBox.group_send(self.group_name, payload, history=False)
+
 
 
     async def on_disconnect(self, websocket, close_code):
 
         await ChannelBox.channel_remove(self.group_name, self.channel)
         print("on_disconnect", self.channel)
+        self.is_who[self.group_name].remove(websocket.user.email)
 
 
     async def on_receive(self, websocket, data):
@@ -116,6 +134,9 @@ class ChannelOne(WebSocketEndpoint):
 
 # ..Two
 class ChannelTwo(WebSocketEndpoint):
+
+    is_who = defaultdict(set)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -135,23 +156,36 @@ class ChannelTwo(WebSocketEndpoint):
             print(" add channel..!", self.channel)
             print(" sec-websocket-key..", websocket.headers["sec-websocket-key"])
 
-            groups = await ChannelBox.groups()
-
-            i = len(groups.get(self.group_name))
-            print(
-                " groups..", f"{groups}"
-            )
-            print(
-                " len..", i
-            )
-
+        # ..
         await websocket.accept()
+        # ..
+
+        groups = await ChannelBox.groups()
+
+        is_user = len(groups.get(self.group_name))
+        print(
+            " groups..", f"{groups}"
+        )
+        print(
+            " len..", is_user
+        )
+
+        # ..
+        self.is_who[self.group_name].add(str(websocket.user.email))
+        print(" add is_who..!", self.is_who)
+        payload = {
+            "owner_msg": list(self.is_who[self.group_name]),
+            "message": is_user,
+            "created_at": datetime.now().strftime("%H:%M:%S"),
+        }
+        await ChannelBox.group_send(self.group_name, payload, history=False)
 
 
     async def on_disconnect(self, websocket, close_code):
 
         await ChannelBox.channel_remove(self.group_name, self.channel)
         print("on_disconnect", self.channel)
+        self.is_who[self.group_name].remove(websocket.user.email)
 
 
     async def on_receive(self, websocket, data):

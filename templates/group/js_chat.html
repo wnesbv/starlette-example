@@ -1,12 +1,14 @@
 
-
 <script>
 
 
-var ws = new WebSocket("ws://127.0.0.1:8000/chat/one_ws/{{ id_group }}");
 let btnmsg = document.querySelector("#btnmsg");
 let messageinput = document.getElementById("messageinput");
 let msg = document.querySelector("#msg");
+
+let ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+let websocket_str = `${ws_scheme}://${window.location.host}/chat/one_ws/{{ id_group }}`;
+let ws = new WebSocket(websocket_str);
 
 ws.onmessage = function (event) {
 
@@ -14,8 +16,27 @@ ws.onmessage = function (event) {
 
     let { message } = data;
     let { owner_msg } = data;
+    if (typeof message === "number") {
+        num.innerHTML +=
+            "<div>" +
+            "<sub>" +
+            "in the chat " +
+            "</sub>" +
+            data.message +
+            "<sup>" +
+            " : " +
+            "</sup>" +
+            data.owner_msg +
+            " : " +
+            "<time>" +
+            data.created_at +
+            "</time>" +
+            "</div>";
+    } else {
     msg.innerHTML += '<div class="shadow w-75 list-group-item float-end my-1">' + data.message + '<span class="mx-2">' + data.owner_msg + '</span></div>';
-    console.log("data", msg.innerHTML);
+    }
+    console.log("data num..", num.innerHTML);
+    console.log("data msg..", msg.innerHTML);
 };
 
 btnmsg.addEventListener("click", (event) => {
