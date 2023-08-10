@@ -1,11 +1,29 @@
-.list-group-item{
-    position: relative;
-    display: block;
-    padding: 1rem 1rem .25rem 1rem;
-    color: #212529;
-    text-decoration: none;
-    background-color: #fff;
-    border: 1pxsolidrgba(0,0,0,.125);
+
+.num{
+    width: 20%;
+    overflow: hidden;
+    float: right;
+}
+.chat{
+    width: 80%;
+}
+.ch_img{
+    width: 100%;
+}
+.js_chat{
+    font-size: 75%;
+}
+.js_chat{
+    word-wrap: break-word;;
+}
+
+@media (max-width:1024px){
+    .num{
+        min-width: 100%;
+    }
+    .chat{
+        width: 100%;
+    }
 }
 
 .flex_cont{

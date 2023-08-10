@@ -117,37 +117,38 @@ class ChannelOne(WebSocketEndpoint):
             # ..
 
             if message:
-                # ..
-                payload = {
-                    "owner_msg": owner_msg,
-                    "message": message,
-                }
+                if odj_true or odj_admin:
+                    payload = {
+                        "owner_msg": owner_msg,
+                        "message": message,
+                    }
 
-                await ChannelBox.group_send(self.group_name, payload, history=True)
-                # ..
-                new = MessageChat()
-                new.owner_msg = owner_msg
-                new.message = message
-                new.id_group = int(self.group_name)
-                new.created_at = datetime.now()
-                # ..
-                session.add(new)
-                await session.commit()
+                    await ChannelBox.group_send(self.group_name, payload, history=True)
+                    # ..
+                    new = MessageChat()
+                    new.owner_msg = owner_msg
+                    new.message = message
+                    new.id_group = int(self.group_name)
+                    new.created_at = datetime.now()
+                    # ..
+                    session.add(new)
+                    await session.commit()
             if file:
-                payload = {
-                    "file": file,
-                    "owner_msg": owner_msg,
-                }
-                await ChannelBox.group_send(self.group_name, payload, history=True)
-                # ..
-                new = MessageChat()
-                new.file = update_file(self.group_name, file)
-                new.owner_msg = owner_msg
-                new.id_group = int(self.group_name)
-                new.created_at = datetime.now()
-                # ..
-                session.add(new)
-                await session.commit()
+                if odj_true or odj_admin:
+                    payload = {
+                        "file": file,
+                        "owner_msg": owner_msg,
+                    }
+                    await ChannelBox.group_send(self.group_name, payload, history=True)
+                    # ..
+                    new = MessageChat()
+                    new.file = update_file(self.group_name, file)
+                    new.owner_msg = owner_msg
+                    new.id_group = int(self.group_name)
+                    new.created_at = datetime.now()
+                    # ..
+                    session.add(new)
+                    await session.commit()
         await engine.dispose()
 
 
@@ -174,11 +175,9 @@ class ChannelTwo(WebSocketEndpoint):
 
             print(" add channel..!", self.channel)
             print(" sec-websocket-key..", websocket.headers["sec-websocket-key"])
-
         # ..
         await websocket.accept()
         # ..
-
         groups = await ChannelBox.groups()
 
         is_user = len(groups.get(self.group_name))

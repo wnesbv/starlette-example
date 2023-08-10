@@ -6,8 +6,12 @@
 
 <h1 class="lead mt-2">{{ request.user }}</h1>
 
-<div class="d-flex">
-<div class="card col-9 mt-2">
+<div class="num mt-2 p-2">
+    <sub>in the chat</sub>
+    <p id="num" class="js_chat"></p>
+</div>
+
+<div class="chat card mt-2">
     <div class="card-header">
         <h5 class="mt-2">MyChat group (open in different browsers)</h5>
         <ul>
@@ -62,10 +66,6 @@
     
 </div>
 
-<ul id="num" class="num col-6 mt-2 p-2">
-    <h6><sub>in the chat</sub></h6>
-</ul>
-</div>
 
 {% endblock %}
 

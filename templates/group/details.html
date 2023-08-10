@@ -78,8 +78,12 @@
 </div>
 
 
-<div class="d-flex">
-<div class="card col-9 mt-2">
+<div class="num mt-2 p-2">
+    <sub>in the chat</sub>
+    <p id="num" class="js_chat"></p>
+</div>
+
+<div class="chat card mt-2">
 
     <div class="card-header">
         <h2 class="lead">group channel</h2>
@@ -95,8 +99,31 @@
             <span {% if i.owner_msg == request.user.user_id %}class="w-75 float-end"{% else %}class="w-75" {% endif %}>
 
             {% if i.file %}
-            <figure class="mt-3"><img src="{{ i.file }}" width='480'/></figure>
+            <figure class="mt-3">
+                <img class="ch_img" src="{{ i.file }}"/>
+                <figcaption>{{ i.owner_msg }}</figcaption>
+            </figure>
+            <time class="mx-2">
+                {{ i.created_at.strftime('%Y-%m-%d%H:%M:%S') }}
+            </time>
+                {% if request.user.is_authenticated %}
+                <a
+                    class="btn btn-outline-primary btn-sm me-2"
+                    href="/chat/update/{{ i.id }}"
+                    role="button"
+                >
+                    <i class="bi bi-pencil"></i> &raquo;
+                </a>
+                <a
+                    class="btn btn-outline-danger btn-sm"
+                    href="/chat/delete/{{ i.id }}"
+                    role="button"
+                >
+                    <i class="bi bi-trash3"></i> &raquo;
+                </a>
+                {% endif %}
             {% else %}
+
             <span class="me-2">{{ i.owner_msg }}</span>
             <span>{{ i.message }}</span>
             <span class="float-end">
@@ -176,11 +203,6 @@
     </div>
 </div>
 
-<ul id="num" class="num col-6 mt-2 p-2">
-    <h6><sub>in the chat</sub></h6>
-</ul>
-
-</div>
 
 {% endblock %}
 
