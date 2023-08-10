@@ -4,9 +4,10 @@
 
 {% block content %}
 
-<h1 class="lead">{{ request.user }}</h1>
+<h1 class="lead mt-2">{{ request.user }}</h1>
 
-<div class="card mt-4">
+<div class="d-flex">
+<div class="card col-9 mt-2">
     <div class="card-header">
         <h5 class="mt-2">MyChat group (open in different browsers)</h5>
         <ul>
@@ -18,31 +19,53 @@
         </ul>
     </div>
 
-    <div id="num" class="border mt-2 p-2"></div>
+    {% for i in result %}
+    <ul class="list-group list-group-flush">
+        {% if i.file %}
+        <figure class="mt-3"><img src="{{ i.file }}" width='480'/></figure>
+        {% else %}
+        <li class="list-group-item">{{ i.message }}</li>
+        {% endif %}
+    </ul>
+    {% endfor %}
+
     <div class="p-3"> 
         <div id="msg"></div>
     </div>
 
-    <ul>
-        {% for i in result %}
-        <li>{{ i.message }}</li>
-        {% endfor %}
-    </ul>
-
-    <div class="card-body">   
-        <form class="p-3" method="POST" enctype="multipart/form-data">
-            <div class="mb-3">
-                <input name="message" type="text" class="form-control" id="messageinput" value="Lorem ipsum">
+    <div class="card-body mb-3">   
+        <form class="card p-2 mb-1" method="POST">
+            <sup class="mt-2 ms-2">message</sup>
+            <div class="card-body">
+                <input name="message" type="text" id="messageinput" class="form-control" value="Lorem ipsum">
             </div>
-            
-            <input id="btnmsg"  type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
+
+            <div class="card-footer">
+                <input id="btnmsg"  type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
+            </div>
 
         </form>
+        <form class="card p-2" method="POST" enctype="multipart/form-data">
+            <sup class="mt-2 ms-2">file</sup>
+            <div class="card-body">
+                <input name="file" type="file" id="file-input"  class="form-control">
+            </div>
+
+            <div class="card-footer">
+                <input id="file-submit" type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
+            </div>
+            
+        </form>
+
         <div id="target"></div>
     </div>
     
 </div>
 
+<ul id="num" class="num col-6 mt-2 p-2">
+    <h6><sub>in the chat</sub></h6>
+</ul>
+</div>
 
 {% endblock %}
 

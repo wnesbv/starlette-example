@@ -27,6 +27,14 @@
     align-items: center;
     align-content: space-between;
 }
+
+.num hr{
+    margin: 0;
+}
+html,
+body{
+    overflow-x: hidden;
+}
 li{
     list-style-type: none;
 }

@@ -20,6 +20,8 @@ from db_config.storage_config import engine, async_session
 from channel.models import GroupChat, MessageChat, OneChat
 from participant.models import PersonParticipant
 
+from .img import update_file
+
 
 templates = Jinja2Templates(directory="templates")
 
@@ -70,23 +72,24 @@ class ChannelOne(WebSocketEndpoint):
         self.is_who[self.group_name].add(str(websocket.user.email))
         print(" add is_who..!", self.is_who)
         payload = {
-            "owner_msg": list(self.is_who[self.group_name]),
             "message": is_user,
+            "owner_msg": list(self.is_who[self.group_name]),
             "created_at": datetime.now().strftime("%H:%M:%S"),
         }
         await ChannelBox.group_send(self.group_name, payload, history=False)
 
 
-
     async def on_disconnect(self, websocket, close_code):
 
         await ChannelBox.channel_remove(self.group_name, self.channel)
-        print("on_disconnect", self.channel)
+        print(" on_disconnect..", self.channel)
         self.is_who[self.group_name].remove(websocket.user.email)
 
 
     async def on_receive(self, websocket, data):
-        message = data["message"]
+
+        file = data.get("file")
+        message = data.get("message")
         print(" message..", message)
         name = websocket.user.user_id
         owner_msg = websocket.user.email
@@ -112,7 +115,8 @@ class ChannelOne(WebSocketEndpoint):
             )
             odj_admin = stmt_admin.scalars().first()
             # ..
-            if odj_admin or odj_true and message.strip():
+
+            if message:
                 # ..
                 payload = {
                     "owner_msg": owner_msg,
@@ -124,6 +128,21 @@ class ChannelOne(WebSocketEndpoint):
                 new = MessageChat()
                 new.owner_msg = owner_msg
                 new.message = message
+                new.id_group = int(self.group_name)
+                new.created_at = datetime.now()
+                # ..
+                session.add(new)
+                await session.commit()
+            if file:
+                payload = {
+                    "file": file,
+                    "owner_msg": owner_msg,
+                }
+                await ChannelBox.group_send(self.group_name, payload, history=True)
+                # ..
+                new = MessageChat()
+                new.file = update_file(self.group_name, file)
+                new.owner_msg = owner_msg
                 new.id_group = int(self.group_name)
                 new.created_at = datetime.now()
                 # ..
@@ -190,21 +209,37 @@ class ChannelTwo(WebSocketEndpoint):
 
     async def on_receive(self, websocket, data):
 
-        message = data["message"]
+        file = data.get("file")
+        message = data.get("message")
         owner_msg = websocket.user.email
-        print(" owner_msg..", owner_msg)
+        print(" file..", file)
         print(" message..", message)
+        print(" owner_msg..", owner_msg)
 
         async with async_session() as session:
-            if message.strip():
+            if message:
                 payload = {
-                    "owner_msg": owner_msg,
                     "message": message,
+                    "owner_msg": owner_msg,
                 }
                 await ChannelBox.group_send(self.group_name, payload, history=True)
                 # ..
                 new = OneChat()
                 new.message = message
+                new.owner_msg = owner_msg
+                new.created_at = datetime.now()
+                # ..
+                session.add(new)
+                await session.commit()
+            if file:
+                payload = {
+                    "file": file,
+                    "owner_msg": owner_msg,
+                }
+                await ChannelBox.group_send(self.group_name, payload, history=True)
+                # ..
+                new = OneChat()
+                new.file = update_file(self.group_name, file)
                 new.owner_msg = owner_msg
                 new.created_at = datetime.now()
                 # ..

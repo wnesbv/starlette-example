@@ -77,87 +77,108 @@
     </div>
 </div>
 
-<div class="card mt-2">
+
+<div class="d-flex">
+<div class="card col-9 mt-2">
 
     <div class="card-header">
         <h2 class="lead">group channel</h2>
     </div>
 
-    <div class="card-body">
-        <ul class="w-100 list-group list-group-flush">
+    <ul class="list-group list-group-flush">
 
-            {% if group_chat %}
-            {% for chat in group_chat %}
+        {% if group_chat %}
+        {% for i in group_chat %}
 
-            <li class="list-group-item">
+        <li class="list-group-item">
 
-                <span {% if chat.owner_msg == request.user.user_id %}class="w-75 float-end"{% else %}class="w-75" {% endif %}>
+            <span {% if i.owner_msg == request.user.user_id %}class="w-75 float-end"{% else %}class="w-75" {% endif %}>
 
-                    <span class="me-2">{{ chat.owner_msg }}</span>
+            {% if i.file %}
+            <figure class="mt-3"><img src="{{ i.file }}" width='480'/></figure>
+            {% else %}
+            <span class="me-2">{{ i.owner_msg }}</span>
+            <span>{{ i.message }}</span>
+            <span class="float-end">
+                <time class="mx-2">
+                    {{ i.created_at.strftime('%Y-%m-%d%H:%M:%S') }}
+                </time>
 
-                    <span>{{ chat.message }}</span>
-
-                    <span class="float-end">
-                        <time class="mx-2">
-                            {{ chat.created_at.strftime('%Y-%m-%d%H:%M:%S') }}
-                        </time>
-
-                        {% if request.user.is_authenticated %}
-                        <a
-                            class="btn btn-outline-primary btn-sm me-2"
-                            href="/chat/update/{{ chat.id }}"
-                            role="button"
-                        >
-                            <i class="bi bi-pencil"></i> &raquo;
-                        </a>
-                        <a
-                            class="btn btn-outline-danger btn-sm"
-                            href="/chat/delete/{{ chat.id }}"
-                            role="button"
-                        >
-                            <i class="bi bi-trash3"></i> &raquo;
-                        </a>
-                        {% endif %}
-                    </span>
-
-                </span>
-
-            </li>
-
-            {% endfor %}
+                {% if request.user.is_authenticated %}
+                <a
+                    class="btn btn-outline-primary btn-sm me-2"
+                    href="/chat/update/{{ i.id }}"
+                    role="button"
+                >
+                    <i class="bi bi-pencil"></i> &raquo;
+                </a>
+                <a
+                    class="btn btn-outline-danger btn-sm"
+                    href="/chat/delete/{{ i.id }}"
+                    role="button"
+                >
+                    <i class="bi bi-trash3"></i> &raquo;
+                </a>
+                {% endif %}
+            </span>
             {% endif %}
 
-        </ul>
+            </span>
 
-        <div id="num" class="border mt-2 p-2"></div>
-        <div class="p-3"> 
-            <div id="msg"></div>
-        </div>
+        </li>
 
-        <div class="card-body">   
-            <form class="p-3" method="POST" enctype="multipart/form-data">
-                <div class="mb-3">
-                <textarea
-                    class="shadow-sm form-control p-3"
-                    id="messageinput"
-                    name="message"
-                    maxlength="333"
-                    spellcheck
-                    minlength="7"
-                    maxlength="200"
-                    required
-                ></textarea>
-                </div>
-                
-                <input id="btnmsg"  type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
+        {% endfor %}
+        {% endif %}
 
-            </form>
-            <div id="target"></div>
+    </ul>
+
+    <div class="p-3"> 
+        <div id="msg"></div>
+    </div>
+
+    <div class="card-body">
+        <div class="card-body mb-3">   
+        <form class="card p-3 mb-1" method="POST">
+            <sup class="mt-2 ms-2">message</sup>
+            <div class="card-body">
+            <textarea
+                class="shadow-sm form-control p-3"
+                id="messageinput"
+                name="message"
+                maxlength="333"
+                spellcheck
+                minlength="7"
+                maxlength="200"
+                required
+            ></textarea>
+            </div>
+            
+            <div class="card-footer">
+            <input id="btnmsg"  type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
+            </div>
+
+        </form>
+        <form class="card p-2" method="POST" enctype="multipart/form-data">
+            <sup class="mt-2 ms-2">file</sup>
+            <div class="card-body">
+                <input name="file" type="file" id="file-input"  class="form-control">
+            </div>
+
+            <div class="card-footer">
+            <input id="file-submit" type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
+            </div>
+            
+        </form>
         </div>
 
         <div id="target"></div>
 
     </div>
+</div>
+
+<ul id="num" class="num col-6 mt-2 p-2">
+    <h6><sub>in the chat</sub></h6>
+</ul>
 
 </div>
 

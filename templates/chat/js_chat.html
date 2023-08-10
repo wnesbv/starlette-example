@@ -3,41 +3,62 @@
 
 
 let num = document.querySelector("#num");
+let msg = document.querySelector("#msg");
 
 let btnmsg = document.querySelector("#btnmsg");
 let messageinput = document.getElementById("messageinput");
-let msg = document.querySelector("#msg");
+
+let btnfile = document.querySelector("#file-submit");
+let inputfile = document.querySelector("#file-input");
 
 let ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
 let websocket_str = `${ws_scheme}://${window.location.host}/chat/two_ws`;
 let ws = new WebSocket(websocket_str);
 
+
 ws.onmessage = function (event) {
 
     let data = JSON.parse(event.data);
 
+    let { file } = data;
     let { message } = data;
     let { owner_msg } = data;
 
     if (typeof message === "number") {
         num.innerHTML +=
-            "<div>" +
-            "<sub>" +
-            "in the chat " +
-            "</sub>" +
-            data.message +
+            "<li>" +
             "<sup>" +
-            " : " +
-            "</sup>" +
+            data.message +
+            "<hr>" +
             data.owner_msg +
             " : " +
             "<time>" +
             data.created_at +
             "</time>" +
-            "</div>";
+            "</sup>" +
+            "</li>";
     } else {
-    msg.innerHTML += '<div class="shadow w-75 list-group-item float-end my-1">' + data.message + '<span class="mx-2">' + data.owner_msg + '</span></div>';
+        if (data.file) {
+            msg.innerHTML +=
+                '<figure class="shadow w-75 list-group-item float-end">' +
+                "<img class'my-2' src=" +
+                "data:image/png;base64," +
+                data.file +
+                " width='64'/></figure>" +
+                '<span class="mx-2">' +
+                data.owner_msg +
+                "</span></div>";
+        } else {
+            msg.innerHTML +=
+                '<div class="shadow w-75 list-group-item float-end my-1">' +
+                data.message +
+                '<span class="mx-2">' +
+                data.owner_msg +
+                "</span></div>";
+        }
     }
+    console.log("file..", data.file);
+    console.log("message..", data.message);
     console.log("data num..", num.innerHTML);
     console.log("data msg..", msg.innerHTML);
 };
@@ -47,6 +68,22 @@ btnmsg.addEventListener("click", (event) => {
     ws.send(JSON.stringify({"message": message}));
     event.preventDefault();
     messageinput.value = "";
+});
+
+btnfile.addEventListener("click", (event) => {
+    file = inputfile.files[0];
+
+    let reader = new FileReader();
+    reader.onload = function (event) {
+        let fileData = event.target.result.split(",")[1];
+        ws.send(
+            JSON.stringify({
+                file: fileData,
+            })
+        );
+    };
+    reader.readAsDataURL(file);
+    inputfile.value = "";
 });
 
 
