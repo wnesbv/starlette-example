@@ -73,7 +73,7 @@ class ChannelOne(WebSocketEndpoint):
         print(" add is_who..!", self.is_who)
         payload = {
             "message": is_user,
-            "owner_msg": list(self.is_who[self.group_name]),
+            "owner_msg": list(self.is_who.get(self.group_name)),
             "created_at": datetime.now().strftime("%H:%M:%S"),
         }
         await ChannelBox.group_send(self.group_name, payload, history=False)
@@ -192,8 +192,8 @@ class ChannelTwo(WebSocketEndpoint):
         self.is_who[self.group_name].add(str(websocket.user.email))
         print(" add is_who..!", self.is_who)
         payload = {
-            "owner_msg": list(self.is_who[self.group_name]),
             "message": is_user,
+            "owner_msg": list(self.is_who.get(self.group_name)),
             "created_at": datetime.now().strftime("%H:%M:%S"),
         }
         await ChannelBox.group_send(self.group_name, payload, history=False)

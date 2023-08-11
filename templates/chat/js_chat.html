@@ -26,12 +26,14 @@ ws.onmessage = function (event) {
 
     if (typeof message === "number") {
         num.innerHTML +=
+            " * " +
             data.message +
-            "<hr>" +
+            " : " +
             data.owner_msg +
             "<time>" +
             data.created_at +
-            "</time>";
+            "</time>" +
+            " <hr> ";
     } else {
         if (data.file) {
             msg.innerHTML +=
