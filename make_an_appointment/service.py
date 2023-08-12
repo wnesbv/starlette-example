@@ -117,10 +117,13 @@ async def reserve_list_service(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def reserve_detail_service(request):
+
+    id = request.path_params["id"]
     template = "make_an_appointment/details_service.html"
+
     async with async_session() as session:
         # ..
-        obj = await in_rsf(request, session)
+        obj = await in_rsf(request, session, id)
         if obj:
             context = {
                 "request": request,
@@ -134,11 +137,13 @@ async def reserve_detail_service(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def reserve_update_service(request):
+
     id = request.path_params["id"]
     template = "/make_an_appointment/update_service.html"
+
     async with async_session() as session:
         # ..
-        detail = await in_rsf(request, session)
+        detail = await in_rsf(request, session, id)
         context = {
             "request": request,
             "detail": detail,
@@ -177,13 +182,15 @@ async def reserve_update_service(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def delete_rsf(request):
+
     id = request.path_params["id"]
     template = "/make_an_appointment/delete.html"
+
     async with async_session() as session:
 
         if request.method == "GET":
             # ..
-            detail = await in_rsf(request, session)
+            detail = await in_rsf(request, session, id)
             if detail:
                 return templates.TemplateResponse(
                     template,

@@ -130,7 +130,7 @@ async def group_update(request):
 
     async with async_session() as session:
         # ..
-        detail = await in_group_chat(request, session)
+        detail = await in_group_chat(request, session, id)
         context = {
             "request": request,
             "detail": detail,
@@ -176,7 +176,7 @@ async def group_delete(request):
         # ...
         if request.method == "GET":
             #..
-            detail = await in_group_chat(request, session)
+            detail = await in_group_chat(request, session, id)
             if detail:
                 return templates.TemplateResponse(
                     template,

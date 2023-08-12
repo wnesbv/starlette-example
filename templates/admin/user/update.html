@@ -1,9 +1,11 @@
-{% extends "admin/base.html" %} {% block title %} admin update {{ i.name }} {%
-endblock%} {% block content %}
+{% extends "admin/base.html" %}
+{% block title %} admin update {{ i.name }} {% endblock %}
+
+{% block content %}
 
 <div class="card">
     <div class="card-header">
-        <h3 class="lead">admin user create</h3>
+        <h3 class="lead">admin user update</h3>
     </div>
 
     <form method="POST" enctype="multipart/form-data">
@@ -28,13 +30,7 @@ endblock%} {% block content %}
             />
         </div>
         <div class="mb-3">
-            <sup>password</sup>
-            <input
-                type="password"
-                class="form-control"
-                name="password"
-                value="{{ i.password }}"
-            />
+            <a href="/admin/user/update-password/{{ i.id }}"><sup>password</sup></a>
         </div>
     </div>
     <div class="card-footer mb-3">
@@ -91,7 +87,9 @@ endblock%} {% block content %}
 
 </div>
 
-{% endblock %} {% block script %}
+{% endblock %}
+
+{% block script %}
 
 <link
     rel="stylesheet"

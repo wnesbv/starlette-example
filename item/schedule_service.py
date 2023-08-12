@@ -20,7 +20,7 @@ from mail.send import send_mail
 
 from options_select.opt_slc import (
     user_sv,
-    schedule_service,
+    schedule_srv,
     in_schedule_service,
     schedule_service_id,
     details_schedule_service,
@@ -51,10 +51,13 @@ async def list_service_id(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def list_service(request):
+
+    id = request.path_params["id"]
     template = "/item/schedule/list_service.html"
+
     async with async_session() as session:
         # ..
-        odj_list = await schedule_service(request, session)
+        odj_list = await schedule_srv(request, session, id)
         # ..
         context = {
             "request": request,
@@ -68,16 +71,18 @@ async def list_service(request):
 # ...
 async def details_service(request):
 
+    id = request.path_params["id"]
+    service = request.path_params["service"]
     template = "/item/schedule/details_service.html"
 
     async with async_session() as session:
 
         if request.method == "GET":
             # ..
-            sch = await in_schedule_service(request, session)
+            sch = await in_schedule_service(request, session, id)
             if sch:
                 # ..
-                obj_list = await details_schedule_service(request, session)
+                obj_list = await details_schedule_service(request, session, service)
                 # ..
                 obj = [
                     {
@@ -180,7 +185,7 @@ async def update_service(request):
 
     async with async_session() as session:
         # ..
-        detail = await in_schedule_service(request, session)
+        detail = await in_schedule_service(request, session, id)
         context = {
             "request": request,
             "detail": detail,
@@ -245,7 +250,7 @@ async def delete(request):
 
         if request.method == "GET":
             # ..
-            detail = await in_schedule_service(request, session)
+            detail = await in_schedule_service(request, session, id)
             if detail:
                 return templates.TemplateResponse(
                     template,

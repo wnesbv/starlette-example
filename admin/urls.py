@@ -11,6 +11,7 @@ routes = [
     Route("/user/details/{id:int}", user.i_details),
     Route("/user/create/", user.i_create, methods=["GET", "POST"]),
     Route("/user/update/{id:int}", user.i_update, methods=["GET", "POST"]),
+    Route("/user/update-password/{id:int}", user.i_update_password, methods=["GET", "POST"]),
     Route("/user/delete/{id:int}", user.i_delete, methods=["GET", "POST"]),
     # ..
     Route("/item/list", item.item_list),

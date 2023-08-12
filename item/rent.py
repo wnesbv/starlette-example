@@ -17,7 +17,7 @@ from options_select import file_img
 from options_select.opt_slc import (
     user_tm,
     rent_comment,
-    in_rent,
+    in_rent_user,
 )
 from .models import Rent, ScheduleRent
 
@@ -103,13 +103,15 @@ async def rent_create(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def rent_update(request):
+
     id = request.path_params["id"]
     template = "/item/rent/update.html"
     mdl = "rent"
     basewidth = 800
+
     async with async_session() as session:
         # ..
-        i = await in_rent(request, session)
+        i = await in_rent_user(request, session, id)
         # ..
         context = {
             "request": request,
@@ -196,13 +198,14 @@ async def rent_update(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def delete(request):
+    
     id = request.path_params["id"]
     template = "/item/rent/delete.html"
 
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            i = await in_rent(request, session)
+            i = await in_rent_user(request, session, id)
             # ..
             if i:
                 return templates.TemplateResponse(
@@ -242,11 +245,13 @@ async def rent_list(request):
 
 
 async def rent_details(request):
+
     id = request.path_params["id"]
     template = "/item/rent/details.html"
+    
     async with async_session() as session:
         # ..
-        cmt_list = await rent_comment(request, session)
+        cmt_list = await rent_comment(session, id)
         # ..
         stmt = await session.execute(select(Rent).where(Rent.id == id))
         i = stmt.scalars().first()

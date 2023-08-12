@@ -21,7 +21,7 @@ from db_config.storage_config import engine, async_session
 from options_select.opt_slc import (
     in_dump,
     sch_sv_user,
-    schedule_service,
+    schedule_srv,
     dump_schedule_service,
 )
 
@@ -52,11 +52,11 @@ async def export_csv(request):
 
         if request.method == "GET":
             #..
-            detail = await sch_sv_user(request, session)
+            detail = await sch_sv_user(request, session, id)
             #..
             if detail:
                 # ..
-                records = await schedule_service(request, session)
+                records = await schedule_srv(request, session, id)
                 # ..
                 async with aiofiles.open(
                     root_directory, mode="w",
@@ -120,13 +120,14 @@ async def export_csv(request):
 # ...
 async def dump_csv(request):
 
+    id = request.path_params["id"]
     template = "/item/schedule/dump_csv.html"
 
     async with async_session() as session:
 
         if request.method == "GET":
             #..
-            odj_list = await dump_schedule_service(request, session)
+            odj_list = await dump_schedule_service(request, session, id)
             #..
             if not odj_list:
                 return PlainTextResponse(
@@ -151,7 +152,7 @@ async def delete_user_csv(request):
 
         if request.method == "GET":
             #..
-            detail = await in_dump(request, session)
+            detail = await in_dump(request, session, id)
             #..
             if detail:
                 context = {"request": request}

@@ -61,9 +61,9 @@ async def item_details(request):
         # ..
         if admin:
             # ..
-            cmt_list = await rent_comment(request, session)
+            cmt_list = await rent_comment(session, id)
             # ..
-            detail = await in_rent(request, session)
+            detail = await in_rent(session, id)
             # ..
             stmt = await session.execute(
                 select(ScheduleRent)
@@ -155,7 +155,7 @@ async def item_update(request):
     async with async_session() as session:
         # ..
         admin = await in_admin(request, session)
-        detail = await in_rent(request, session)
+        detail = await in_rent(session, id)
         # ..
         context = {
             "request": request,
@@ -208,7 +208,7 @@ async def item_delete(request):
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            detail = await in_rent(request, session)
+            detail = await in_rent(session, id)
             # ..
             if admin:
                 return templates.TemplateResponse(

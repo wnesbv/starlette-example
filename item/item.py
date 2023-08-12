@@ -13,7 +13,7 @@ from db_config.storage_config import engine, async_session
 from mail.send import send_mail
 
 from options_select import file_img
-from options_select.opt_slc import item_comment, in_item
+from options_select.opt_slc import item_comment, in_item_user
 
 from .models import Item, Service, Rent
 
@@ -90,6 +90,7 @@ async def item_create(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def item_update(request):
+    
     id = request.path_params["id"]
     template = "/item/update.html"
     mdl = "item"
@@ -97,7 +98,7 @@ async def item_update(request):
 
     async with async_session() as session:
         # ..
-        i = await in_item(request, session)
+        i = await in_item_user(request, session, id)
         # ..
         context = {
             "request": request,
@@ -192,7 +193,7 @@ async def item_delete(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            i = await in_item(request, session)
+            i = await in_item_user(request, session, id)
             if i:
                 return templates.TemplateResponse(
                     template,
@@ -235,12 +236,13 @@ async def item_list(request):
 
 
 async def item_details(request):
+    
     id = request.path_params["id"]
     template = "/item/details.html"
 
     async with async_session() as session:
         # ..
-        cmt_list = await item_comment(request, session)
+        cmt_list = await item_comment(session, id)
         # ...
         stmt = await session.execute(select(Item).where(Item.id == id))
         i = stmt.scalars().first()

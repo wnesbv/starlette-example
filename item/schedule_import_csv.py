@@ -37,7 +37,7 @@ async def import_csv(request):
 
         if request.method == "GET":
             # ..
-            detail = await sch_sv_user(request, session)
+            detail = await sch_sv_user(request, session, id)
             if detail:
                 # ..
                 context = {"request": request}
@@ -51,7 +51,7 @@ async def import_csv(request):
         # ...
         if request.method == "POST":
             # ..
-            result = await sch_sv_id(request, session)
+            result = await sch_sv_id(request, session, id)
             # ..
             query = delete(ScheduleService).where(
                 ScheduleService.id.in_(result),

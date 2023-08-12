@@ -109,6 +109,7 @@ async def item_details(
     request
 ):
 
+    service = request.path_params["service"]
     template = "/admin/schedule_service/details.html"
 
     async with async_session() as session:
@@ -119,7 +120,7 @@ async def item_details(
             # ..
             if admin:
                 # ..
-                obj_list = await details_schedule_service(request, session)
+                obj_list = await details_schedule_service(request, session, service)
                 # ..
                 obj = [
                     {
@@ -224,7 +225,7 @@ async def item_update(
         # ..
         admin = await in_admin(request, session)
         # ..
-        detail = await in_schedule_sv(request, session)
+        detail = await in_schedule_sv(session, id)
         context = {
             "request": request,
             "detail": detail,
@@ -278,7 +279,7 @@ async def item_delete(
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            detail = await in_schedule_sv(request, session)
+            detail = await in_schedule_sv(session, id)
             # ..
             if admin:
                 return templates.TemplateResponse(

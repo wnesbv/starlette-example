@@ -80,13 +80,14 @@ async def reserve_add(request):
 # ...
 async def reserve_choice(request):
 
+    id = request.path_params["id"]
     template = "make_an_appointment/choice.html"
 
     async with async_session() as session:
 
         if request.method == "GET":
             # ..
-            rrf = await in_rrf(request, session)
+            rrf = await in_rrf(request, session, id)
             if rrf:
                 # ..
                 obj_item = await period_item(rrf, session)
@@ -157,11 +158,12 @@ async def reserve_list_rent(request):
 # ...
 async def reserve_detail_rent(request):
 
+    id = request.path_params["id"]
     template = "make_an_appointment/details_rent.html"
 
     async with async_session() as session:
         # ..
-        obj = await in_rrf(request, session)
+        obj = await in_rrf(request, session, id)
         if obj:
             context = {
                 "request": request,
@@ -181,7 +183,7 @@ async def reserve_update_rent(request):
 
     async with async_session() as session:
         # ..
-        detail = await in_rrf(request, session)
+        detail = await in_rrf(request, session, id)
         context = {
             "request": request,
             "detail": detail,
@@ -248,7 +250,7 @@ async def delete(request):
         # ...
         if request.method == "GET":
             # ..
-            detail = await in_rrf(request, session)
+            detail = await in_rrf(request, session, id)
             if detail:
                 return templates.TemplateResponse(
                     template,

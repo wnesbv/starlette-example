@@ -28,7 +28,7 @@ async def participant_create(
         # ...
         if request.method == "GET":
             #..
-            double = await in_person_participant(request, session)
+            double = await in_person_participant(request, session, id)
             if not double:
                 return templates.TemplateResponse(
                     template, {"request": request,}
@@ -75,7 +75,7 @@ async def participant_list(
 
     async with async_session() as session:
         #..
-        odj_admin = person_participant(request, session)
+        odj_admin = person_participant(request, session, id)
         if odj_admin:
             stmt = await session.execute(
                 select(PersonParticipant)
@@ -104,7 +104,7 @@ async def participant_add(
 
     async with async_session() as session:
         #..
-        odj_admin = person_participant(request, session)
+        odj_admin = person_participant(request, session, id)
         if odj_admin:
             stmt = await session.execute(
                 select(PersonParticipant)
@@ -134,7 +134,7 @@ async def participant_delete(
 
     async with async_session() as session:
         #..
-        odj_admin = person_participant(request, session)
+        odj_admin = person_participant(request, session, id)
         if odj_admin:
             # ..
             query = (

@@ -15,7 +15,6 @@ from .opt_slc import (
     in_admin,
     in_service,
     all_item,
-    in_rent,
     all_schedule,
     all_service,
     all_count,
@@ -66,9 +65,9 @@ async def item_details(request):
         # ..
         if admin:
             # ..
-            cmt_list = await service_comment(request, session)
+            cmt_list = await service_comment(session, id)
             # ..
-            detail = await in_service(request, session)
+            detail = await in_service(session, id)
             # ..
             rsv = await session.execute(
                 select(ScheduleService.id)
@@ -174,7 +173,7 @@ async def item_update(request):
     async with async_session() as session:
         # ..
         admin = await in_admin(request, session)
-        detail = await in_service(request, session)
+        detail = await in_service(session, id)
         # ..
         context = {
             "request": request,
@@ -229,7 +228,7 @@ async def item_delete(request):
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            detail = await in_service(request, session)
+            detail = await in_service(session, id)
             # ..
             if admin:
                 return templates.TemplateResponse(

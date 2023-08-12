@@ -21,22 +21,6 @@ async def all_count(
     return result
 
 
-async def in_admin(
-    request, session
-):
-    stmt = await session.execute(
-        select(User)
-        .where(
-            and_(
-                User.id == request.user.user_id,
-                User.is_admin, true()
-            )
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
 async def all_user(
     session
 ):
@@ -76,6 +60,7 @@ async def all_rent(
     result = stmt.scalars().all()
     return result
 
+
 async def all_schedule(
     session
 ):
@@ -86,10 +71,25 @@ async def all_schedule(
     return result
 
 
-async def in_user(
+async def in_admin(
     request, session
 ):
-    id = request.path_params["id"]
+    stmt = await session.execute(
+        select(User)
+        .where(
+            and_(
+                User.id == request.user.user_id,
+                User.is_admin, true()
+            )
+        )
+    )
+    result = stmt.scalars().first()
+    return result
+
+
+async def in_user(
+    session, id
+):
     stmt = await session.execute(
         select(User)
         .where(
@@ -101,9 +101,8 @@ async def in_user(
 
 
 async def in_item(
-    request, session
+    session, id
 ):
-    id = request.path_params["id"]
     stmt = await session.execute(
         select(Item)
         .where(
@@ -115,9 +114,8 @@ async def in_item(
 
 
 async def in_service(
-    request, session
+    session, id
 ):
-    id = request.path_params["id"]
     stmt = await session.execute(
         select(Service)
         .where(
@@ -129,9 +127,8 @@ async def in_service(
 
 
 async def in_rent(
-    request, session
+    session, id
 ):
-    id = request.path_params["id"]
     stmt = await session.execute(
         select(Rent)
         .where(
@@ -143,9 +140,8 @@ async def in_rent(
 
 
 async def in_schedule_r(
-    request, session
+    session, id
 ):
-    id = request.path_params["id"]
     stmt = await session.execute(
         select(ScheduleRent)
         .where(
@@ -157,9 +153,8 @@ async def in_schedule_r(
 
 
 async def in_schedule_sv(
-    request, session
+    session, id
 ):
-    id = request.path_params["id"]
     stmt = await session.execute(
         select(ScheduleService)
         .where(
@@ -171,9 +166,8 @@ async def in_schedule_sv(
 
 
 async def item_comment(
-    request, session
+    session, id
 ):
-    id = request.path_params["id"]
     stmt = await session.execute(
         select(Comment)
         .where(Comment.cmt_item_id == id)
@@ -184,9 +178,8 @@ async def item_comment(
 
 
 async def service_comment(
-    request, session
+    session, id
 ):
-    id = request.path_params["id"]
     stmt = await session.execute(
         select(Comment)
         .where(Comment.cmt_service_id == id)
@@ -197,9 +190,8 @@ async def service_comment(
 
 
 async def rent_comment(
-    request, session
+    session, id
 ):
-    id = request.path_params["id"]
     stmt = await session.execute(
         select(Comment)
         .where(Comment.cmt_rent_id == id)

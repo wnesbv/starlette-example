@@ -61,12 +61,14 @@ async def list_rent(
 async def details_rent(
     request
 ):
+    id = request.path_params["id"]
     template = "/item/schedule/details_rent.html"
+    
     async with async_session() as session:
 
         if request.method == "GET":
             #..
-            sch = await in_schedule_rent(request, session)
+            sch = await in_schedule_rent(request, session, id)
             if sch:
                 #..
                 obj_list = await details_schedule_rent(request, session)
@@ -166,12 +168,13 @@ async def create_rent(
 async def update_rent(
     request
 ):
+
     id = request.path_params["id"]
     template = "/item/schedule/update_rent.html"
 
     async with async_session() as session:
         #..
-        detail = await in_schedule_rent(request, session)
+        detail = await in_schedule_rent(request, session, id)
         #..
         context = {
             "request": request,
@@ -242,7 +245,7 @@ async def delete(
 
         if request.method == "GET":
             #..
-            detail = await in_schedule_rent(request, session)
+            detail = await in_schedule_rent(request, session, id)
             if detail:
                 return templates.TemplateResponse(
                     template,

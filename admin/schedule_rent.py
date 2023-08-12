@@ -76,7 +76,7 @@ async def item_details(
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            sch = await in_schedule_r(request, session)
+            sch = await in_schedule_r(session, id)
             obj_list = await details_schedule_rent(request, session)
             # ..
             if admin:
@@ -183,7 +183,7 @@ async def item_update(
         # ..
         admin = await in_admin(request, session)
         # ..
-        detail = await in_schedule_r(request, session)
+        detail = await in_schedule_r(session, id)
         context = {
             "request": request,
             "detail": detail,
@@ -237,7 +237,7 @@ async def item_delete(
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            detail = await in_schedule_r(request, session)
+            detail = await in_schedule_r(session, id)
             # ..
             if admin:
                 return templates.TemplateResponse(

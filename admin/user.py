@@ -62,7 +62,7 @@ async def i_details(request):
         admin = await in_admin(request, session)
         # ..
         if admin:
-            i = await in_user(request, session)
+            i = await in_user(session, id)
             # ..
             opt_service = await session.execute(
                 select(Service)
@@ -89,6 +89,7 @@ async def i_details(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def i_create(request):
+
     template = "/admin/user/create.html"
     mdl = "user"
     basewidth = 800
@@ -170,6 +171,7 @@ async def i_create(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def i_update(request):
+
     id = request.path_params["id"]
     template = "/admin/user/update.html"
     mdl = "user"
@@ -178,7 +180,7 @@ async def i_update(request):
     async with async_session() as session:
         # ..
         admin = await in_admin(request, session)
-        i = await in_user(request, session)
+        i = await in_user(session, id)
         # ..
         context = {
             "request": request,
@@ -196,7 +198,6 @@ async def i_update(request):
             # ..
             name = form["name"]
             email = form["email"]
-            password = pbkdf2_sha1.hash(form["password"])
             file = form["file"]
             del_obj = form.get("del_bool")
             #
@@ -212,7 +213,6 @@ async def i_update(request):
                     .values(
                         name=name,
                         email=email,
-                        password=password,
                         file=i.file,
                         email_verified=strtobool(email_verified),
                         modified_at=datetime.now(),
@@ -251,7 +251,6 @@ async def i_update(request):
                 .values(
                     name=name,
                     email=email,
-                    password=password,
                     file=await file_img.img_creat(request, file, mdl, basewidth),
                     email_verified=strtobool(email_verified),
                     modified_at=datetime.now(),
@@ -273,7 +272,55 @@ async def i_update(request):
 
 @requires("authenticated", redirect="user_login")
 # ...
+async def i_update_password(request):
+
+    id = request.path_params["id"]
+    template = "/admin/user/update_password.html"
+
+    async with async_session() as session:
+        # ..
+        admin = await in_admin(request, session)
+        # ..
+        context = {
+            "request": request,
+        }
+        # ...
+        if request.method == "GET":
+            if admin:
+                return templates.TemplateResponse(template, context)
+            return PlainTextResponse("You are banned - this is not your account..!")
+        # ...
+        if request.method == "POST":
+            # ..
+            form = await request.form()
+            # ..
+            password = pbkdf2_sha1.hash(form["password"])
+            # ..
+
+            query = (
+                sqlalchemy_update(User)
+                .where(User.id == id)
+                .values(
+                    password=password,
+                    modified_at=datetime.now(),
+                )
+                .execution_options(synchronize_session="fetch")
+            )
+            await session.execute(query)
+            await session.commit()
+            # ..
+            return RedirectResponse(
+                f"/admin/user/details/{ id }",
+                status_code=302,
+            )
+
+    await engine.dispose()
+
+
+@requires("authenticated", redirect="user_login")
+# ...
 async def i_delete(request):
+
     id = request.path_params["id"]
     template = "/admin/user/delete.html"
 
@@ -281,7 +328,7 @@ async def i_delete(request):
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            detail = await in_user(request, session)
+            detail = await in_user(session, id)
             # ..
             if admin:
                 return templates.TemplateResponse(

@@ -21,7 +21,7 @@ from options_select import file_img
 from options_select.opt_slc import (
     user_tm,
     service_comment,
-    in_service,
+    in_service_user,
 )
 
 
@@ -113,7 +113,7 @@ async def service_update(request):
 
     async with async_session() as session:
         # ..
-        i = await in_service(request, session)
+        i = await in_service_user(request, session, id)
         context = {
             "request": request,
             "i": i,
@@ -212,7 +212,7 @@ async def delete(request):
 
         if request.method == "GET":
             # ..
-            i = await in_service(request, session)
+            i = await in_service_user(request, session, id)
             if i:
                 return templates.TemplateResponse(
                     template,
@@ -257,12 +257,13 @@ async def service_list(request):
 
 
 async def service_details(request):
+    
     id = request.path_params["id"]
     template = "/item/service/details.html"
 
     async with async_session() as session:
         # ..
-        cmt_list = await service_comment(request, session)
+        cmt_list = await service_comment(session, id)
         # ..
         stmt = await session.execute(
             select(Service)

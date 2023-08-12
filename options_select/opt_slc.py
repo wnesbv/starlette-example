@@ -2,8 +2,6 @@
 from sqlalchemy import func, and_
 from sqlalchemy.future import select
 
-from starlette.templating import Jinja2Templates
-
 from comment.models import Comment
 from participant.models import PersonParticipant
 from channel.models import GroupChat, MessageChat
@@ -11,9 +9,6 @@ from item.models import Item, Rent, Service, ScheduleRent, ScheduleService, Dump
 from make_an_appointment.models import ReserveRentFor, ReserveServicerFor
 
 from db_config.settings import settings
-
-
-templates = Jinja2Templates(directory="templates")
 
 
 async def user_tm(request, session):
@@ -65,8 +60,7 @@ async def schedule_service_id(request, session):
     return result
 
 
-async def schedule_service(request, session):
-    id = request.path_params["id"]
+async def schedule_srv(request, session, id):
     stmt = await session.execute(
         select(ScheduleService)
         .where(
@@ -82,7 +76,6 @@ async def schedule_service(request, session):
 
 
 async def details_schedule_rent(request, session):
-    # ..
     stmt = await session.execute(
         select(ScheduleRent)
         .where(
@@ -94,9 +87,7 @@ async def details_schedule_rent(request, session):
     return result
 
 
-async def details_schedule_service(request, session):
-    service = request.path_params["service"]
-    # ..
+async def details_schedule_service(request, session, service):
     stmt = await session.execute(
         select(ScheduleService)
         .where(ScheduleService.sch_s_service_id == service)
@@ -107,8 +98,7 @@ async def details_schedule_service(request, session):
     return result
 
 
-async def dump_schedule_service(request, session):
-    id = request.path_params["id"]
+async def dump_schedule_service(request, session, id):
     stmt = await session.execute(
         select(DumpService)
         .where(
@@ -124,8 +114,7 @@ async def dump_schedule_service(request, session):
 
 
 #..
-async def sch_sv_user(request, session):
-    id = request.path_params["id"]
+async def sch_sv_user(request, session, id):
     stmt = await session.execute(
         select(ScheduleService)
         .where(
@@ -139,8 +128,7 @@ async def sch_sv_user(request, session):
     return result
 
 
-async def sch_sv_id(request, session):
-    id = request.path_params["id"]
+async def sch_sv_id(request, session, id):
     stmt = await session.execute(
         select(ScheduleService.id)
         .where(
@@ -156,8 +144,7 @@ async def sch_sv_id(request, session):
 
 
 #..
-async def in_rrf(request, session):
-    id = request.path_params["id"]
+async def in_rrf(request, session, id):
     stmt = await session.execute(
         select(ReserveRentFor).where(
             and_(
@@ -170,8 +157,7 @@ async def in_rrf(request, session):
     return result
 
 
-async def in_rsf(request, session):
-    id = request.path_params["id"]
+async def in_rsf(request, session, id):
     stmt = await session.execute(
         select(ReserveServicerFor).where(
             and_(
@@ -184,8 +170,7 @@ async def in_rsf(request, session):
     return result
 
 
-async def in_item(request, session):
-    id = request.path_params["id"]
+async def in_item_user(request, session, id):
     stmt = await session.execute(
         select(Item)
         .where(
@@ -199,8 +184,7 @@ async def in_item(request, session):
     return result
 
 
-async def in_rent(request, session):
-    id = request.path_params["id"]
+async def in_rent_user(request, session, id):
     stmt = await session.execute(
         select(Rent)
         .where(
@@ -214,8 +198,7 @@ async def in_rent(request, session):
     return result
 
 
-async def in_service(request, session):
-    id = request.path_params["id"]
+async def in_service_user(request, session, id):
     stmt = await session.execute(
         select(Service)
         .where(
@@ -229,8 +212,7 @@ async def in_service(request, session):
     return result
 
 
-async def in_schedule_rent(request, session):
-    id = request.path_params["id"]
+async def in_schedule_rent(request, session, id):
     stmt = await session.execute(
         select(ScheduleRent).where(
             and_(
@@ -243,8 +225,7 @@ async def in_schedule_rent(request, session):
     return result
 
 
-async def in_schedule_service(request, session):
-    id = request.path_params["id"]
+async def in_schedule_service(request, session, id):
     stmt = await session.execute(
         select(ScheduleService)
         .where(
@@ -258,8 +239,7 @@ async def in_schedule_service(request, session):
     return result
 
 
-async def in_dump(request, session):
-    id = request.path_params["id"]
+async def in_dump(request, session, id):
     stmt = await session.execute(
         select(DumpService)
         .where(
@@ -273,7 +253,7 @@ async def in_dump(request, session):
     return result
 
 
-async def in_comment(request, session):
+async def in_comment(request, session, id):
     stmt = await session.execute(
         select(Comment)
         .where(Comment.cmt_user_id == request.user.user_id)
@@ -283,8 +263,7 @@ async def in_comment(request, session):
 
 
 # ..
-async def in_group_chat(request, session):
-    id = request.path_params["id"]
+async def in_group_chat(request, session, id):
     stmt = await session.execute(
         select(GroupChat)
         .where(
@@ -298,8 +277,7 @@ async def in_group_chat(request, session):
     return result
 
 
-async def in_chat(request, session):
-    id = request.path_params["id"]
+async def in_chat(request, session, id):
     stmt = await session.execute(
         select(MessageChat)
         .where(
@@ -314,8 +292,7 @@ async def in_chat(request, session):
 
 
 # ..
-async def in_person_participant(request, session):
-    id = request.path_params["id"]
+async def in_person_participant(request, session, id):
     stmt = await session.execute(
         select(PersonParticipant)
         .where(
@@ -329,8 +306,7 @@ async def in_person_participant(request, session):
     return result
 
 
-async def person_participant(request, session):
-    id = request.path_params["id"]
+async def person_participant(request, session, id):
     stmt = await session.execute(
         select(PersonParticipant)
         .join(GroupChat)
@@ -346,8 +322,7 @@ async def person_participant(request, session):
 
 
 #..
-async def item_comment(request, session):
-    id = request.path_params["id"]
+async def item_comment(session, id):
     stmt = await session.execute(
         select(Comment)
         .where(Comment.cmt_item_id == id)
@@ -357,8 +332,7 @@ async def item_comment(request, session):
     return result
 
 
-async def rent_comment(request, session):
-    id = request.path_params["id"]
+async def rent_comment(session, id):
     stmt = await session.execute(
         select(Comment)
         .where(Comment.cmt_rent_id == id)
@@ -368,8 +342,7 @@ async def rent_comment(request, session):
     return result
 
 
-async def service_comment(request, session):
-    id = request.path_params["id"]
+async def service_comment(session, id):
     stmt = await session.execute(
         select(Comment)
         .where(Comment.cmt_service_id == id)

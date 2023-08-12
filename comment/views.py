@@ -24,13 +24,15 @@ templates = Jinja2Templates(directory="templates")
 async def cmt_item_create(
     request
 ):
-    template = "/comment/create.html"
+
+    id = request.path_params["id"]
     cmt_item_id = request.path_params["id"]
     cmt_user_id = request.user.display_name
+    template = "/comment/create.html"
 
     async with async_session() as session:
         #..
-        user = await in_comment(request, session)
+        user = await in_comment(request, session, id)
         # ...
         if request.method == "GET":
             if user:
@@ -76,13 +78,15 @@ async def cmt_item_create(
 async def cmt_rent_create(
     request
 ):
-    template = "/comment/create.html"
+
+    id = request.path_params["id"]
     cmt_rent_id = request.path_params["id"]
     cmt_user_id = request.user.display_name
+    template = "/comment/create.html"
 
     async with async_session() as session:
         #..
-        user = await in_comment(request, session)
+        user = await in_comment(request, session, id)
         # ...
         if request.method == "GET":
             if user:
@@ -128,13 +132,13 @@ async def cmt_rent_create(
 async def cmt_service_create(
     request
 ):
-    template = "/comment/create.html"
+    id = request.path_params["id"]
     cmt_service_id = request.path_params["id"]
     cmt_user_id = request.user.display_name
-
+    template = "/comment/create.html"
     async with async_session() as session:
         #..
-        user = await in_comment(request, session)
+        user = await in_comment(request, session, id)
         # ...
         if request.method == "GET":
             if user:

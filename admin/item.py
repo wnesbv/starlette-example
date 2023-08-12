@@ -77,17 +77,19 @@ async def item_list(
 async def item_details(
     request
 ):
+
     id = request.path_params["id"]
     template = "/admin/details.html"
+
     async with async_session() as session:
         # ..
         admin = await in_admin(request, session)
         # ..
         if admin:
             # ..
-            cmt_list = await item_comment(request, session)
+            cmt_list = await item_comment(session, id)
             # ..
-            detail = await in_item(request, session)
+            detail = await in_item(session, id)
             # ..
             opt_service = await session.execute(
                 select(Service)
@@ -176,7 +178,7 @@ async def item_update(
     async with async_session() as session:
         # ..
         admin = await in_admin(request, session)
-        detail = await in_item(request, session)
+        detail = await in_item(session, id)
         # ..
         context = {
             "request": request,
@@ -234,7 +236,7 @@ async def item_delete(
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            detail = await in_item(request, session)
+            detail = await in_item(session, id)
             # ..
             if admin:
                 return templates.TemplateResponse(

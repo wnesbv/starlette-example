@@ -7,9 +7,7 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 
 from db_config.storage_config import engine, async_session
 
-from options_select.opt_slc import (
-    in_chat,
-)
+from options_select.opt_slc import in_chat
 
 from .models import MessageChat
 
@@ -26,7 +24,7 @@ async def chat_update(request):
 
     async with async_session() as session:
         #..
-        detail = await in_chat(request, session)
+        detail = await in_chat(request, session, id)
         context = {
             "request": request,
             "detail": detail,
@@ -70,7 +68,7 @@ async def chat_delete(request):
     async with async_session() as session:
         # ..
         if request.method == "GET":
-            detail = await in_chat(request, session)
+            detail = await in_chat(request, session, id)
             if detail:
                 return templates.TemplateResponse(
                     template,
