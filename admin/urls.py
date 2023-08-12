@@ -7,11 +7,11 @@ from . import user, item, rent, slider, service, schedule_rent, schedule_service
 routes = [
     Route("/", item.all_list),
     # ..
-    Route("/user/list", user.item_list),
-    Route("/user/details/{id:int}", user.item_details),
-    Route("/user/create/", user.item_create, methods=["GET", "POST"]),
-    Route("/user/update/{id:int}", user.item_update, methods=["GET", "POST"]),
-    Route("/item/delete/{id:int}", item.item_delete, methods=["GET", "POST"]),
+    Route("/user/list", user.i_list),
+    Route("/user/details/{id:int}", user.i_details),
+    Route("/user/create/", user.i_create, methods=["GET", "POST"]),
+    Route("/user/update/{id:int}", user.i_update, methods=["GET", "POST"]),
+    Route("/user/delete/{id:int}", user.i_delete, methods=["GET", "POST"]),
     # ..
     Route("/item/list", item.item_list),
     Route("/item/details/{id:int}", item.item_details),

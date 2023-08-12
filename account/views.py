@@ -177,13 +177,11 @@ async def user_update(request):
                 .where(User.id == id)
                 .values(
                     name=name,
-                    file=file_img.img_creat(request, file, mdl),
+                    file=await file_img.img_creat(request, file, mdl, basewidth),
                     modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
             )
-            # ..
-            file_img.img_size(request, file, mdl, basewidth)
             # ..
             await session.execute(file_query)
             await session.commit()

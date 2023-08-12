@@ -80,17 +80,14 @@ async def rent_create(request):
             new = Rent()
             new.title = title
             new.description = description
-            new.file = file_img.img_creat(request, file, mdl)
+            new.file = await file_img.img_creat(request, file, mdl, basewidth)
             new.rent_owner = request.user.user_id
             # ..
             new.rent_belongs = int(rent_belongs)
             # ..
             new.created_at = datetime.now()
             # ..
-            file_img.img_size(request, file, mdl, basewidth)
-            # ..
             session.add(new)
-            session.refresh(new)
             await session.commit()
             # ..
             await send_mail(f"A new object has been created - {new}: {title}")
@@ -176,12 +173,10 @@ async def rent_update(request):
                 .values(
                     title=title,
                     description=description,
-                    file=file_img.img_creat(request, file, mdl),
+                    file=await file_img.img_creat(request, file, mdl, basewidth),
                 )
                 .execution_options(synchronize_session="fetch")
             )
-            # ..
-            file_img.img_size(request, file, mdl, basewidth)
             # ..
             await session.execute(file_query)
             await session.commit()

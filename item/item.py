@@ -1,3 +1,4 @@
+
 from pathlib import Path
 from datetime import datetime
 from sqlalchemy import update as sqlalchemy_update, delete
@@ -57,7 +58,6 @@ async def item_create(request):
                 new.created_at = datetime.now()
                 # ..
                 session.add(new)
-                session.refresh(new)
                 await session.commit()
                 # ..
                 await send_mail(f"A new object has been created - {new}: {title}")
@@ -69,15 +69,12 @@ async def item_create(request):
 
             new = Item()
             new.title = title
-            new.file = file_img.img_creat(request, file, mdl)
+            new.file = await file_img.img_creat(request, file, mdl, basewidth)
             new.item_owner = item_owner
             new.description = description
             new.created_at = datetime.now()
             # ..
-            file_img.img_size(request, file, mdl, basewidth)
-            # ..
             session.add(new)
-            session.refresh(new)
             await session.commit()
             # ..
             await send_mail(f"A new object has been created - {new}: {title}")
@@ -165,13 +162,12 @@ async def item_update(request):
                 .where(Item.id == id)
                 .values(
                     title=title,
+                    description=description,
+                    file=await file_img.img_creat(request, file, mdl, basewidth),
                     modified_at=datetime.now(),
-                    file=file_img.img_creat(request, file, mdl),
                 )
                 .execution_options(synchronize_session="fetch")
             )
-            # ..
-            file_img.img_size(request, file, mdl, basewidth)
             # ..
             await session.execute(file_query)
             await session.commit()

@@ -1,100 +1,106 @@
+{% extends "admin/base.html" %} {% block title %} admin update {{ i.name }} {%
+endblock%} {% block content %}
 
-{% extends "admin/base.html" %}
-{% block title %} admin update {{ detail.name }} {% endblock%}
-
-{% block content %}
-
-    <div class="card">
-        <div class="card-header">
-            <h3 class="lead">admin user create</h3>
-        </div>
-
-        <div class="card-body border-bottom py-3">
-
-        <form method="POST" enctype="multipart/form-data">
-            <div class="mb-3">
-                <input
-                    required
-                    type="text"
-                    class="form-control"
-                    name="name"
-                    value="{{ detail.name }}"
-                    placeholder="name"
-                />
-            </div>
-            <div class="mb-3">
-                <input
-                    required
-                    type="text"
-                    class="form-control"
-                    name="name"
-                    value="{{ detail.name }}"
-                    placeholder="name"
-                />
-            </div>
-            <div class="mb-3">
-                <input
-                    required
-                    type="email"
-                    class="form-control"
-                    name="email"
-                    value="{{ detail.email }}"
-                    placeholder="email"
-                />
-            </div>
-            <div class="mb-3">
-                <input
-                    required
-                    type="password"
-                    class="form-control"
-                    name="password"
-                    value="{{ detail.password }}"
-                    placeholder="password"
-                />
-            </div>
-
-            <div class="mb-3">
-                <select required name="email_verified" id="email_verified">
-                    <option value=False>False</option>
-                    <option value=True selected>True</option>
-                </select>
-                <label for="email_verified">email_verified</label>
-            </div>
-            <div class="mb-3">
-                <select required name="is_active" id="is_active">
-                    <option value=False>False</option>
-                    <option value=True selected>True</option>
-                </select>
-                <label for="is_active">is_active</label>
-            </div>
-            <div class="mb-3">
-                <select required name="is_admin" id="is_admin">
-                    <option value=False selected>False</option>
-                    <option value=True>True</option>
-                </select>
-                <label for="is_admin">is_admin</label>
-            </div>
-
-            <button type="submit" class="btn btn-outline-primary btn-sm">
-                submit
-            </button>
-
-        </form>
-
-        </div>
+<div class="card">
+    <div class="card-header">
+        <h3 class="lead">admin user create</h3>
     </div>
 
-{% endblock %}
+    <form method="POST" enctype="multipart/form-data">
+    <div class="card-body">
+        <div class="mb-3">
+            <sup>name</sup>
+            <input
+                type="text"
+                class="form-control"
+                name="name"
+                value="{{ i.name }}"
+            />
+        </div>
+        <div class="mb-3">
+            <sup>email</sup>
+            <input
+                required
+                type="email"
+                class="form-control"
+                name="email"
+                value="{{ i.email }}"
+            />
+        </div>
+        <div class="mb-3">
+            <sup>password</sup>
+            <input
+                type="password"
+                class="form-control"
+                name="password"
+                value="{{ i.password }}"
+            />
+        </div>
+    </div>
+    <div class="card-footer mb-3">
+        <input
+            type="file"
+            name="file"
+            class="form-control"
+        />
+    </div>
 
+    {% if i.file %}
+    <figure
+        class="list-group-item list-group-item-danger d-inline-block p-3"
+    >
+        <figcaption><sup>image</sup></figcaption>
 
-{% block script %}
+        <img width="128" src="{{ i.file }}" />
+        <input
+            type="checkbox"
+            name="del_bool"
+            class="ms-2 form-check-input"
+        />
+        <sup class="m-2">delete</sup>
+    </figure>
+    {% endif %}
 
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jodit/3.17.1/jodit.min.css"/>
+    <div class="mb-3">
+        <select required name="email_verified" id="email_verified">
+            <option value="False">False</option>
+            <option value="True" selected>True</option>
+        </select>
+        <label for="email_verified">email_verified</label>
+    </div>
+    <div class="mb-3">
+        <select required name="is_active" id="is_active">
+            <option value="False">False</option>
+            <option value="True" selected>True</option>
+        </select>
+        <label for="is_active">is_active</label>
+    </div>
+    <div class="mb-3">
+        <select required name="is_admin" id="is_admin">
+            <option value="False" selected>False</option>
+            <option value="True">True</option>
+        </select>
+        <label for="is_admin">is_admin</label>
+    </div>
+
+    <button type="submit" class="btn btn-outline-primary btn-sm">
+        submit
+    </button>
+
+    </form>
+
+</div>
+
+{% endblock %} {% block script %}
+
+<link
+    rel="stylesheet"
+    href="//cdnjs.cloudflare.com/ajax/libs/jodit/3.17.1/jodit.min.css"
+/>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jodit/3.17.1/jodit.min.js"></script>
 
 <script>
-    const editor = Jodit.make('textarea');
+    const editor = Jodit.make("textarea");
 </script>
 
 {% endblock %}
-
