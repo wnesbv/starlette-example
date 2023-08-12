@@ -6,9 +6,11 @@
 
 <h1 class="lead my-4">update item</h1>
 
-<form class="card p-3" method="POST" enctype="multipart/form-data">
-    <div class="m-2">
-        <sup class="float-start mb-2">title</sup>
+<form class="card" method="POST" enctype="multipart/form-data">
+    <div class="card-body">
+
+    <div class="mb-2">
+        <sup>title</sup>
         <input
             type="text"
             name="title"
@@ -17,15 +19,19 @@
         />
     </div>
 
-    <div class="m-2">
+    <div class="mb-2">
     <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ i.description }}</textarea>
     </div>
 
-    <div class="m-2">
+    <div class="card-footer">
+    <div class="mb-2">
         <input type="file" name="file" class="form-control" />
+    </div>
+    </div>
     </div>
 
     {% if i.file %}
+    <div class="card-footer">
     <figure class="list-group-item list-group-item-danger d-inline-block p-3">
         <figcaption><sup>image</sup></figcaption>
 
@@ -37,9 +43,10 @@
         />
         <sup class="m-2">delete</sup>
     </figure>
+    </div>
     {% endif %}
 
-    <div class="m-2">
+    <div class="card-footer">
     <button type="submit" class="btn btn-outline-primary btn-sm">
         submit
     </button>

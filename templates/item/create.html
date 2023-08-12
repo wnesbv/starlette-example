@@ -4,37 +4,46 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">new item</h1>
-    <form class="card p-3" method="POST" enctype="multipart/form-data">
-        <div class="m-2">
-            <sup class="float-start">title</sup>
+<h1 class="lead my-4">new item</h1>
+<form class="card" method="POST" enctype="multipart/form-data">
+    <div class="card-body">
+
+        <div class="mb-2">
+            <sup>title</sup>
             <input
                 type="text"
                 required
                 name="title"
-                value="{{ title }}"
                 placeholder="item title"
                 class="form-control my-2"
             />
         </div>
-        <div class="m-2">
-        <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ description }}</textarea>
+
+        <div class="mb-2">
+        <sup>description</sup>
+        <textarea class="form-control" name="description" maxlength="333" spellcheck></textarea>
         <div id="help" class="form-text">up to 200 characters</div>
         </div>
-        <div class="m-2">
-            <input
-                type="file"
-                name="file"
-                class="form-control"
-            />
-            <div id="help" class="form-text">image ~ 1020px</div>
+
+
+        <div class="card-footer">
+            <div class="mb-2">
+                <input
+                    type="file"
+                    name="file"
+                    class="form-control"
+                />
+                <div id="help" class="form-text">image ~ 800px ~ 1mb</div>
+            </div>
         </div>
-        <div class="m-2">
-        <button type="submit" class="btn btn-outline-primary btn-sm">
-            submit
-        </button>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-outline-primary btn-sm">
+                submit
+            </button>
         </div>
-    </form>
+
+    </div>
+</form>
 
 {% endblock %}
 
