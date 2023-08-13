@@ -1,13 +1,12 @@
 
 {% extends "admin/base.html" %}
-{% block title %} user {{ i.name }} {% endblock %}
+{% block title %} admin user {{ i.name }} {% endblock %}
 
 {% block content %}
 
 <h1 class="lead my-4">admin detail user...</h1>
 
-<div class="flex_cont">
-    <div class="card p-3 mb-5">
+<div class="card p-3">
 
     <ul class="card-header list-group list-group-horizontal">
         <li class="list-group-item">
@@ -36,7 +35,29 @@
             {{ i.password }}
         </li>
     </ul>
-    <ul class="card-header list-group list-group-horizontal">
+
+    <ul class="card-footer list-group list-group-horizontal">
+        <li class="list-group-item">
+            <sup class="float-start">all item:</sup>
+            {% for i in all_item %}
+            {{ i.title }},
+            {% endfor %}
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">all service:</sup>
+            {% for i in all_service %}
+            {{ i.title }},
+            {% endfor %}
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">all rent:</sup>
+            {% for i in all_rent %}
+            {{ i.title }},
+            {% endfor %}
+        </li>
+    </ul>
+
+    <ul class="card-footer list-group list-group-horizontal">
         <li class="list-group-item">
             <sup class="float-start">email_verified:</sup>
             {{ i.email_verified }}
@@ -50,6 +71,7 @@
             {{ i.is_admin }}
         </li>
     </ul>
+    
     <ul class="card-footer list-group list-group-flush">
         <li class="list-group-item">
             <sup class="float-start">last_login_date:</sup>
@@ -61,7 +83,6 @@
         </li>
     </ul>
 
-    </div>
 
     {% if i.file %}
     <div class="col-xxl-5 col-sm-10 ms-3">

@@ -64,23 +64,29 @@ async def i_details(request):
         if admin:
             i = await in_user(session, id)
             # ..
+            opt_item = await session.execute(
+                select(Item)
+                .where(Item.item_owner == id)
+            )
+            all_item = opt_item.scalars().all()
             opt_service = await session.execute(
                 select(Service)
-                .join(Item.item_rent)
-                .where(Service.service_belongs == id)
+                .where(Service.service_owner == id)
             )
             all_service = opt_service.scalars().unique()
             # ..
             opt_rent = await session.execute(
-                select(Rent).join(Item.item_rent).where(Rent.rent_belongs == id)
+                select(Rent)
+                .where(Rent.rent_owner == id)
             )
             all_rent = opt_rent.scalars().unique()
             # ...
             context = {
                 "request": request,
                 "i": i,
-                "all_service": all_service,
-                "all_rent": all_rent,
+                "all_item": list(all_item),
+                "all_service": list(all_service),
+                "all_rent": list(all_rent),
             }
             return templates.TemplateResponse(template, context)
     await engine.dispose()

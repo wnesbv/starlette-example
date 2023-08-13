@@ -4,16 +4,17 @@
 
 {% block content %}
 
-    <h1 class="lead my-3">admin list user..</h1>
-    <div class="p-3 bg-light">
-        <p>user count {{ odj_count | max }}</p>
-    </div>
+<h1 class="lead my-3">admin list user..</h1>
 
-    <div class="row">
+<div class="card">
+    <p class="card-header">user count {{ odj_count | max }}</p>
+</div>
 
+<div class="flex_cont">
     {% if odj_list %}
     {% for obj in odj_list %}
-    <div class="card p-3 mb-3">
+    <div class="card m-1">
+
         <ul class="card-header list-group list-group-horizontal">
             <li class="list-group-item">
                 <sup class="float-start">id:</sup>
@@ -28,42 +29,43 @@
                 <span>{{ obj.email }}</span>
             </li>
         </ul>
-        <ul class="card-body list-group list-group-horizontal">
-            <li class="list-group-item">
-                <sup class="float-start">email verified:</sup>
-                <span>{{ obj.email_verified }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">active:</sup>
-                <span>{{ obj.is_active }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">admin:</sup>
-                <span>{{ obj.is_admin }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">last_login_date:</sup>
-                <span>{{ obj.last_login_date }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">created:</sup>
-                <time>{{ obj.created_at }}</time>
-            </li>
-        </ul>
+
+        <div class="card-body">
+
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <sup class="float-start">email verified:</sup>
+                    <span>{{ obj.email_verified }}</span>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">active:</sup>
+                    <span>{{ obj.is_active }}</span>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">admin:</sup>
+                    <span>{{ obj.is_admin }}</span>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">last_login_date:</sup>
+                    <span>{{ obj.last_login_date }}</span>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">created:</sup>
+                    <time>{{ obj.created_at }}</time>
+                </li>
+            </ul>
+        </div>
 
         <p class="card-footer">
         <a class="btn btn-outline-primary btn-sm" href="/admin/user/details/{{ obj.id }}" role="button">View details &raquo;</a>
         </p>
 
     </div>
-
     {% endfor %}
 
         {% else %}
         <span class="mt-5">no information available</span>
 
     {% endif %}
-
-    </div>
-
+</div>
 {% endblock %}

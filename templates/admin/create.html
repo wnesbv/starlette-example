@@ -4,53 +4,60 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">admin new item</h1>
-    <form class="card p-3" method="POST" enctype="multipart/form-data">
-        <div class="mb-3 card-header">
-            <select
-                name="item_owner"
-                class="form-control shadow">
-                <option value="">user select</option>
+<h1 class="lead my-3">admin new item</h1>
 
-                {% for obj in owner_all %}
-                    <option value="{{ obj.id }}">
-                        {{ obj.id }}
-                    </option>
-                {% endfor %}
+<form class="card" method="POST" enctype="multipart/form-data">
 
-            </select>
-        </div>
+    <div class="card-header mb-3">
+        <select
+            name="item_owner"
+            class="form-control shadow">
+            <option value="">user select</option>
+
+            {% for obj in owner_all %}
+                <option value="{{ obj.id }}">
+                    {{ obj.id }}
+                </option>
+            {% endfor %}
+
+        </select>
+    </div>
+
+    <div class="card-body">
+
         <div class="mb-3">
-            <sup class="float-start">title</sup>
+            <sup>title</sup>
             <input
                 type="text"
                 required
                 name="title"
-                value="{{ title }}"
                 placeholder="item title"
                 class="form-control my-2"
             />
         </div>
 
         <div class="mb-3">
-        <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ description }}</textarea>
+        <textarea class="form-control" name="description" maxlength="333" spellcheck></textarea>
             <div id="help" class="form-text">help text</div>
         </div>
-        <div class="mb-3">
-            <input
-                type="file"
-                required
-                name="file"
-                value="{{ file }}"
-                class="form-control"
-            />
-        </div>
-        <div class="m-2">
-        <button type="submit" class="btn btn-outline-primary btn-sm">
-            submit
-        </button>
-        </div>
-    </form>
+
+    </div>
+
+    <div class="card-footer mb-3">
+        <input
+            type="file"
+            required
+            name="file"
+            class="form-control"
+        />
+    </div>
+
+    <div class="card-footer">
+    <button type="submit" class="btn btn-outline-primary btn-sm">
+        submit
+    </button>
+    </div>
+</form>
 
 {% endblock %}
 

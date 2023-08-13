@@ -4,34 +4,24 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">update comment</h1>
+<h1 class="lead my-4">update comment</h1>
 
-    <div class="card">
-        <div class="card-header">
-            <h3 class="lead">update comment</h3>
-        </div>
-
-        <div class="card-body py-3">
-
-        <form method="POST">
-            <div class="m-2">
-                <sup class="form-label">opinion</sup>
-                <textarea
-                    required
-                    id="comment"
-                    class="form-control"
-                    name="opinion"
-                    rows="3"
-                >{{ detail.opinion }} </textarea>
-            </div>
-
-            <button type="submit" class="btn btn-outline-primary btn-sm">
-                submit
-            </button>
-        </form>
-
-        </div>
-
+<form class="card" method="POST">
+    <div class="card-body">
+        <sup>opinion</sup>
+        <textarea
+            required
+            id="comment"
+            class="form-control"
+            name="opinion"
+            rows="3"
+        >{{ detail.opinion }} </textarea>
     </div>
+    <div class="card-footer">
+    <button type="submit" class="btn btn-outline-primary btn-sm">
+        submit
+    </button>
+    </div>
+</form>
 
 {% endblock %}
