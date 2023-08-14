@@ -35,7 +35,7 @@ templates = Jinja2Templates(directory="templates")
 @requires("authenticated", redirect="user_login")
 # ...
 async def list_service_id(request):
-    template = "/item/schedule/list_service_id.html"
+    template = "/schedule/list_service_id.html"
     async with async_session() as session:
         # ..
         odj_list = await schedule_service_id(request, session)
@@ -53,7 +53,7 @@ async def list_service_id(request):
 async def list_service(request):
 
     id = request.path_params["id"]
-    template = "/item/schedule/list_service.html"
+    template = "/schedule/list_service.html"
 
     async with async_session() as session:
         # ..
@@ -73,7 +73,7 @@ async def details_service(request):
 
     id = request.path_params["id"]
     service = request.path_params["service"]
-    template = "/item/schedule/details_service.html"
+    template = "/schedule/details_service.html"
 
     async with async_session() as session:
 
@@ -87,10 +87,10 @@ async def details_service(request):
                 obj = [
                     {
                         "id": i.id,
-                        "dates": i.dates,
                         "name": i.name,
-                        "type": i.type,
+                        "type_on": i.type_on,
                         "title": i.title,
+                        "number_on": i.number_on,
                         "there_is": i.there_is,
                         "description": i.description,
                     }
@@ -116,7 +116,7 @@ async def details_service(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def create_service(request):
-    template = "/item/schedule/create_service.html"
+    template = "/schedule/create_service.html"
     async with async_session() as session:
 
         if request.method == "GET":
@@ -135,24 +135,24 @@ async def create_service(request):
             # ..
             form = await request.form()
             # ..
-            str_date = form["dates"]
+            str_date = form["number_on"]
             str_there_is = form["there_is"]
             # ..
             name = form["name"]
-            type = form["type"]
+            type_on = form["type_on"]
             title = form["title"]
             description = form["description"]
             sch_s_service_id = form["sch_s_service_id"]
             # ..
             sch_s_owner = request.user.user_id
             # ..
-            date = datetime.strptime(str_date, settings.DATE)
+            number_on = datetime.strptime(str_date, settings.DATE)
             there_is = datetime.strptime(str_there_is, settings.DATE_T)
             # ...
             new = ScheduleService()
-            new.dates = dates
             new.name = name
-            new.type = type
+            new.type_on = type_on
+            new.number_on = number_on
             new.there_is = there_is
             new.title = title
             new.description = description
@@ -181,7 +181,7 @@ async def create_service(request):
 async def update_service(request):
 
     id = request.path_params["id"]
-    template = "/item/schedule/update_service.html"
+    template = "/schedule/update_service.html"
 
     async with async_session() as session:
         # ..
@@ -204,20 +204,20 @@ async def update_service(request):
             str_there_is = form["there_is"]
             # ..
             name = form["name"]
-            type = form["type"]
+            type_on = form["type_on"]
             title = form["title"]
             description = form["description"]
             # ..
-            date = datetime.strptime(str_date, settings.DATE)
+            number_on = datetime.strptime(str_date, settings.DATE)
             there_is = datetime.strptime(str_there_is, settings.DATE_T)
             # ..
             query = (
                 sqlalchemy_update(ScheduleService)
                 .where(ScheduleService.id == id)
                 .values(
-                    dates=dates,
                     name=name,
-                    type=type,
+                    type_on=type_on,
+                    number_on=number_on,
                     there_is=there_is,
                     title=title,
                     description=description,
@@ -242,9 +242,10 @@ async def update_service(request):
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def delete(request):
+async def schedule_delete(request):
+
     id = request.path_params["id"]
-    template = "/item/schedule/delete.html"
+    template = "/schedule/delete.html"
 
     async with async_session() as session:
 

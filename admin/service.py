@@ -91,14 +91,14 @@ async def item_details(request):
             # ..
             obj = [
                 {
-                    "id": to.id,
-                    "date": to.date,
-                    "name": to.name,
-                    "type": to.type,
-                    "there_is": to.there_is,
-                    "description": to.description,
+                    "id": i.id,
+                    "name": i.name,
+                    "type_on": i.type_on,
+                    "number_on": i.number_on,
+                    "there_is": i.there_is,
+                    "description": i.description,
                 }
-                for to in obj_list
+                for i in obj_list
             ]
             sch_json = json.dumps(obj, default=str)
             # ..

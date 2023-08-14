@@ -35,21 +35,24 @@
 </ul>
 
 <ul class="card-footer list-group list-group-horizontal">
-    {% for sv in all_service %}
+
     <li class="list-group-item">
         <sup class="float-start">service:</sup>
-        <a class="page-link" href="/admin/service/details/{{ sv.id }}">{{ sv.title }}
+        {% for i in all_service %}
+        <a href="/admin/service/details/{{ i.id }}">
+            <sub>{{ i.title }},</sub>
         </a>
+        {% endfor %}
     </li>
-    {% endfor %}
-
-    {% for rent in all_rent %}
     <li class="list-group-item">
         <sup class="float-start">rent:</sup>
-        <a class="page-link" href="/admin/rent/details/{{ rent.id }}">{{ rent.title }}
+        {% for i in all_rent %}
+        <a href="/admin/rent/details/{{ i.id }}">
+            <sub>{{ i.title }},</sub>
         </a>
+        {% endfor %}
     </li>
-    {% endfor %}
+
 </ul>
 
 </div>
@@ -62,7 +65,7 @@
 
 
 
-<div class="card mt-2">
+<div class="card my-2">
     <div class="card-header">
         <a class="btn btn-outline-primary btn-sm me-2" href="/admin/item/update/{{ detail.id }}" role="button">
             <i class="bi bi-pencil"></i> &raquo;
@@ -71,7 +74,7 @@
             <i class="bi bi-trash3"></i> &raquo;
         </a>
     </div>
-    <div class="card-footer">
+    <div class="card-footer mt-2">
     <a class="btn btn-outline-primary btn-sm" href="/admin/comment/item/create/{{ detail.id }}">create comment</a>
     </div>
 </div>

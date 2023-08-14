@@ -1,18 +1,20 @@
 
-{% extends "admin/base.html" %}
-{% block title %} admin list rent {% endblock %}
+{% extends "base.html" %}
+{% block title %} list rent {% endblock %}
 
 {% block content %}
 
-<h1 class="lead my-3">admin list rent..</h1>
+<h1 class="lead my-3">list rent..</h1>
 
 <div class="card">
-    <p class="card-header">rent count {{ odj_count | max }}</p>
+    <h2 class="card-body lead">list rent..</h2>
+    <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+
 </div>
 
-<div class="flex_cont">
-    {% if odj_list %}
-    {% for obj in odj_list %}
+<div class="flex_start">
+{% if odj_list %}
+{% for obj in odj_list %}
     <div class="card m-1">
 
         <ul class="card-header list-group list-group-horizontal">
@@ -25,11 +27,11 @@
                 <span>{{ obj.rent_owner }}</span>
             </li>
             <li class="list-group-item">
-                <sup class="float-start">rent belongs:</sup>
-                <span>{{ obj.rent_belongs }}</span>
+                <sup class="float-start">rent to item:</sup>
+                {{ obj.rent_belongs }}
             </li>
         </ul>
-        
+
         <ul class="card-body list-group list-group-flush">
             <li class="list-group-item">
                 <sup class="float-start">title:</sup>
@@ -44,18 +46,15 @@
         </ul>
 
         <div class="card-footer">
-        <a class="btn btn-outline-primary btn-sm" href="/admin/rent/details/{{ obj.id }}" role="button">View details &raquo;</a>
+        <a class="btn btn-outline-primary btn-sm" href="/item/rent/details/{{ obj.id }}" role="button">View details &raquo;</a>
         </div>
 
     </div>
+{% endfor %}
 
-    {% endfor %}
-
-        {% else %}
-        <span class="mt-5">no information available</span>
-
-    {% endif %}
-
+    {% else %}
+    <span class="mt-5">no information available</span>
+{% endif %}
 </div>
 
 {% endblock %}

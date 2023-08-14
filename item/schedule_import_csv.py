@@ -75,11 +75,11 @@ async def import_csv(request):
                             **{
                                 "id": int(new["id"]),
                                 "name": new["name"],
-                                "type": new["type"],
+                                "type_on": new["type_on"],
                                 "title": new["title"],
                                 "description": new["description"],
-                                "dates": datetime.strptime(
-                                    new["dates"], settings.DATE
+                                "number_on": datetime.strptime(
+                                    new["number_on"], settings.DATE
                                 ).date(),
                                 "there_is": datetime.strptime(
                                     new["there_is"], settings.DATETIME_FORMAT

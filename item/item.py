@@ -22,6 +22,7 @@ templates = Jinja2Templates(directory="templates")
 
 
 async def item_create(request):
+
     template = "/item/create.html"
     mdl = "item"
     basewidth = 800
@@ -187,6 +188,7 @@ async def item_update(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def item_delete(request):
+
     id = request.path_params["id"]
     template = "/item/delete.html"
 
@@ -220,6 +222,7 @@ async def item_delete(request):
 
 
 async def item_list(request):
+
     template = "/item/list.html"
 
     async with async_session() as session:
@@ -236,7 +239,7 @@ async def item_list(request):
 
 
 async def item_details(request):
-    
+
     id = request.path_params["id"]
     template = "/item/details.html"
 
@@ -270,8 +273,10 @@ async def item_details(request):
 
 
 async def search(request):
+
     query = request.query_params.get("query")
     template = "/item/search.html"
+    
     async with async_session() as session:
         if request.method == "GET":
             # ..

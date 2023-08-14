@@ -74,11 +74,11 @@ async def item_details(request):
             # ..
             obj = [
                 {
-                    "start": to.start,
-                    "end": to.end,
-                    "title": to.title,
+                    "start": i.start,
+                    "end": i.end,
+                    "title": i.title,
                 }
-                for to in obj_list
+                for i in obj_list
             ]
             sch_json = json.dumps(obj, default=str)
             # ..

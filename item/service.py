@@ -32,7 +32,7 @@ templates = Jinja2Templates(directory="templates")
 # ...
 async def service_create(request):
 
-    template = "/item/service/create.html"
+    template = "/service/create.html"
     mdl = "service"
     basewidth = 800
 
@@ -109,7 +109,7 @@ async def service_create(request):
 async def service_update(request):
 
     id = request.path_params["id"]
-    template = "/item/service/update.html"
+    template = "/service/update.html"
 
     async with async_session() as session:
         # ..
@@ -203,10 +203,10 @@ async def service_update(request):
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def delete(request):
+async def service_delete(request):
 
     id = request.path_params["id"]
-    template = "/item/service/delete.html"
+    template = "/service/delete.html"
 
     async with async_session() as session:
 
@@ -238,7 +238,7 @@ async def delete(request):
 
 
 async def service_list(request):
-    template = "/item/service/list.html"
+    template = "/service/list.html"
 
     async with async_session() as session:
         # ..
@@ -257,9 +257,9 @@ async def service_list(request):
 
 
 async def service_details(request):
-    
+
     id = request.path_params["id"]
-    template = "/item/service/details.html"
+    template = "/service/details.html"
 
     async with async_session() as session:
         # ..
@@ -294,9 +294,9 @@ async def service_details(request):
         obj = [
             {
                 "id": i.id,
-                "date": i.date,
                 "name": i.name,
-                "type": i.type,
+                "type_on": i.type_on,
+                "number_on": i.number_on,
                 "there_is": i.there_is,
                 "description": i.description,
             }

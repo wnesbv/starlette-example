@@ -1,5 +1,5 @@
 
-from sqlalchemy import select, update as sqlalchemy_update, delete, func
+from sqlalchemy import select, update as sqlalchemy_update, delete, func, true
 
 from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
@@ -40,7 +40,7 @@ async def all_list(
 async def item_list(
     request
 ):
-    template = "/admin/list.html"
+    template = "/admin/item/list.html"
     async with async_session() as session:
         # ..
         admin = await in_admin(request, session)
@@ -79,7 +79,7 @@ async def item_details(
 ):
 
     id = request.path_params["id"]
-    template = "/admin/details.html"
+    template = "/admin/item/details.html"
 
     async with async_session() as session:
         # ..
@@ -93,7 +93,6 @@ async def item_details(
             # ..
             opt_service = await session.execute(
                 select(Service)
-                .join(Item.item_rent)
                 .where(Service.service_belongs==id)
             )
             all_service = opt_service.scalars().unique()
@@ -123,7 +122,7 @@ async def item_details(
 async def item_create(
     request
 ):
-    template = "/admin/create.html"
+    template = "/admin/item/create.html"
     async with async_session() as session:
 
         if request.method == "GET":
@@ -149,7 +148,7 @@ async def item_create(
             description = form["description"]
             file = form["file"]
             # ..
-            new = Item(f)
+            new = Item()
             new.title = title
             new.file = file
             new.item_owner = item_owner
@@ -173,7 +172,7 @@ async def item_update(
     request
 ):
     id = request.path_params["id"]
-    template = "/admin/update.html"
+    template = "/admin/item/update.html"
 
     async with async_session() as session:
         # ..
@@ -229,7 +228,7 @@ async def item_delete(
     request
 ):
     id = request.path_params["id"]
-    template = "/admin/delete.html"
+    template = "/admin/item/delete.html"
 
     async with async_session() as session:
 

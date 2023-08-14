@@ -125,10 +125,10 @@ async def item_details(
                 obj = [
                     {
                         "id": i.id,
-                        "dates": i.dates,
                         "name": i.name,
-                        "type": i.type,
+                        "type_on": i.type_on,
                         "title": i.title,
+                        "number_on": i.number_on,
                         "there_is": i.there_is,
                         "description": i.description,
                     }
@@ -185,8 +185,8 @@ async def item_create(
             by_points = form["by_points"]
             by_choose = form["by_choose"]
             # ...
-            sch_service = form["sch_service"]
-            sch_rent = form["sch_rent"]
+            sch_s_service_id = form["sch_s_service_id"]
+            sch_r_rent_id = form["sch_r_rent_id"]
             # ..
             sch_owner = request.user.user_id
             # ..
@@ -197,8 +197,8 @@ async def item_create(
             new.by_points = by_points
             new.sch_owner = sch_owner
             # ..
-            new.sch_service = sch_service
-            new.sch_rent = sch_rent
+            new.sch_s_service_id = sch_s_service_id
+            new.sch_r_rent_id = sch_r_rent_id
             # ..
             session.add(new)
             session.refresh(new)

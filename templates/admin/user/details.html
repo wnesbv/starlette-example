@@ -40,19 +40,19 @@
         <li class="list-group-item">
             <sup class="float-start">all item:</sup>
             {% for i in all_item %}
-            {{ i.title }},
+            <sub>{{ i.title }},</sub>
             {% endfor %}
         </li>
         <li class="list-group-item">
             <sup class="float-start">all service:</sup>
             {% for i in all_service %}
-            {{ i.title }},
+            <sub>{{ i.title }},</sub>
             {% endfor %}
         </li>
         <li class="list-group-item">
             <sup class="float-start">all rent:</sup>
             {% for i in all_rent %}
-            {{ i.title }},
+            <sub>{{ i.title }},</sub>
             {% endfor %}
         </li>
     </ul>
@@ -91,7 +91,7 @@
     {% endif %}
 </div>
 
-<div class="card mt-2">
+<div class="card my-2">
     <div class="card-header">
         <a class="btn btn-outline-primary btn-sm me-2" href="/admin/user/update/{{ i.id }}" role="button">
             <i class="bi bi-pencil"></i> &raquo;

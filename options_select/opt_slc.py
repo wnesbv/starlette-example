@@ -39,7 +39,7 @@ async def user_sv(request, session):
 
 
 #..
-async def schedule_rent(request, session):
+async def user_sch_rent(request, session):
     stmt = await session.execute(
         select(ScheduleRent)
         .where(ScheduleRent.sch_r_owner == request.user.user_id)

@@ -112,7 +112,7 @@ async def schedule_service_list(
                 "id": i.id,
                 "title": i.title,
                 "description": i.description,
-                "dates": i.dates,
+                "number_on": i.number_on,
             }
             for i in obj_list
         ]

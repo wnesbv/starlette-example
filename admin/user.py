@@ -84,9 +84,9 @@ async def i_details(request):
             context = {
                 "request": request,
                 "i": i,
-                "all_item": list(all_item),
-                "all_service": list(all_service),
-                "all_rent": list(all_rent),
+                "all_item": all_item,
+                "all_service": all_service,
+                "all_rent": all_rent,
             }
             return templates.TemplateResponse(template, context)
     await engine.dispose()

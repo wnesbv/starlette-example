@@ -1,123 +1,104 @@
 
 {% extends "admin/base.html" %}
-{% block title %} create {% endblock%}
+{% block title %} admin create sch service {% endblock%}
 
 {% block calendar_css %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.9.2/jquery.contextMenu.min.css" integrity="sha512-SWjZLElR5l3FxoO9Bt9Dy3plCWlBi1Mc9/OlojDPwryZxO0ydpZgvXMLhV6jdEyULGNWjKgZWiX/AMzIvZ4JuA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock %}
 
 {% block content %}
 
-    <h1 class="lead my-3">create schedule</h1>
+    <h1 class="lead my-4">create schedule service</h1>
 
-    <div class="row mt-3">
-        <div id='input_container' class='col-md-12'>
-
-        {# <textarea id="Textarea1" class="form-control" rows="8">{{ detail.by_points | tojson }}</textarea> #}
-
-        <textarea id="by-points" class="form-control" rows="8"></textarea>
-
-        </div>
-    </div>
-    <div class="row mt-3">
-        <div class='col-md-4'></div>
-        <div id='button_container' class='col-md-3'>
-            <button id='json_to_table_btn' type="button" class="btn btn-outline-primary btn-sm">
-                JSON to Table
-            </button>
-        </div>
-    </div>
-    <div class="row mt-3">
-        <div id='table_container' class='col-md-12'></div>
-    </div>
-    <div class="row mt-3">
-        <div class='col-md-4'></div>
-        <div id='button_container' class='col-md-3'>
-            <button id='table_to_json_btn' type="button" class="btn btn-outline-primary btn-sm">
-                Table to JSON
-            </button>
-        </div>
-    </div>
-
-    <div class="row mt-3">
-    <form method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
+    <form class="card p-3" method="POST">
+        <div class="card-header mb-3">
             <select
-                name="by_choose"
-                class="form-control shadow">
-                <option value="">mandatory selec</option>
-                <option value="RENT">RENT</option>
-                <option value="SERVICE">SERVICE</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <select
-                name="sch_service"
+                name="sch_s_service_id"
                 class="form-control shadow">
                 <option value="">service select</option>
+
                 {% for obj in odj_service %}
                     <option value="{{ obj.id }}">
                         {{ obj.id }}
                     </option>
                 {% endfor %}
-            </select>
-        </div>
-        <div class="mb-3">
-            <select
-                name="sch_rent"
-                class="form-control shadow">
-                <option value="">rent select</option>
-                {% for obj in odj_rent %}
-                    <option value="{{ obj.id }}">
-                        {{ obj.id }}
-                    </option>
-                {% endfor %}
+
             </select>
         </div>
 
-        <div class="mb-3">
+        <div class="row m-2">
+            <div class="col-sm">
+            <sup class="float-start">date</sup>
+            <input
+                type="date"
+                required
+                name="date"
+                class="form-control my-2"
+            />
+            </div>
+            <div class="col-sm">
+            <sup class="float-start">there_is</sup>
+            <input
+                type="datetime-local"
+                required
+                name="there_is"
+                class="form-control my-2"
+            />
+            </div>
+        </div>
+        <div class="m-2">
+            <sup class="float-start">title</sup>
             <input
                 type="text"
                 required
                 placeholder="title"
                 name="title"
-                value="schedule 01"
-                class="form-control"
+                value="schedule service 01"
+                class="form-control my-2"
             />
         </div>
-
-        <div class="mb-3">
-            <label class="form-label">description</label>
-            <textarea class="form-control" name="description" maxlength="333" spellcheck></textarea>
+        <div class="row m-2">
+            <div class="col-sm">
+            <sup class="float-start">name</sup>
+            <input
+                type="text"
+                required
+                placeholder="name"
+                name="name"
+                value="name"
+                class="form-control my-2"
+            />
+            </div>
+            <div class="col-sm">
+            <sup class="float-start">type</sup>
+            <input
+                type="text"
+                required
+                placeholder="type"
+                name="type"
+                value="(event|holiday|birthday)"
+                class="form-control my-2"
+            />
+            </div>
         </div>
-        <div class="mb-3">
-            <textarea name="by_points" id='result_container' class="form-control" rows="8"></textarea>
+        <div class="m-2">
+            <sup class="float-start">description</sup>
+            <textarea
+                class="form-control my-2"
+                name="description"
+                maxlength="333"
+                spellcheck
+            ></textarea>
         </div>
-
-        <button type="submit" class="btn btn-outline-primary btn-sm mb-5">
+        <div class="m-2">
+        <button type="submit" class="btn btn-outline-primary btn-sm">
             submit
         </button>
+        </div>
     </form>
-    </div>
 
 {% endblock %}
 
-
 {% block calendar_js %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.9.2/jquery.contextMenu.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.9.2/jquery.ui.position.js"></script>
-
-<script src="/static/json_table_editor/jsoneditor.js"></script>
-
-<script>
-$(document).ready(function() {
-    jsonEditorInit('table_container', 'by-points', 'result_container', 'json_to_table_btn', 'table_to_json_btn');
-});
-</script>
-
 {% endblock %}
 
 

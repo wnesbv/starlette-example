@@ -123,7 +123,7 @@ async def on_app_startup() -> None:
                     ),
                     ScheduleService(
                         name="name 01 Service 01",
-                        type="event",
+                        type_on="event",
                         title="service 01 ScheduleService 01",
                         description="description.. id-1 service 01 ScheduleService 01",
                         sch_s_owner=1,
@@ -132,7 +132,7 @@ async def on_app_startup() -> None:
                     ),
                     ScheduleService(
                         name="name 02 Service 01",
-                        type="event",
+                        type_on="event",
                         title="service 01 ScheduleService 02",
                         description="description.. id-2 service 01 ScheduleService 02",
                         sch_s_owner=1,

@@ -1,4 +1,4 @@
-id,name,type,title,description,date,there_is,created_at,sch_s_owner,sch_s_service_id
+id,name,type_on,title,description,number_on,there_is,created_at,sch_s_owner,sch_s_service_id
 
 3,name 03 Service 01,event,service 01 ScheduleService 03,description.. id-3 service 01 ScheduleService 03,2022-09-02,2022-09-02 19:50:00,2022-08-28 18:43:24,1,1
 

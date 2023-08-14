@@ -50,13 +50,13 @@ routes = [
     Route("/rent/details/{id:int}", rent.rent_details),
     Route("/rent/create/", rent.rent_create, methods=["GET", "POST"]),
     Route("/rent/update/{id:int}", rent.rent_update, methods=["GET", "POST"]),
-    Route("/rent/delete/{id:int}", rent.delete, methods=["GET", "POST"]),
+    Route("/rent/delete/{id:int}", rent.rent_delete, methods=["GET", "POST"]),
     # ..
     Route("/service/list", service.service_list),
     Route("/service/details/{id:int}", service.service_details),
     Route("/service/create/", service.service_create, methods=["GET", "POST"]),
     Route("/service/update/{id:int}", service.service_update, methods=["GET", "POST"]),
-    Route("/service/delete/{id:int}", service.delete, methods=["GET", "POST"]),
+    Route("/service/delete/{id:int}", service.service_delete, methods=["GET", "POST"]),
     # ..
     Route("/schedule-rent/list", schedule_rent.list_rent),
     Route(
@@ -71,7 +71,7 @@ routes = [
         methods=["GET", "POST"],
     ),
     Route(
-        "/schedule-rent/delete/{id:int}", schedule_rent.delete, methods=["GET", "POST"]
+        "/schedule-rent/delete/{id:int}", schedule_rent.schedule_delete, methods=["GET", "POST"]
     ),
     # ..
     Route("/schedule-service/list_id_service", schedule_service.list_service_id),
@@ -93,7 +93,7 @@ routes = [
     ),
     Route(
         "/schedule-service/delete/{id:int}",
-        schedule_service.delete,
+        schedule_service.schedule_delete,
         methods=["GET", "POST"],
     ),
 ]

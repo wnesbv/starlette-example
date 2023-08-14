@@ -29,7 +29,7 @@ templates = Jinja2Templates(directory="templates")
 # ...
 async def rent_create(request):
 
-    template = "/item/rent/create.html"
+    template = "/rent/create.html"
     mdl = "rent"
     basewidth = 800
 
@@ -105,7 +105,7 @@ async def rent_create(request):
 async def rent_update(request):
 
     id = request.path_params["id"]
-    template = "/item/rent/update.html"
+    template = "/rent/update.html"
     mdl = "rent"
     basewidth = 800
 
@@ -197,10 +197,10 @@ async def rent_update(request):
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def delete(request):
-    
+async def rent_delete(request):
+
     id = request.path_params["id"]
-    template = "/item/rent/delete.html"
+    template = "/rent/delete.html"
 
     async with async_session() as session:
         if request.method == "GET":
@@ -230,7 +230,9 @@ async def delete(request):
 
 
 async def rent_list(request):
-    template = "/item/rent/list.html"
+
+    template = "/rent/list.html"
+    
     async with async_session() as session:
         # ..
         stmt = await session.execute(select(Rent).order_by(Rent.created_at.desc()))
@@ -247,8 +249,8 @@ async def rent_list(request):
 async def rent_details(request):
 
     id = request.path_params["id"]
-    template = "/item/rent/details.html"
-    
+    template = "/rent/details.html"
+
     async with async_session() as session:
         # ..
         cmt_list = await rent_comment(session, id)

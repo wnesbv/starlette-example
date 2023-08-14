@@ -25,7 +25,7 @@ from mail.send import send_mail
 
 from options_select.opt_slc import(
     user_rt,
-    schedule_rent,
+    user_sch_rent,
     in_schedule_rent,
     details_schedule_rent
 )
@@ -41,10 +41,10 @@ templates = Jinja2Templates(directory="templates")
 async def list_rent(
     request
 ):
-    template = "/item/schedule/list_rent.html"
+    template = "/schedule/list_rent.html"
     async with async_session() as session:
         #..
-        odj_list = await schedule_rent(request, session)
+        odj_list = await user_sch_rent(request, session)
         #..
         context = {
             "request": request,
@@ -61,9 +61,10 @@ async def list_rent(
 async def details_rent(
     request
 ):
+
     id = request.path_params["id"]
-    template = "/item/schedule/details_rent.html"
-    
+    template = "/schedule/details_rent.html"
+
     async with async_session() as session:
 
         if request.method == "GET":
@@ -104,7 +105,7 @@ async def details_rent(
 async def create_rent(
     request
 ):
-    template = "/item/schedule/create_rent.html"
+    template = "/schedule/create_rent.html"
     async with async_session() as session:
 
         if request.method == "GET":
@@ -170,7 +171,7 @@ async def update_rent(
 ):
 
     id = request.path_params["id"]
-    template = "/item/schedule/update_rent.html"
+    template = "/schedule/update_rent.html"
 
     async with async_session() as session:
         #..
@@ -235,11 +236,12 @@ async def update_rent(
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def delete(
+async def schedule_delete(
     request
 ):
+
     id = request.path_params["id"]
-    template = "/item/schedule/delete.html"
+    template = "/schedule/delete.html"
 
     async with async_session() as session:
 

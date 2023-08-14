@@ -180,11 +180,11 @@ class ScheduleService(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(30), nullable=True)
-    type: Mapped[str] = mapped_column(String, nullable=True)
+    type_on: Mapped[str] = mapped_column(String, nullable=True)
     title: Mapped[str] = mapped_column(String(30), unique=True, index=True)
     description: Mapped[str] = mapped_column(Text(200), nullable=True)
     # ...
-    dates: Mapped[date] = mapped_column(Date, nullable=True)
+    number_on: Mapped[date] = mapped_column(Date, nullable=True)
     there_is: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     # ...
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)

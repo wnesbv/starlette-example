@@ -19,7 +19,6 @@ from account.models import User
 
 from middleware import JWTAuthenticationBackend
 
-
 #...
 #from db_startup.db import on_app_startup
 #...
