@@ -8,93 +8,90 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">service detail...</h1>
-    <div class="flex_cont">
-        <div class="card p-3 mb-5">
-        <h2 class="lead">service</h2>
+<h1 class="lead my-3">service detail..</h1>
+<div class="card p-3">
 
-        <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item">
-                <sup class="float-start">id:</sup>
-                <span>{{ i.id }}...</span>
-                <input type="hidden" id="detail" name="id" value="{{ i.id }}">
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">owner:</sup>
-                <span>{{ i.service_owner }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">service_belongs:</sup>
-                <span>{{ i.service_belongs }}</span>
-            </li>
-        </ul>
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item">
+            <sup class="float-start">id:</sup>
+            <span>{{ i.id }}...</span>
+            <input type="hidden" id="detail" name="id" value="{{ i.id }}">
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">owner:</sup>
+            <span>{{ i.service_owner }}</span>
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">service_belongs:</sup>
+            <span>{{ i.service_belongs }}</span>
+        </li>
+    </ul>
 
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">title:</sup>
-                <p>{{ i.title }}</p>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">description:</sup>
-                <p>{{ i.description | safe }}</p>
-            </li>
-        </ul>
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">title:</sup>
+            <p>{{ i.title }}</p>
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">description:</sup>
+            <p>{{ i.description | safe }}</p>
+        </li>
+    </ul>
 
-        <ul class="card-footer">
-            <li class="list-group-item">
-                <sup class="float-start">created:</sup>
-                <time>{{ i.created_at }}</time>
-            </li>
-        </ul>
+    <ul class="card-footer">
+        <li class="list-group-item">
+            <sup class="float-start">created:</sup>
+            <time>{{ i.created_at }}</time>
+        </li>
+    </ul>
 
-        </div>
+</div>
 
-        {% if i.file %}
-        <div class="col-xxl-5 col-sm-10 ms-3">
-        <img class="w-100 shadow-sm mb-5" src="/static/upload/{{ i.file.path }}" alt="">
+<div class="card p-3 mt-2">
+    {% if i.file %}
+    <figure class="col-xxl-5 col-sm-10 ms-3">
+    <img class="w-100 shadow-sm mb-5" src="/static/upload/{{ i.file.path }}" alt="">
+    <figcaption>
+        <a class="btn btn-outline-primary btn-sm mb-2" href="/item/service/file-update/{{ i.id }}" role="button">
+        image <i class="bi bi-pencil"></i> &raquo;
+        </a>
+    </figcaption>
+    </figure>
 
+    {% else %}
+    <div class="w-100 my-3">
         <a class="btn btn-outline-primary btn-sm mb-2" href="/item/service/file-update/{{ i.id }}" role="button">
             image <i class="bi bi-pencil"></i> &raquo;
         </a>
-
-        </div>
-
-        {% else %}
-        <div class="w-100 my-3">
-            <a class="btn btn-outline-primary btn-sm mb-2" href="/item/service/file-update/{{ i.id }}" role="button">
-                image <i class="bi bi-pencil"></i> &raquo;
-            </a>
-        </div>
-        {% endif %}
-
-
-        <h2 class="container lead">schedule</h2>
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">sch_json:</sup>
-                {{ sch_json | safe }}
-            </li>
-        </ul>
-
     </div>
+    {% endif %}
 
-    <div id="calendar" class="card"></div>
+
+    <h2 class="container lead">schedule</h2>
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">sch_json:</sup>
+            {{ sch_json | safe }}
+        </li>
+    </ul>
+
+</div>
+
+<div id="calendar" class="card mt-2"></div>
 
 
 {% if request.user.is_authenticated %}
-    <div class="mt-2">
-        <div class="card">
-            <div class="card-header">
-                <a class="btn btn-outline-primary btn-sm me-2" href="/item/service/update/{{ i.id }}" role="button">
-                    <i class="bi bi-pencil"></i> &raquo;
-                </a>
-                <a class="btn btn-outline-danger btn-sm" href="/item/service/delete/{{ i.id }}" role="button">
-                    <i class="bi bi-trash3"></i> &raquo;
-                </a>
-                <a class="btn btn-outline-primary btn-sm float-end" href="/comment/service/create/{{ i.id }}">create comment</a>
-            </div>
+    <div class="card mt-2">
+        <div class="card-header">
+            <a class="btn btn-outline-primary btn-sm me-2" href="/item/service/update/{{ i.id }}" role="button">
+                <i class="bi bi-pencil"></i> &raquo;
+            </a>
+            <a class="btn btn-outline-danger btn-sm" href="/item/service/delete/{{ i.id }}" role="button">
+                <i class="bi bi-trash3"></i> &raquo;
+            </a>
+            <a class="btn btn-outline-primary btn-sm float-end" href="/comment/service/create/{{ i.id }}">create comment</a>
         </div>
-  </div>
+    </div>
 {% endif %}
 
 {% include "comment/cmt_service.html" %}
@@ -113,6 +110,7 @@
 
 const listjson = JSON.stringify({{ sch_json | safe }});
 const objlist = JSON.parse(listjson);
+console.log(objlist)
 
 $(document).ready(() => {
     $('#calendar').evoCalendar({

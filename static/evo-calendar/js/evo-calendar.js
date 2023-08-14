@@ -125,8 +125,8 @@
                     if (!_.options.calendarEvents[i].id) {
                         console.log(`%c Event named: "${_.options.calendarEvents[i].name}" doesn't have a unique ID `, 'color:white;font-weight:bold;background-color:#e21d1d;');
                     }
-                    if (_.isValidDate(_.options.calendarEvents[i].date)) {
-                        _.options.calendarEvents[i].date = _.formatDate(_.options.calendarEvents[i].date, _.options.format)
+                    if (_.isValidDate(_.options.calendarEvents[i].number_on)) {
+                        _.options.calendarEvents[i].number_on = _.formatDate(_.options.calendarEvents[i].number_on, _.options.format)
                     }
                 }
             }
@@ -144,15 +144,15 @@
                 year: (
                     isNaN(this.year) || this.year == null
                 ) ? new Date().getFullYear() : this.year,
-                date: _.formatDate(`${_.initials.dates[_.defaults.language].months[new Date().getMonth()]} ${new Date().getDate()} ${new Date().getFullYear()}`, _.options.format),
+                number_on: _.formatDate(`${_.initials.dates[_.defaults.language].months[new Date().getMonth()]} ${new Date().getDate()} ${new Date().getFullYear()}`, _.options.format),
             }
 
             // ACTIVE
             _.$active = {
                 month: _.$current.month,
                 year: _.$current.year,
-                date: _.$current.date,
-                event_date: _.$current.date,
+                number_on: _.$current.number_on,
+                event_date: _.$current.number_on,
                 events: [],
             }
 
@@ -281,14 +281,14 @@
     };
 
     // v1.0.0 - Format date
-    EvoCalendar.prototype.formatDate = function (date, format, language) {
+    EvoCalendar.prototype.formatDate = function (number_on, format, language) {
         const _ = this;
-        if (!date) { return ''; }
+        if (!number_on) { return ''; }
         language = language || _.defaults.language
         if (typeof format === 'string') { format = _.parseFormat(format); }
-        if (format.toDisplay) { return format.toDisplay(date, format, language); }
+        if (format.toDisplay) { return format.toDisplay(number_on, format, language); }
 
-        const ndate = new Date(date);
+        const ndate = new Date(number_on);
         // if (!_.isValidDate(ndate)) { // test
         //     ndate = new Date(date.replace(/-/g, '/'))
         // }
@@ -306,13 +306,13 @@
 
         val.dd = (val.d < 10 ? '0' : '') + val.d;
         val.mm = (val.m < 10 ? '0' : '') + val.m;
-        date = [];
+        number_on = [];
         const seps = $.extend([], format.separators);
         for (let i = 0, cnt = format.parts.length; i <= cnt; i++) {
-            if (seps.length) { date.push(seps.shift()); }
-            date.push(val[format.parts[i]]);
+            if (seps.length) { number_on.push(seps.shift()); }
+            number_on.push(val[format.parts[i]]);
         }
-        return date.join('');
+        return number_on.join('');
     };
 
     // v1.0.0 - Get dates between two dates
@@ -346,19 +346,19 @@ ed;
     }
 
     // v1.0.0 - Check if event has the same event type in the same date
-    EvoCalendar.prototype.hasSameDayEventType = function (date, type) {
+    EvoCalendar.prototype.hasSameDayEventType = function (number_on, type_on) {
         const _ = this; let
 eventLength = 0;
 
         for (let i = 0; i < _.options.calendarEvents.length; i++) {
-            if (_.options.calendarEvents[i].date instanceof Array) {
-                const arr = _.getBetweenDates(_.options.calendarEvents[i].date);
+            if (_.options.calendarEvents[i].number_on instanceof Array) {
+                const arr = _.getBetweenDates(_.options.calendarEvents[i].number_on);
                 for (let x = 0; x < arr.length; x++) {
-                    if (date === arr[x] && type === _.options.calendarEvents[i].type) {
+                    if (number_on === arr[x] && type_on === _.options.calendarEvents[i].type_on) {
                         eventLength++;
                     }
                 }
-            } else if (date === _.options.calendarEvents[i].date && type === _.options.calendarEvents[i].type) {
+            } else if (number_on === _.options.calendarEvents[i].number_on && type_on === _.options.calendarEvents[i].type_on) {
                     eventLength++;
                 }
         }
@@ -589,7 +589,7 @@ hasEventToday = false;
 
         _.$active.events = [];
         // Event date
-        const title = _.formatDate(_.$active.date, _.options.eventHeaderFormat, _.options.language);
+        const title = _.formatDate(_.$active.number_on, _.options.eventHeaderFormat, _.options.language);
         _.$elements.eventEl.find('.event-header > p').text(title);
         // Event list
         const eventListEl = _.$elements.eventEl.find('.event-list');
@@ -597,11 +597,11 @@ hasEventToday = false;
         if (eventListEl.children().length > 0) eventListEl.empty();
         if (_.options.calendarEvents) {
             for (let i = 0; i < _.options.calendarEvents.length; i++) {
-                if (_.isBetweenDates(_.$active.date, _.options.calendarEvents[i].date)) {
+                if (_.isBetweenDates(_.$active.number_on, _.options.calendarEvents[i].number_on)) {
                     eventAdder(_.options.calendarEvents[i])
                 } else if (_.options.calendarEvents[i].everyYear) {
-                    const d = `${new Date(_.$active.date).getMonth() + 1} ${new Date(_.$active.date).getDate()}`;
-                    const dd = `${new Date(_.options.calendarEvents[i].date).getMonth() + 1} ${new Date(_.options.calendarEvents[i].date).getDate()}`;
+                    const d = `${new Date(_.$active.number_on).getMonth() + 1} ${new Date(_.$active.number_on).getDate()}`;
+                    const dd = `${new Date(_.options.calendarEvents[i].number_on).getMonth() + 1} ${new Date(_.options.calendarEvents[i].number_on).getDate()}`;
                     // var dates = [_.formatDate(_.options.calendarEvents[i].date[0], 'mm/dd'), _.formatDate(_.options.calendarEvents[i].date[1], 'mm/dd')];
 
                     if (d == dd) {
@@ -617,7 +617,7 @@ hasEventToday = false;
         // IF: no event for the selected date
         if (!hasEventToday) {
             markup = '<div class="event-empty">';
-            if (_.$active.date === _.$current.date) {
+            if (_.$active.number_on === _.$current.number_on) {
                 markup += `<p>${_.initials.dates[_.options.language].noEventForToday}</p>`;
             } else {
                 markup += `<p>${_.initials.dates[_.options.language].noEventForThisDay}</p>`;
@@ -635,7 +635,7 @@ markup;
         if (eventListEl.find('[data-event-index]').length === 0) eventListEl.empty();
         _.$active.events.push(event_data);
         markup = `<div class="event-container" role="button" data-event-index="${event_data.id}">`;
-        markup += `<div class="event-icon"><div class="event-bullet-${event_data.type}"`;
+        markup += `<div class="event-icon"><div class="event-bullet-${event_data.type_on}"`;
         if (event_data.color) {
             markup += `style="background-color:${event_data.color}"`
         }
@@ -663,7 +663,7 @@ markup;
         eventListEl.find(`[data-event-index="${event_data}"]`).remove();
         if (eventListEl.find('[data-event-index]').length === 0) {
             eventListEl.empty();
-            if (_.$active.date === _.$current.date) {
+            if (_.$active.number_on === _.$current.number_on) {
                 markup += `<p>${_.initials.dates[_.options.language].noEventForToday}</p>`;
             } else {
                 markup += `<p>${_.initials.dates[_.options.language].noEventForThisDay}</p>`;
@@ -728,7 +728,7 @@ title;
         _.$elements.innerEl.find('.calendar-table').append(markup);
 
         if (_.options.todayHighlight) {
-            _.$elements.innerEl.find(`[data-date-val='${_.$current.date}']`).addClass('calendar-today');
+            _.$elements.innerEl.find(`[data-date-val='${_.$current.number_on}']`).addClass('calendar-today');
         }
 
         // set event listener for each day
@@ -736,7 +736,7 @@ title;
         .off('click.evocalendar')
         .on('click.evocalendar', _.selectDate)
 
-        const selectedDate = _.$elements.innerEl.find(`[data-date-val='${_.$active.date}']`);
+        const selectedDate = _.$elements.innerEl.find(`[data-date-val='${_.$active.number_on}']`);
 
         if (selectedDate) {
             // Remove active class to all
@@ -753,8 +753,8 @@ title;
     EvoCalendar.prototype.addEventIndicator = function (event) {
         const _ = this; let htmlToAppend; let
 thisDate;
-        let event_date = event.date;
-        const type = _.stringCheck(event.type);
+        let event_date = event.number_on;
+        const type_on = _.stringCheck(event.type_on);
 
         if (event_date instanceof Array) {
             if (event.everyYear) {
@@ -774,17 +774,17 @@ thisDate;
             appendDot(event_date);
         }
 
-        function appendDot(date) {
-            thisDate = _.$elements.innerEl.find(`[data-date-val="${date}"]`);
+        function appendDot(number_on) {
+            thisDate = _.$elements.innerEl.find(`[data-date-val="${number_on}"]`);
 
             if (thisDate.find('span.event-indicator').length === 0) {
                 thisDate.append('<span class="event-indicator"></span>');
             }
 
-            if (thisDate.find(`span.event-indicator > .type-bullet > .type-${type}`).length === 0) {
+            if (thisDate.find(`span.event-indicator > .type-bullet > .type-${type_on}`).length === 0) {
                 htmlToAppend = '<div class="type-bullet"><div ';
 
-                htmlToAppend += `class="type-${event.type}"`
+                htmlToAppend += `class="type-${event.type_on}"`
                 if (event.color) { htmlToAppend += `style="background-color:${event.color}"` }
                 htmlToAppend += '></div></div>';
                 thisDate.find('.event-indicator').append(htmlToAppend);
@@ -795,8 +795,8 @@ thisDate;
     // v1.0.0 - Remove event indicator/s (dots)
     EvoCalendar.prototype.removeEventIndicator = function (event) {
         const _ = this;
-        const event_date = event.date;
-        const type = _.stringCheck(event.type);
+        const event_date = event.number_on;
+        const type_on = _.stringCheck(event.type_on);
 
         if (event_date instanceof Array) {
             const active_date = _.getBetweenDates(event_date);
@@ -808,15 +808,15 @@ thisDate;
             removeDot(event_date);
         }
 
-        function removeDot(date) {
+        function removeDot(number_on) {
             // Check if no '.event-indicator', 'cause nothing to remove
-            if (_.$elements.innerEl.find(`[data-date-val="${date}"] span.event-indicator`).length === 0) {
+            if (_.$elements.innerEl.find(`[data-date-val="${number_on}"] span.event-indicator`).length === 0) {
                 return;
             }
 
             // // If has no type of event, then delete
-            if (!_.hasSameDayEventType(date, type)) {
-                _.$elements.innerEl.find(`[data-date-val="${date}"] span.event-indicator > .type-bullet > .type-${type}`).parent().remove();
+            if (!_.hasSameDayEventType(number_on, type_on)) {
+                _.$elements.innerEl.find(`[data-date-val="${number_on}"] span.event-indicator > .type-bullet > .type-${type_on}`).parent().remove();
             }
         }
     };
@@ -844,8 +844,8 @@ thisDate;
         const id = $(el).data('eventIndex').toString();
         const index = _.options.calendarEvents.map((event) => (event.id).toString()).indexOf(id);
         const modified_event = _.options.calendarEvents[index];
-        if (modified_event.date instanceof Array) {
-            modified_event.dates_range = _.getBetweenDates(modified_event.date);
+        if (modified_event.number_on instanceof Array) {
+            modified_event.dates_range = _.getBetweenDates(modified_event.number_on);
         }
         $(_.$elements.calendarEl).trigger('selectEvent', [_.options.calendarEvents[index]])
     }
@@ -911,26 +911,26 @@ yearVal;
     // v1.0.0 - Select specific date
     EvoCalendar.prototype.selectDate = function (event) {
         const _ = this;
-        const oldDate = _.$active.date;
-        let date; let year; let month; let activeDayEl; let
+        const oldDate = _.$active.number_on;
+        let number_on; let year; let month; let activeDayEl; let
 isSameDate;
 
         if (typeof event === 'string' || typeof event === 'number' || event instanceof Date) {
-            date = _.formatDate(new Date(event), _.options.format)
-            year = new Date(date).getFullYear();
-            month = new Date(date).getMonth();
+            number_on = _.formatDate(new Date(event), _.options.format)
+            year = new Date(number_on).getFullYear();
+            month = new Date(number_on).getMonth();
 
             if (_.$active.year !== year) _.selectYear(year);
             if (_.$active.month !== month) _.selectMonth(month);
-            activeDayEl = _.$elements.innerEl.find(`[data-date-val='${date}']`);
+            activeDayEl = _.$elements.innerEl.find(`[data-date-val='${number_on}']`);
         } else {
             activeDayEl = $(event.currentTarget);
-            date = activeDayEl.data('dateVal')
+            number_on = activeDayEl.data('dateVal')
         }
-        isSameDate = _.$active.date === date;
+        isSameDate = _.$active.number_on === number_on;
         // Set new active date
-        _.$active.date = date;
-        _.$active.event_date = date;
+        _.$active.number_on = number_on;
+        _.$active.event_date = number_on;
         // Remove active class to all
         _.$elements.innerEl.find('[data-date-val]').removeClass('calendar-active');
         // Add active class to selected date
@@ -939,13 +939,13 @@ isSameDate;
         if (!isSameDate) _.buildEventList();
 
         // EVENT FIRED: selectDate
-        $(_.$elements.calendarEl).trigger('selectDate', [_.$active.date, oldDate])
+        $(_.$elements.calendarEl).trigger('selectDate', [_.$active.number_on, oldDate])
     };
 
     // v1.0.0 - Return active date
     EvoCalendar.prototype.getActiveDate = function () {
         const _ = this;
-        return _.$active.date;
+        return _.$active.number_on;
     }
 
     // v1.0.0 - Return active events
@@ -1014,14 +1014,14 @@ isInnerClicked;
                 console.log(`%c Event named: "${data.name}" doesn't have a unique ID `, 'color:white;font-weight:bold;background-color:#e21d1d;');
             }
 
-            if (data.date instanceof Array) {
-                for (let j = 0; j < data.date.length; j++) {
-                    if (isDateValid(data.date[j])) {
-                        data.date[j] = _.formatDate(new Date(data.date[j]), _.options.format);
+            if (data.number_on instanceof Array) {
+                for (let j = 0; j < data.number_on.length; j++) {
+                    if (isDateValid(data.number_on[j])) {
+                        data.number_on[j] = _.formatDate(new Date(data.number_on[j]), _.options.format);
                     }
                 }
-            } else if (isDateValid(data.date)) {
-                    data.date = _.formatDate(new Date(data.date), _.options.format);
+            } else if (isDateValid(data.number_on)) {
+                    data.number_on = _.formatDate(new Date(data.number_on), _.options.format);
                 }
 
             if (!_.options.calendarEvents) _.options.calendarEvents = [];
@@ -1029,11 +1029,11 @@ isInnerClicked;
             // add to date's indicator
             _.addEventIndicator(data);
             // add to event list IF active.event_date === data.date
-            if (_.$active.event_date === data.date) _.addEventList(data);
+            if (_.$active.event_date === data.number_on) _.addEventList(data);
             // _.$elements.innerEl.find("[data-date-val='" + data.date + "']")
 
-            function isDateValid(date) {
-                if (_.isValidDate(date)) {
+            function isDateValid(number_on) {
+                if (_.isValidDate(number_on)) {
                     return true;
                 }
                     console.log(`%c Event named: "${data.name}" has invalid date `, 'color:white;font-weight:bold;background-color:#e21d1d;');

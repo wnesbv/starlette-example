@@ -9,7 +9,7 @@
 
 {% block content %}
 
-<h1 class="lead my-4">admin detail rent...</h1>
+<h1 class="lead my-3">admin detail rent...</h1>
 
 <div class="card mb-5">
 
@@ -68,22 +68,21 @@
 {% if obj_list %}
     {% for sch in obj_list %}
 
-    <div class="card mt-5">
+    <div class="card mt-2">
         <ul class="card-header list-group list-group-horizontal">
             <li class="list-group-item">
-                <sup class="float-start">id</sup>
+                <sup>id</sup>
                 <p>{{ sch.id }}</p>
             </li>
             <li class="list-group-item">
-                <sup class="float-start">title</sup>
+                <sup>title</sup>
                 <p>{{ sch.title }}</p>
             </li>
             <li class="list-group-item">
-                <sup class="float-start">description</sup>
+                <sup>description</sup>
                 <p>{{ sch.description }}</p>
             </li>
         </ul>
-    </div>
 
         <div class="card-body">
             <div id="{{ sch.title }}"></div>

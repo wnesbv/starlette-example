@@ -1,6 +1,6 @@
 
 {% extends "base.html" %}
-{% block title %} rent {{ i.title }} {% endblock %}
+{% block title %} rent {{ i.title }} detail.. {% endblock %}
 
 {% block calendar_css %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css">
@@ -9,83 +9,78 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">i rent...</h1>
-    <div class="flex_cont">
-        <div class="card p-3 mb-3">
+<h1 class="lead my-4">detail rent...</h1>
+<div class="card p-3">
 
-        <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item">
-                <sup class="float-start">id:</sup>
-                {{ i.id }}...
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">owner:</sup>
-                <span>{{ i.rent_owner }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">rent to item:</sup>
-                <span class="me-3">
-                    {{ i.rent_belongs }}
-                </span>
-            </li>
-        </ul>
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item">
+            <sup class="float-start">id:</sup>
+            {{ i.id }}...
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">owner:</sup>
+            <span>{{ i.rent_owner }}</span>
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">rent to item:</sup>
+            <span class="me-3">
+                {{ i.rent_belongs }}
+            </span>
+        </li>
+    </ul>
 
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">title:</sup>
-                {{ i.title }}
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">description:</sup>
-                {{ i.description | safe }}
-            </li>
-        </ul>
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">title:</sup>
+            {{ i.title }}
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">description:</sup>
+            {{ i.description | safe }}
+        </li>
+    </ul>
 
-        <ul class="card-footer">
-            <li class="list-group-item">
-                <sup class="float-start">created:</sup>
-                <time>{{ i.created_at }}</time>
-            </li>
-        </ul>
-        </div>
+    <ul class="card-footer">
+        <li class="list-group-item">
+            <sup class="float-start">created:</sup>
+            <time>{{ i.created_at }}</time>
+        </li>
+    </ul>
+</div>
 
-        {% if i.file %}
-        <figure>
-            <img class="w-100 shadow-sm mb-5" src="{{ i.file }}">
-        </figure>
-        {% endif %}
+{% if i.file %}
+<figure>
+    <img class="w-100 shadow-sm mb-5" src="{{ i.file }}">
+</figure>
+{% endif %}
 
-        <h2 class="container lead">schedule</h2>
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">sch_json:</sup>
-                {{ sch_json }}
-            </li>
-        </ul>
-
-    </div>
+<h2 class="container lead">schedule</h2>
+<ul class="card-body list-group list-group-flush">
+    <li class="list-group-item">
+        <sup class="float-start">sch_json:</sup>
+        {{ sch_json }}
+    </li>
+</ul>
 
 
 {% if obj_list %}
     {% for sch in obj_list %}
 
-    <div class="card mt-3">
-        <div class="card-header">
-            <div class="d-flex p-3">
-                <div>
-                <sup class="float-start">id</sup>
-                    {{ sch.id }}
-                </div>
-                <div>
-                <sup class="float-start">title</sup>
-                    <p>{{ sch.title }}</p>
-                </div>
-                <div>
-                <sup class="float-start">description</sup>
-                    <p>{{ sch.description }}</p>
-                </div>
-            </div>
-        </div>
+    <div class="card mt-2">
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup>id</sup>
+                <p>{{ sch.id }}</p>
+            </li>
+            <li class="list-group-item">
+                <sup>title</sup>
+                <p>{{ sch.title }}</p>
+            </li>
+            <li class="list-group-item">
+                <sup>description</sup>
+                <p>{{ sch.description }}</p>
+            </li>
+        </ul>
 
         <div class="card-body">
             <div id="{{ sch.title }}"></div>

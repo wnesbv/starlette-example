@@ -4,75 +4,74 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">list service schedule..</h1>
+<h1 class="lead my-4">list service schedule..</h1>
 
-    <div class="row mt-4">
+<div class="flex_start">
     {% if odj_list %}
     {% for i in odj_list %}
-    <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-8 col-sm-10">
-        <div class="card p-3 mb-5">
+    <div class="card m-1">
 
-            <ul class="card-header list-group list-group-horizontal">
-                <li class="list-group-item">
-                    <sup class="float-start">id:</sup>
-                    <span class="me-3">{{ i.id }}</span>
-                </li>
-                <li class="list-group-item">
-                    <sup class="float-start">owner:</sup>
-                    {{ i.sch_s_owner }}
-                </li>
-                <li class="list-group-item">
-                    <sup class="float-start">sch_s_service_id:</sup>
-                    {{ i.sch_s_service_id }}
-                </li>
-            </ul>
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">id:</sup>
+                <span class="me-3">{{ i.id }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">owner:</sup>
+                {{ i.sch_s_owner }}
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">sch_s_service_id:</sup>
+                {{ i.sch_s_service_id }}
+            </li>
+        </ul>
 
-            <ul class="card-header list-group list-group-horizontal">
-                <li class="list-group-item">
-                    <sup class="float-start">name:</sup>
-                    <span>{{ i.name }}</span>
-                </li>
-                <li class="list-group-item">
-                    <sup class="float-start">number on the schedule:</sup>
-                    <span>{{ i.type_on }}</span>
-                </li>
-            </ul>
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">name:</sup>
+                <span>{{ i.name }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">number on the schedule:</sup>
+                <span>{{ i.type_on }}</span>
+            </li>
+        </ul>
 
-            <ul class="card-body list-group list-group-flush">
-                <li class="list-group-item">
-                    <sup class="float-start">number on the schedule:</sup>
-                   <span> {{ i.number_on }}</span>
-                </li>
-                <li class="list-group-item">
-                    <sup class="float-start">there_is:</sup>
-                    <span>{{ i.there_is }}</span>
-                </li>
-                <li class="list-group-item">
-                    <sup class="float-start">title:</sup>
-                    <p>{{ i.title }}</p>
-                </li>
-                <li class="list-group-item">
-                    <sup class="float-start">description:</sup>
-                    <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
-                </li>
-                <li class="list-group-item">
-                    <sup class="float-start">created:</sup>
-                    <time>{{ i.created_at }}</time>
-                </li>
-            </ul>
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">number on the schedule:</sup>
+               <span> {{ i.number_on }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">there_is:</sup>
+                <span>{{ i.there_is }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">title:</sup>
+                <p>{{ i.title }}</p>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">description:</sup>
+                <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">created:</sup>
+                <time>{{ i.created_at }}</time>
+            </li>
+        </ul>
 
-            <p class="card-footer">
-            <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/details/{{ i.sch_s_service_id }}/{{ i.id }}" role="button">
-                view details &raquo;
-            </a>
-            </p>
+        <div class="card-footer">
+        <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/details/{{ i.sch_s_service_id }}/{{ i.id }}" role="button">
+            view details &raquo;
+        </a>
         </div>
+
     </div>
     {% endfor %}
 
         {% else %}
         <span class="mt-5">no information available</span>
     {% endif %}
-    </div>
+</div>
 
 {% endblock %}

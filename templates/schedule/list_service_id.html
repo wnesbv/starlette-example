@@ -6,11 +6,9 @@
 
     <h1 class="lead my-4">list id service schedule..</h1>
 
-    <div class="row mt-4">
-
+<div class="flex_start">
     {% for obj in odj_list %}
-    <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-8 col-sm-10">
-        <div class="ms-2 card p-3 mb-5">
+    <div class="card m-1">
 
         <ul class="card-header list-group list-group-horizontal">
             <li class="list-group-item">
@@ -42,31 +40,30 @@
             </li>
         </ul>
 
-        <p class="card-footer">
+        <div class="card-footer">
             <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/list/{{ obj.id }}" role="button">
                 view service schedule &raquo;
             </a>
-        </p>
-        <p class="card-footer">
+        </div>
+        <div class="card-footer">
         <a class="btn btn-primary btn-sm me-2" href="/item/dump_{{ obj.id }}" role="button">
             export csv &raquo;
         </a>
         <a class="btn btn-primary btn-sm me-2" href="/item/dump-csv/{{ obj.id }}" role="button">
             my dump csv &raquo;
         </a>
-        </p>
+        </div>
 
-        <p class="card-footer">
+        <div class="card-footer">
         <a class="btn btn-outline-primary btn-sm" href="/item/import-csv/{{ obj.id }}" role="button">
             import csv &raquo;
         </a>
-        </p>
-
         </div>
+
     </div>
 
     {% endfor %}
 
-    </div>
+</div>
 
 {% endblock %}
