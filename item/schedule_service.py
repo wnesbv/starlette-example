@@ -26,7 +26,7 @@ from options_select.opt_slc import (
     details_schedule_service,
 )
 
-from .models import ScheduleService
+from .models import ScheduleService, MyEnum
 
 
 templates = Jinja2Templates(directory="templates")
@@ -34,8 +34,9 @@ templates = Jinja2Templates(directory="templates")
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def list_service_id(request):
-    template = "/schedule/list_service_id.html"
+async def list_service(request):
+
+    template = "/schedule/list_service.html"
     async with async_session() as session:
         # ..
         odj_list = await schedule_service_id(request, session)
@@ -50,10 +51,10 @@ async def list_service_id(request):
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def list_service(request):
+async def list_service_id(request):
 
     id = request.path_params["id"]
-    template = "/schedule/list_service.html"
+    template = "/schedule/list_service_id.html"
 
     async with async_session() as session:
         # ..
@@ -116,18 +117,22 @@ async def details_service(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def create_service(request):
+
     template = "/schedule/create_service.html"
+
     async with async_session() as session:
 
         if request.method == "GET":
             # ..
             odj_service = await user_sv(request, session)
+            objects = list(MyEnum)
             # ..
             return templates.TemplateResponse(
                 template,
                 {
                     "request": request,
                     "odj_service": odj_service,
+                    "objects": objects,
                 },
             )
         # ...
@@ -139,9 +144,9 @@ async def create_service(request):
             str_there_is = form["there_is"]
             # ..
             name = form["name"]
-            type_on = form["type_on"]
             title = form["title"]
             description = form["description"]
+            type_on = form["type_on"]
             sch_s_service_id = form["sch_s_service_id"]
             # ..
             sch_s_owner = request.user.user_id
@@ -151,11 +156,11 @@ async def create_service(request):
             # ...
             new = ScheduleService()
             new.name = name
+            new.title = title
+            new.description = description
             new.type_on = type_on
             new.number_on = number_on
             new.there_is = there_is
-            new.title = title
-            new.description = description
             new.sch_s_owner = sch_s_owner
             new.sch_s_service_id = int(sch_s_service_id)
             new.created_at = datetime.now()

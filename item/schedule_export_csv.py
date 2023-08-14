@@ -184,7 +184,7 @@ async def delete_user_csv(request):
             await session.commit()
             #..
             response = RedirectResponse(
-                "/item/schedule-service/list_id_service",
+                "/item/schedule-service/list_service",
                 status_code=303,
             )
             return response

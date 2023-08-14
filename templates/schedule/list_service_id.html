@@ -1,69 +1,77 @@
 
 {% extends "base.html" %}
-{% block title %} list id service schedule{% endblock %}
+{% block title %} list schedule {% endblock %}
 
 {% block content %}
 
-    <h1 class="lead my-4">list id service schedule..</h1>
+<h1 class="lead my-4">list service schedule..</h1>
 
 <div class="flex_start">
-    {% for obj in odj_list %}
+    {% if odj_list %}
+    {% for i in odj_list %}
     <div class="card m-1">
 
         <ul class="card-header list-group list-group-horizontal">
             <li class="list-group-item">
                 <sup class="float-start">id:</sup>
-                <span class="me-3">
-                    {{ obj.id }}
-                </span>
+                <span class="me-3">{{ i.id }}</span>
             </li>
             <li class="list-group-item">
-                <sup class="float-start">service_owner:</sup>
-                {{ obj.service_owner }}
+                <sup class="float-start">owner:</sup>
+                {{ i.sch_s_owner }}
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">sch_s_service_id:</sup>
+                {{ i.sch_s_service_id }}
+            </li>
+        </ul>
+
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <sup class="float-start">name:</sup>
+                <span>{{ i.name }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">number on the schedule:</sup>
+                <span>{{ i.type_on }}</span>
             </li>
         </ul>
 
         <ul class="card-body list-group list-group-flush">
             <li class="list-group-item">
-                <sup class="float-start">service_belongs:</sup>
-                <span>{{ obj.service_belongs }}</span>
+                <sup class="float-start">number on the schedule:</sup>
+               <span> {{ i.number_on }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">there_is:</sup>
+                <span>{{ i.there_is }}</span>
             </li>
             <li class="list-group-item">
                 <sup class="float-start">title:</sup>
-                <p>{{ obj.title }}</p>
+                <p>{{ i.title }}</p>
             </li>
             <li class="list-group-item">
                 <sup class="float-start">description:</sup>
-                <p>
-                    {{ obj.description | striptags() | truncate(190, True, '...', 5) | safe }}
-                </p>
+                <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">created:</sup>
+                <time>{{ i.created_at }}</time>
             </li>
         </ul>
 
         <div class="card-footer">
-            <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/list/{{ obj.id }}" role="button">
-                view service schedule &raquo;
-            </a>
-        </div>
-        <div class="card-footer">
-        <a class="btn btn-primary btn-sm me-2" href="/item/dump_{{ obj.id }}" role="button">
-            export csv &raquo;
-        </a>
-        <a class="btn btn-primary btn-sm me-2" href="/item/dump-csv/{{ obj.id }}" role="button">
-            my dump csv &raquo;
-        </a>
-        </div>
-
-        <div class="card-footer">
-        <a class="btn btn-outline-primary btn-sm" href="/item/import-csv/{{ obj.id }}" role="button">
-            import csv &raquo;
+        <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/details/{{ i.sch_s_service_id }}/{{ i.id }}" role="button">
+            view details &raquo;
         </a>
         </div>
 
     </div>
-
     {% endfor %}
 
+        {% else %}
+        <span class="mt-5">no information available</span>
+    {% endif %}
 </div>
 
 {% endblock %}

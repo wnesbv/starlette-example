@@ -1,8 +1,10 @@
+
 from __future__ import annotations
 
 from datetime import datetime, date
 
-from sqlalchemy import Column, String, Text, ForeignKey, Date, DateTime
+import enum
+from sqlalchemy import Column, String, Text, ForeignKey, Date, DateTime, Enum
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -175,15 +177,21 @@ class ScheduleRent(Base):
         return str(self.id)
 
 
+class MyEnum(enum.Enum):
+    event = 1
+    holiday = 2
+    birthday = 3
+
+
 class ScheduleService(Base):
     __tablename__ = "sch_s"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(30), nullable=True)
-    type_on: Mapped[str] = mapped_column(String, nullable=True)
     title: Mapped[str] = mapped_column(String(30), unique=True, index=True)
     description: Mapped[str] = mapped_column(Text(200), nullable=True)
     # ...
+    type_on: Mapped[str] = mapped_column(Enum(MyEnum), nullable=True)
     number_on: Mapped[date] = mapped_column(Date, nullable=True)
     there_is: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     # ...

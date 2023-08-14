@@ -285,7 +285,7 @@ async def delete_rent_csv(request):
                 )
                 response = [f.unlink() for f in Path(directory).glob("*") if f.is_file()]
                 response = RedirectResponse(
-                    "/item/schedule-service/list_id_service",
+                    "/item/schedule-service/list_service",
                     status_code=302,
                 )
                 return response

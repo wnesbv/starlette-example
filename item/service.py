@@ -297,7 +297,7 @@ async def service_details(request):
                 "name": i.name,
                 "type_on": i.type_on,
                 "number_on": i.number_on,
-                "there_is": i.there_is,
+                "there_is": i.there_is.strftime("%H:%M"),
                 "description": i.description,
             }
             for i in obj_list

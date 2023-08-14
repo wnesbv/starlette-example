@@ -123,18 +123,22 @@ async def on_app_startup() -> None:
                     ),
                     ScheduleService(
                         name="name 01 Service 01",
-                        type_on="event",
                         title="service 01 ScheduleService 01",
                         description="description.. id-1 service 01 ScheduleService 01",
+                        type_on="event",
+                        number_on=date.today(),
+                        there_is=datetime.now(),
                         sch_s_owner=1,
                         sch_s_service_id=1,
                         created_at=datetime.now()
                     ),
                     ScheduleService(
                         name="name 02 Service 01",
-                        type_on="event",
                         title="service 01 ScheduleService 02",
                         description="description.. id-2 service 01 ScheduleService 02",
+                        type_on="birthday",
+                        number_on=date.today(),
+                        there_is=datetime.now() + timedelta(minutes=60),
                         sch_s_owner=1,
                         sch_s_service_id=1,
                         created_at=datetime.now()

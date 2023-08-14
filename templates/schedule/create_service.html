@@ -7,94 +7,96 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">create schedule service</h1>
+<h1 class="lead my-4">create schedule service</h1>
 
-    <form class="card p-3" method="POST">
+<form class="card p-3" method="POST">
+    <div class="card-header mb-3">
+        <select
+            required
+            name="sch_s_service_id"
+            class="form-control shadow">
+            <option value="">service choice</option>
+
+            {% for obj in odj_service %}
+                <option value="{{ obj.id }}">
+                    {{ obj.id }}
+                </option>
+            {% endfor %}
+
+        </select>
+    </div>
+
+    <div class="row m-2">
+        <div class="col-sm">
+        <sup class="float-start">date</sup>
+        <input
+            type="date"
+            required
+            name="number_on"
+            class="form-control my-2"
+        />
+        </div>
+        <div class="col-sm">
+        <sup class="float-start">there_is</sup>
+        <input
+            type="datetime-local"
+            required
+            name="there_is"
+            class="form-control my-2"
+        />
+        </div>
+    </div>
+    <div class="m-2">
+        <sup class="float-start">title</sup>
+        <input
+            type="text"
+            required
+            placeholder="title"
+            name="title"
+            value="schedule service 01"
+            class="form-control my-2"
+        />
+    </div>
+    <div class="row m-2">
+        <div class="col-sm">
+        <sup class="float-start">name</sup>
+        <input
+            type="text"
+            required
+            placeholder="name"
+            name="name"
+            value="name"
+            class="form-control my-2"
+        />
+        </div>
+
         <div class="card-header mb-3">
             <select
-                name="sch_s_service_id"
+                name="type_on"
                 class="form-control shadow">
-                <option value="">service select</option>
-
-                {% for obj in odj_service %}
-                    <option value="{{ obj.id }}">
-                        {{ obj.id }}
-                    </option>
+                {% for obj in objects %}
+                    <option>{{ obj.name }}</option>
                 {% endfor %}
 
             </select>
         </div>
 
-        <div class="row m-2">
-            <div class="col-sm">
-            <sup class="float-start">date</sup>
-            <input
-                type="date"
-                required
-                name="number_on"
-                class="form-control my-2"
-            />
-            </div>
-            <div class="col-sm">
-            <sup class="float-start">there_is</sup>
-            <input
-                type="datetime-local"
-                required
-                name="there_is"
-                class="form-control my-2"
-            />
-            </div>
-        </div>
-        <div class="m-2">
-            <sup class="float-start">title</sup>
-            <input
-                type="text"
-                required
-                placeholder="title"
-                name="title"
-                value="schedule service 01"
-                class="form-control my-2"
-            />
-        </div>
-        <div class="row m-2">
-            <div class="col-sm">
-            <sup class="float-start">name</sup>
-            <input
-                type="text"
-                required
-                placeholder="name"
-                name="name"
-                value="name"
-                class="form-control my-2"
-            />
-            </div>
-            <div class="col-sm">
-            <sup class="float-start">type</sup>
-            <input
-                type="text"
-                required
-                placeholder="type"
-                name="type_on"
-                value="(event|holiday|birthday)"
-                class="form-control my-2"
-            />
-            </div>
-        </div>
-        <div class="m-2">
-            <sup class="float-start">description</sup>
-            <textarea
-                class="form-control my-2"
-                name="description"
-                maxlength="333"
-                spellcheck
-            ></textarea>
-        </div>
-        <div class="m-2">
-        <button type="submit" class="btn btn-outline-primary btn-sm">
-            submit
-        </button>
-        </div>
-    </form>
+    </div>
+    <div class="m-2">
+        <sup class="float-start">description</sup>
+        <textarea
+            class="form-control my-2"
+            name="description"
+            maxlength="333"
+            spellcheck
+        ></textarea>
+    </div>
+    <div class="m-2">
+    <button type="submit" class="btn btn-outline-primary btn-sm">
+        submit
+    </button>
+    </div>
+</form>
 
 {% endblock %}
 
