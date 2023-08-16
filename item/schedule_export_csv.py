@@ -42,7 +42,7 @@ async def export_csv(request):
     id = request.path_params["id"]
 
     file_time = datetime.now()
-    root_directory = (
+    directory = (
         BASE_DIR
         / f"static/service/{file_time.strftime('%Y-%m-%d-%H-%M-%S')}.csv"
     )
@@ -59,7 +59,7 @@ async def export_csv(request):
                 records = await schedule_srv(request, session, id)
                 # ..
                 async with aiofiles.open(
-                    root_directory, mode="w",
+                    directory, mode="w",
                     encoding="utf-8",
                 ) as afp:
                     #..
@@ -69,9 +69,9 @@ async def export_csv(request):
                         [
                             "id",
                             "name",
-                            "type_on",
                             "title",
                             "description",
+                            "type_on",
                             "number_on",
                             "there_is",
                             "created_at",
@@ -84,9 +84,9 @@ async def export_csv(request):
                             [
                                 i.id,
                                 i.name,
-                                i.type_on,
                                 i.title,
                                 i.description,
+                                i.type_on.name,
                                 i.number_on,
                                 i.there_is,
                                 i.created_at,

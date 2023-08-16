@@ -4,39 +4,62 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">admin list schedule service user..</h1>
+<h1 class="lead my-3">admin list schedule service..</h1>
 
-    <div class="row">
-    {% if odj_list %}
-    {% for obj in odj_list %}
-    <div class="card p-3 mb-5">
+<div class="flex_start">
+    {% if obj_list %}
+    {% for i in obj_list %}
+    <div class="card mt-2 me-1">
 
         <ul class="card-header list-group list-group-horizontal">
             <li class="list-group-item">
                 <sup class="float-start">id:</sup>
-                <span class="me-3">{{ obj.id }}</span>
+                <span class="me-3">{{ i.id }}</span>
             </li>
             <li class="list-group-item">
-                <sup class="float-start">name:</sup>
-                <span>{{ obj.name }}</span>
+                <sup class="float-start">sch_s_owner:</sup>
+                <span class="me-3">{{ i.sch_s_owner }}</span>
             </li>
             <li class="list-group-item">
-                <sup class="float-start">email:</sup>
-                <span class="me-3">{{ obj.email }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">name:</sup>
-                <span>{{ obj.name }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">created_at:</sup>
-                <time>{{ obj.created_at }}</time>
+                <sup class="float-start">sch_s_service_id:</sup>
+                <span class="me-3">{{ i.sch_s_service_id }}</span>
             </li>
         </ul>
 
-        <p class="card-footer">
-        <a class="btn btn-outline-primary btn-sm" href="/admin/schedule-service/list/{{ obj.id }}" role="button">view details &raquo;</a>
-        </p>
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">name:</sup>
+                <span>{{ i.name }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">title:</sup>
+                <span>{{ i.title }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">type_on:</sup>
+                <span class="me-3">{{ i.type_on.name }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">number_on:</sup>
+                <span class="me-3">{{ i.number_on }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">there_is:</sup>
+                <span class="me-3">{{ i.there_is }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">created_at:</sup>
+                <time>{{ i.created_at }}</time>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">modified_at:</sup>
+                <time>{{ i.modified_at }}</time>
+            </li>
+        </ul>
+
+        <div class="card-footer">
+        <a class="btn btn-outline-primary btn-sm" href="/admin/schedule-service/details/{{ i.sch_s_owner }}/{{ i.sch_s_service_id }}" role="button">view details &raquo;</a>
+        </div>
 
     </div>
 
@@ -47,6 +70,6 @@
 
     {% endif %}
 
-    </div>
+</div>
 
 {% endblock %}

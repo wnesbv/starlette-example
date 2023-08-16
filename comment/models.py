@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import Text, ForeignKey, DateTime
+from sqlalchemy import String, Text, ForeignKey, DateTime, JSON
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -15,6 +15,7 @@ class Comment(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     opinion: Mapped[str] = mapped_column(Text(200), nullable=False)
+    user_on: Mapped[dict|list] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 

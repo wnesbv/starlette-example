@@ -159,7 +159,6 @@ async def item_create(
             new.sch_r_rent_id = sch_r_rent_id
             # ..
             session.add(new)
-            session.refresh(new)
             await session.commit()
             # ..
             response = RedirectResponse(

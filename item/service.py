@@ -71,7 +71,6 @@ async def service_create(request):
                 new.created_at = datetime.now()
                 # ..
                 session.add(new)
-                session.refresh(new)
                 await session.commit()
                 # ..
                 await send_mail(f"A new object has been created - {new}: {title}")

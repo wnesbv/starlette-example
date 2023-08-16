@@ -152,7 +152,6 @@ async def item_create(request):
             new.service_belongs = int(service_belongs)
             # ..
             session.add(new)
-            session.refresh(new)
             await session.commit()
             # ..
             response = RedirectResponse(

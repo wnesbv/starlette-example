@@ -18,15 +18,13 @@ from db_config.storage_config import engine, async_session
 from account.models import User
 from item.models import Service, ScheduleService
 
-from options_select.opt_slc import (
-    details_schedule_service,
-)
-
 from .opt_slc import(
     in_admin,
     in_schedule_sv,
     all_service,
     all_rent,
+    all_schedule,
+    details_schedule_service
 )
 
 
@@ -39,10 +37,36 @@ templates = Jinja2Templates(directory="templates")
 
 @requires("authenticated", redirect="user_login")
 # ...
+async def sch_list(
+    request
+):
+
+    template = "/admin/schedule_service/list.html"
+
+    async with async_session() as session:
+        # ..
+        admin = await in_admin(request, session)
+        # ..
+        if admin:
+            # ..
+            obj_list = await all_schedule(session)
+            context = {
+                "request": request,
+                "obj_list": obj_list,
+            }
+            return templates.TemplateResponse(
+                template, context
+            )
+    await engine.dispose()
+
+
+@requires("authenticated", redirect="user_login")
+# ...
 async def user_list(
     request
 ):
 
+    id = request.path_params["id"]
     template = "/admin/schedule_service/user_list.html"
 
     async with async_session() as session:
@@ -52,19 +76,14 @@ async def user_list(
         if admin:
             # ..
             stmt = await session.execute(
-                select(User.id)
-                .join(Service.service_sch_s)
+                select(ScheduleService)
+                .where(ScheduleService.sch_s_owner == id)
             )
-            result = stmt.scalars().all()
-            sv = await session.execute(
-                select(User)
-                .where(User.id.in_(result))
-            )
-            odj_list = sv.scalars().all()
+            obj_list = stmt.scalars().all()
             # ..
             context = {
                 "request": request,
-                "odj_list": odj_list,
+                "obj_list": obj_list,
             }
             return templates.TemplateResponse(
                 template, context
@@ -74,12 +93,12 @@ async def user_list(
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def item_list(
+async def srv_list(
     request
 ):
 
-    user = request.path_params["user"]
-    template = "/admin/schedule_service/list.html"
+    id = request.path_params["id"]
+    template = "/admin/schedule_service/srv_list.html"
 
     async with async_session() as session:
         # ..
@@ -88,14 +107,14 @@ async def item_list(
         if admin:
             # ..
             stmt = await session.execute(
-                select(Service)
-                .where(Service.service_owner == user)
+                select(ScheduleService)
+                .where(ScheduleService.sch_s_service_id == id)
             )
-            odj_list = stmt.scalars().all()
+            obj_list = stmt.scalars().all()
             # ..
             context = {
                 "request": request,
-                "odj_list": odj_list,
+                "obj_list": obj_list,
             }
             return templates.TemplateResponse(
                 template, context
@@ -105,10 +124,47 @@ async def item_list(
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def item_details(
+async def all_user_sch_list(
     request
 ):
 
+    template = "/admin/schedule_service/all_user_sch_list.html"
+
+    async with async_session() as session:
+        # ..
+        admin = await in_admin(request, session)
+        # ..
+        if admin:
+            # ..
+            stmt = await session.execute(
+                select(ScheduleService.id)
+                .join(ScheduleService.sch_s_user)
+            )
+            result = stmt.scalars().all()
+            print(" result..", result)
+            srv = await session.execute(
+                select(User)
+                .where(User.id.in_(result))
+            )
+            obj_list = srv.scalars().all()
+            # ..
+            context = {
+                "request": request,
+                "obj_list": obj_list,
+            }
+            return templates.TemplateResponse(
+                template, context
+            )
+    await engine.dispose()
+
+
+@requires("authenticated", redirect="user_login")
+# ...
+async def sch_details(
+    request
+):
+
+    user = request.path_params["user"]
     service = request.path_params["service"]
     template = "/admin/schedule_service/details.html"
 
@@ -120,13 +176,13 @@ async def item_details(
             # ..
             if admin:
                 # ..
-                obj_list = await details_schedule_service(request, session, service)
+                obj_list = await details_schedule_service(request, session, user, service)
                 # ..
                 obj = [
                     {
                         "id": i.id,
                         "name": i.name,
-                        "type_on": i.type_on,
+                        "type_on": i.type_on.name,
                         "title": i.title,
                         "number_on": i.number_on,
                         "there_is": i.there_is,
@@ -201,7 +257,6 @@ async def item_create(
             new.sch_r_rent_id = sch_r_rent_id
             # ..
             session.add(new)
-            session.refresh(new)
             await session.commit()
             # ..
             response = RedirectResponse(

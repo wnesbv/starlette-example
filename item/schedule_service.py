@@ -22,7 +22,7 @@ from options_select.opt_slc import (
     user_sv,
     schedule_srv,
     in_schedule_service,
-    schedule_service_id,
+    schedule_service_user,
     details_schedule_service,
 )
 
@@ -39,7 +39,7 @@ async def list_service(request):
     template = "/schedule/list_service.html"
     async with async_session() as session:
         # ..
-        odj_list = await schedule_service_id(request, session)
+        odj_list = await schedule_service_user(request, session)
         # ..
         context = {
             "request": request,
@@ -166,7 +166,6 @@ async def create_service(request):
             new.created_at = datetime.now()
             # ..
             session.add(new)
-            session.refresh(new)
             await session.commit()
             # ..
             await send_mail(

@@ -77,7 +77,6 @@ async def create_reserve_service(request):
             new.reserve_time = reserve_time
             # ..
             session.add(new)
-            session.refresh(new)
             await session.commit()
             # ..
             await send_mail(f"A new object has been created - {new}:")

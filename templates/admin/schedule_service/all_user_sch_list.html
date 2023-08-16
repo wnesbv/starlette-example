@@ -1,0 +1,44 @@
+
+{% extends "admin/base.html" %}
+{% block title %} admin list schedule service {% endblock %}
+
+{% block content %}
+
+<h1 class="lead my-3">admin list schedule service..</h1>
+
+<div class="flex_start">
+    {% if obj_list %}
+    {% for i in obj_list %}
+    <div class="card mt-2 me-1">
+
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">name:</sup>
+                <span>{{ i.name }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">email:</sup>
+                <span>{{ i.email }}</span>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">created_at:</sup>
+                <time>{{ i.created_at }}</time>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">modified_at:</sup>
+                <time>{{ i.modified_at }}</time>
+            </li>
+        </ul>
+
+    </div>
+
+    {% endfor %}
+
+        {% else %}
+        <span class="mt-5">no information available</span>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

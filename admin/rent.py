@@ -134,7 +134,6 @@ async def item_create(request):
             new.rent_belongs = int(rent_belongs)
             # ..
             session.add(new)
-            session.refresh(new)
             await session.commit()
             # ..
             response = RedirectResponse(

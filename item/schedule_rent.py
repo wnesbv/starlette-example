@@ -149,7 +149,6 @@ async def create_rent(
             new.created_at = datetime.now()
             #..
             session.add(new)
-            session.refresh(new)
             await session.commit()
             #..
             await send_mail(

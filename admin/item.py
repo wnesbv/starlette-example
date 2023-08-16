@@ -47,10 +47,7 @@ async def item_list(
         # ..
         if admin:
             # ..
-            stmt = await session.execute(
-                select(Item)
-                .order_by(Item.created_at)
-            )
+            stmt = await session.execute(select(Item).order_by(Item.created_at.desc()))
             odj_list = stmt.scalars().all()
             # ..
             stmt = await session.execute(
@@ -155,7 +152,6 @@ async def item_create(
             new.description = description
             # ..
             session.add(new)
-            session.refresh(new)
             await session.commit()
             # ..
             response = RedirectResponse(

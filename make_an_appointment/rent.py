@@ -65,7 +65,6 @@ async def reserve_add(request):
             new.rrf_item_id = rrf_item_id
             # ..
             session.add(new)
-            session.refresh(new)
             await session.commit()
             # ..
             response = RedirectResponse(

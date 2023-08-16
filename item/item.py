@@ -91,7 +91,7 @@ async def item_create(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def item_update(request):
-    
+
     id = request.path_params["id"]
     template = "/item/update.html"
     mdl = "item"

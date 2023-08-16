@@ -70,7 +70,6 @@ async def user_register(request):
             new.created_at = datetime.now()
 
             session.add(new)
-            session.refresh(new)
             await session.commit()
             # ..
             payload = {

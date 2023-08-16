@@ -165,6 +165,17 @@ async def in_schedule_sv(
     return result
 
 
+async def details_schedule_service(request, session, user, service):
+    stmt = await session.execute(
+        select(ScheduleService)
+        .where(ScheduleService.sch_s_service_id == service)
+        .where(ScheduleService.sch_s_owner == user)
+        .order_by(ScheduleService.id.desc())
+    )
+    result = stmt.scalars().all()
+    return result
+
+
 async def item_comment(
     session, id
 ):

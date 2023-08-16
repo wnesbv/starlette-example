@@ -98,18 +98,21 @@ async def on_app_startup() -> None:
                     ),
                     Comment(
                         opinion="01 (one) item-opinion description",
+                        user_on={"name": "one", "email": "one@example.com"},
                         cmt_user_id=1,
                         cmt_item_id=1,
                         created_at=datetime.now()
                     ),
                     Comment(
                         opinion="01 (one) service-opinion description",
+                        user_on={"name": "one", "email": "one@example.com"},
                         cmt_user_id=1,
                         cmt_service_id=1,
                         created_at=datetime.now()
                     ),
                     Comment(
                         opinion="01 (one) rent-opinion description",
+                        user_on={"name": "two", "email": "two@example.com"},
                         cmt_user_id=2,
                         cmt_rent_id=1,
                         created_at=datetime.now()

@@ -6,10 +6,10 @@
 
     <h1 class="lead my-4">admin list schedule rent..</h1>
 
-    <div class="row">
+<div class="flex_start">
     {% if odj_list %}
     {% for obj in odj_list %}
-    <div class="card p-3 mb-5">
+    <div class="card mt-2 me-1">
 
         <ul class="card-header list-group list-group-horizontal">
             <li class="list-group-item">
@@ -45,9 +45,9 @@
             </li>
         </ul>
 
-        <p class="card-footer">
+        <div class="card-footer">
         <a class="btn btn-outline-primary btn-sm" href="/admin/schedule-rent/details/{{ obj.id }}" role="button">view details &raquo;</a>
-        </p>
+        </div>
 
     </div>
 
@@ -58,6 +58,6 @@
 
     {% endif %}
 
-    </div>
+</div>
 
 {% endblock %}

@@ -6,55 +6,51 @@
 
 <h1 class="lead my-3">admin schedule detail</h1>
 
-<div class="flex_cont">
-    <div class="card p-3 mb-5">
+<div class="card mb-3">
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item">
+            <sup class="float-start">id:</sup>
+            <span class="me-3">{{ sch.id }}</span>
+        <li class="list-group-item">
+            <sup class="float-start">owner:</sup>
+            <span>{{ sch.sch_r_owner }}</span>
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">service id:</sup>
+            <span class="me-3">{{ sch.sch_r_rent_id }}</span>
+        </li>
+    </ul>
 
-        <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item">
-                <sup class="float-start">id:</sup>
-                <span class="me-3">{{ sch.id }}</span>
-            <li class="list-group-item">
-                <sup class="float-start">owner:</sup>
-                <span>{{ sch.sch_r_owner }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">service id:</sup>
-                <span class="me-3">{{ sch.sch_r_rent_id }}</span>
-            </li>
-        </ul>
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">title</sup>
+            <p>{{ sch.title }}</p>
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">description</sup>
+            <p>{{ sch.description }}</p>
+        </li>
+        <li class="list-group-item">
+            <sup class="me-2">created</sup>
+            <time>{{ sch.created_at }}</time>
+        </li>
+    </ul>
 
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">title</sup>
-                <p>{{ sch.title }}</p>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">description</sup>
-                <p>{{ sch.description }}</p>
-            </li>
-            <li class="list-group-item">
-                <sup class="me-2">created</sup>
-                <time>{{ sch.created_at }}</time>
-            </li>
-        </ul>
-
-        <div class="card-footer mt-3">
-            {{ sch_json | safe }}
-        </div>
-
+    <div class="card-footer mt-3">
+        {{ sch_json | safe }}
     </div>
 </div>
 
-    <div class="card">
-        <div class="card-header">
-            <a class="btn btn-outline-primary btn-sm me-2" href="/admin/schedule/update/{{ sch.id }}" role="button">
-                <i class="bi bi-pencil"></i> &raquo;
-            </a>
-            <a class="btn btn-outline-danger btn-sm" href="/admin/schedule/delete/{{ sch.id }}" role="button">
-                <i class="bi bi-trash3"></i> &raquo;
-            </a>
-        </div>
+<div class="card">
+    <div class="card-header">
+        <a class="btn btn-outline-primary btn-sm me-2" href="/admin/schedule/update/{{ sch.id }}" role="button">
+            <i class="bi bi-pencil"></i> &raquo;
+        </a>
+        <a class="btn btn-outline-danger btn-sm" href="/admin/schedule/delete/{{ sch.id }}" role="button">
+            <i class="bi bi-trash3"></i> &raquo;
+        </a>
     </div>
+</div>
 
 {% endblock %}
 

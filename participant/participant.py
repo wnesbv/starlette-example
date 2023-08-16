@@ -1,4 +1,6 @@
 
+from datetime import datetime
+
 from sqlalchemy import delete
 from sqlalchemy.future import select
 
@@ -53,7 +55,6 @@ async def participant_create(
             new.created_at = datetime.now()
 
             session.add(new)
-            session.refresh(new)
             await session.commit()
 
             response = RedirectResponse(

@@ -42,7 +42,7 @@ routes = [
         schedule_service.delete_service_csv,
         methods=["GET"],
     ),
-    # ..
+    # ..schedule
     Route("/schedule-rent/list", schedule_rent.item_list),
     Route(
         "/schedule-rent/details/{id:int}",
@@ -60,12 +60,17 @@ routes = [
         schedule_rent.item_delete,
         methods=["GET", "POST"],
     ),
-    # ..
-    Route("/schedule-service/user-list/", schedule_service.user_list),
-    Route("/schedule-service/list/{user:int}", schedule_service.item_list),
+
+    # ..schedule service
+    Route("/schedule-service/list/", schedule_service.sch_list),
+    Route("/schedule-service/user-sch/{id:int}", schedule_service.user_list),
+    Route("/schedule-service/srv-sch/{id:int}", schedule_service.srv_list),
+
+    Route("/schedule-service/all-user-sch-list", schedule_service.all_user_sch_list),
+
     Route(
         "/schedule-service/details/{user:int}/{service:int}",
-        schedule_service.item_details,
+        schedule_service.sch_details,
         methods=["GET", "POST"],
     ),
     Route(

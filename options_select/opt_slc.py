@@ -8,8 +8,6 @@ from channel.models import GroupChat, MessageChat
 from item.models import Item, Rent, Service, ScheduleRent, ScheduleService, DumpService
 from make_an_appointment.models import ReserveRentFor, ReserveServicerFor
 
-from db_config.settings import settings
-
 
 async def user_tm(request, session):
     stmt = await session.execute(
@@ -49,7 +47,7 @@ async def user_sch_rent(request, session):
     return result
 
 
-async def schedule_service_id(request, session):
+async def schedule_service_user(request, session):
     stmt = await session.execute(
         select(Service)
         .join(ScheduleService.sch_s_service)

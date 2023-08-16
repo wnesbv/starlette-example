@@ -1,0 +1,27 @@
+
+{% extends "base.html" %}
+{% block title %} update {{ detail.ld }} {% endblock%}
+
+{% block content %}
+
+<h1 class="lead my-4">update comment</h1>
+
+<form class="card" method="POST">
+    <div class="card-body">
+        <sup>opinion</sup>
+        <textarea
+            required
+            id="comment"
+            class="form-control"
+            name="opinion"
+            rows="3"
+        >{{ detail.opinion }} </textarea>
+    </div>
+    <div class="card-footer">
+    <button type="submit" class="btn btn-outline-primary btn-sm">
+        submit
+    </button>
+    </div>
+</form>
+
+{% endblock %}

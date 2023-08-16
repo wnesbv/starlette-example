@@ -115,7 +115,6 @@ async def slider_create(request):
             new.file = file
             # ..
             session.add(new)
-            session.refresh(new)
             await session.commit()
             # ..
             response = RedirectResponse(

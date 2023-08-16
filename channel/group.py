@@ -102,7 +102,6 @@ async def group_create(request):
             new.description = description
 
             session.add(new)
-            session.refresh(new)
             await session.commit()
             # ..
             query = insert(MessageChat).values(

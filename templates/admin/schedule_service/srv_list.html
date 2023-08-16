@@ -1,15 +1,15 @@
 
-{% extends "base.html" %}
-{% block title %} list schedule {% endblock %}
+{% extends "admin/base.html" %}
+{% block title %} admin list schedule service {% endblock %}
 
 {% block content %}
 
-<h1 class="lead my-4">list service schedule..</h1>
+<h1 class="lead my-3">admin list schedule service..</h1>
 
 <div class="flex_start">
-    {% if odj_list %}
-    {% for i in odj_list %}
-    <div class="card m-1">
+    {% if obj_list %}
+    {% for i in obj_list %}
+    <div class="card mt-2 me-1">
 
         <ul class="card-header list-group list-group-horizontal">
             <li class="list-group-item">
@@ -17,15 +17,15 @@
                 <span class="me-3">{{ i.id }}</span>
             </li>
             <li class="list-group-item">
-                <sup class="float-start">owner:</sup>
-                {{ i.sch_s_owner }}
+                <sup class="float-start">sch_s_owner:</sup>
+                <span class="me-3">{{ i.sch_s_owner }}</span>
             </li>
             <li class="list-group-item">
                 <sup class="float-start">sch_s_service_id:</sup>
-                {{ i.sch_s_service_id }}
+                <span class="me-3">{{ i.sch_s_service_id }}</span>
             </li>
         </ul>
-        
+
         <ul class="card-body list-group list-group-flush">
             <li class="list-group-item">
                 <sup class="float-start">name:</sup>
@@ -33,45 +33,43 @@
             </li>
             <li class="list-group-item">
                 <sup class="float-start">title:</sup>
-                <p>{{ i.title }}</p>
+                <span>{{ i.title }}</span>
             </li>
             <li class="list-group-item">
-                <sup class="float-start">number on the schedule:</sup>
-                <span>{{ i.type_on.name }}</span>
+                <sup class="float-start">type_on:</sup>
+                <span class="me-3">{{ i.type_on.name }}</span>
             </li>
-        </ul>
-
-        <ul class="card-body list-group list-group-flush">
             <li class="list-group-item">
-                <sup class="float-start">number on the schedule:</sup>
-               <span> {{ i.number_on }}</span>
+                <sup class="float-start">number_on:</sup>
+                <span class="me-3">{{ i.number_on }}</span>
             </li>
             <li class="list-group-item">
                 <sup class="float-start">there_is:</sup>
-                <span>{{ i.there_is }}</span>
+                <span class="me-3">{{ i.there_is }}</span>
             </li>
             <li class="list-group-item">
-                <sup class="float-start">description:</sup>
-                <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">created:</sup>
+                <sup class="float-start">created_at:</sup>
                 <time>{{ i.created_at }}</time>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">modified_at:</sup>
+                <time>{{ i.modified_at }}</time>
             </li>
         </ul>
 
         <div class="card-footer">
-        <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/details/{{ i.sch_s_service_id }}/{{ i.id }}" role="button">
-            view details &raquo;
-        </a>
+        <a class="btn btn-outline-primary btn-sm" href="/admin/schedule-service/details/{{ i.sch_s_owner }}/{{ i.sch_s_service_id }}" role="button">view details &raquo;</a>
         </div>
 
     </div>
+
     {% endfor %}
 
         {% else %}
         <span class="mt-5">no information available</span>
+
     {% endif %}
-</div>
+
+    </div>
 
 {% endblock %}
