@@ -25,7 +25,7 @@ from mail.send import send_mail
 
 from options_select.opt_slc import(
     user_rt,
-    user_sch_rent,
+    schedule_rent_user,
     in_schedule_rent,
     details_schedule_rent
 )
@@ -44,7 +44,7 @@ async def list_rent(
     template = "/schedule/list_rent.html"
     async with async_session() as session:
         #..
-        odj_list = await user_sch_rent(request, session)
+        odj_list = await schedule_rent_user(request, session)
         #..
         context = {
             "request": request,

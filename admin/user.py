@@ -19,7 +19,9 @@ from db_config.storage_config import engine, async_session
 from account.models import User
 from item.models import Item, Service, Rent
 from options_select import file_img
-from .opt_slc import all_count, in_admin, in_user
+from options_select.opt_slc import all_total
+
+from .opt_slc import in_admin, in_user
 
 
 templates = Jinja2Templates(directory="templates")
@@ -37,9 +39,7 @@ async def i_list(request):
         if admin:
             stmt = await session.execute(select(User).order_by(User.created_at.desc()))
             odj_list = stmt.scalars().all()
-
-            odj_count = await all_count(session)
-
+            odj_count = await all_total(session, User)
             context = {
                 "request": request,
                 "odj_list": odj_list,

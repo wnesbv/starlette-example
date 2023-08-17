@@ -9,6 +9,14 @@ from item.models import Item, Rent, Service, ScheduleRent, ScheduleService, Dump
 from make_an_appointment.models import ReserveRentFor, ReserveServicerFor
 
 
+async def all_total(session, model):
+    stmt = await session.execute(
+        select(func.count(model.id))
+    )
+    result = stmt.scalars().all()
+    return result
+
+
 async def user_tm(request, session):
     stmt = await session.execute(
         select(Item)
@@ -37,7 +45,7 @@ async def user_sv(request, session):
 
 
 #..
-async def user_sch_rent(request, session):
+async def schedule_rent_user(request, session):
     stmt = await session.execute(
         select(ScheduleRent)
         .where(ScheduleRent.sch_r_owner == request.user.user_id)
@@ -47,7 +55,7 @@ async def user_sch_rent(request, session):
     return result
 
 
-async def schedule_service_user(request, session):
+async def schedule_sv_user(request, session):
     stmt = await session.execute(
         select(Service)
         .join(ScheduleService.sch_s_service)
@@ -58,7 +66,7 @@ async def schedule_service_user(request, session):
     return result
 
 
-async def schedule_srv(request, session, id):
+async def schedule_sv(request, session, id):
     stmt = await session.execute(
         select(ScheduleService)
         .where(

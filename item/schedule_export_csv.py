@@ -21,7 +21,7 @@ from db_config.storage_config import engine, async_session
 from options_select.opt_slc import (
     in_dump,
     sch_sv_user,
-    schedule_srv,
+    schedule_sv,
     dump_schedule_service,
 )
 
@@ -56,7 +56,7 @@ async def export_csv(request):
             #..
             if detail:
                 # ..
-                records = await schedule_srv(request, session, id)
+                records = await schedule_sv(request, session, id)
                 # ..
                 async with aiofiles.open(
                     directory, mode="w",

@@ -10,9 +10,10 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 from db_config.storage_config import engine, async_session
 
 from item.models import Slider
+from options_select.opt_slc import all_total
 
 from .opt_slc import in_admin
-from .opt_slider import all_count, all_slider, in_slider
+from .opt_slider import all_slider, in_slider
 
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -38,8 +39,7 @@ async def slider_list(request):
                     .order_by(Slider.id)
                 )
             odj_list = stmt.scalars().all()
-            # ..
-            odj_count = await all_count(session)
+            odj_count = await all_total(session, Slider)
             # ..
             context = {
                 "request": request,

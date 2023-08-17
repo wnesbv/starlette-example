@@ -7,35 +7,34 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">update schedule service</h1>
+    <h1 class="lead my-4">update schedule service..</h1>
     <form class="card p-3" method="POST">
         <div class="row m-2">
             <div class="list-group col-sm">
                 <sup class="float-start">date</sup>
                 <input
                     type="date"
-                    required
-                    name="date"
-                    value="{{ detail.date }}"
+                    name="number_on"
+                    value="{{ detail.number_on }}"
                     class="form-control my-2"
                 />
             </div>
             <div class="list-group col-sm">
                 <sup class="float-start">there_is</sup>
                 <input
-                    type="datetime-local"
                     required
+                    type="datetime-local"
                     name="there_is"
                     value="{{ detail.there_is }}"
                     class="form-control my-2"
                 />
+                <p><sub>datetime: {{ detail.there_is }}</sub></p>
             </div>
         </div>
         <div class="m-2">
             <sup class="float-start">title</sup>
             <input
                 type="text"
-                required
                 name="title"
                 value="{{ detail.title }}"
                 class="form-control my-2"
@@ -46,7 +45,6 @@
             <sup class="float-start">name</sup>
             <input
                 type="text"
-                required
                 name="name"
                 value="{{ detail.name }}"
                 class="form-control my-2"
@@ -56,20 +54,19 @@
             <sup class="float-start">type</sup>
             <input
                 type="text"
-                required
-                name="type"
-                value="{{ detail.type }}"
+                name="type_on"
+                value="{{ detail.type_on.name }}"
                 class="form-control my-2"
             />
                 <div class="form-text">
-                    (event|holiday|birthday)
+                    event,holiday,birthday
                 </div>
             </div>
+
         </div>
         <div class="m-2">
             <sup class="float-start">description</sup>
             <textarea
-                required
                 class="form-control my-2"
                 name="description"
                 maxlength="333"

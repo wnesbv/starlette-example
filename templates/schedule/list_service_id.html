@@ -4,25 +4,34 @@
 
 {% block content %}
 
-<h1 class="lead my-4">list service schedule..</h1>
+<h1 class="lead my-3">list service schedule..</h1>
+<div class="card">
+    <div class="card-header">
+    <h2 class="lead m-2">
+        <sup>
+            ScheduleService: for Service.id from your account
+        </sup>
+    </h2>
+    </div>
+</div>
 
 <div class="flex_start">
     {% if odj_list %}
     {% for i in odj_list %}
-    <div class="card m-1">
+    <div class="card mt-2 me-1">
 
         <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">id:</sup>
-                <span class="me-3">{{ i.id }}</span>
+                <span>{{ i.id }}</span>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">owner:</sup>
-                {{ i.sch_s_owner }}
+                <span>{{ i.sch_s_owner }}</span>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">sch_s_service_id:</sup>
-                {{ i.sch_s_service_id }}
+                <span>{{ i.sch_s_service_id }}</span>
             </li>
         </ul>
         
@@ -57,6 +66,10 @@
             <li class="list-group-item">
                 <sup class="float-start">created:</sup>
                 <time>{{ i.created_at }}</time>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">modified:</sup>
+                <time>{{ i.modified_at }}</time>
             </li>
         </ul>
 

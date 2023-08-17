@@ -1,6 +1,4 @@
 
-from pathlib import Path
-
 from datetime import datetime
 
 import json
@@ -20,13 +18,14 @@ from mail.send import send_mail
 
 from options_select.opt_slc import (
     user_sv,
-    schedule_srv,
+    all_total,
+    schedule_sv,
+    schedule_sv_user,
     in_schedule_service,
-    schedule_service_user,
     details_schedule_service,
 )
 
-from .models import ScheduleService, MyEnum
+from .models import Service, ScheduleService, MyEnum
 
 
 templates = Jinja2Templates(directory="templates")
@@ -39,11 +38,13 @@ async def list_service(request):
     template = "/schedule/list_service.html"
     async with async_session() as session:
         # ..
-        odj_list = await schedule_service_user(request, session)
+        odj_count = await all_total(session, Service)
+        odj_list = await schedule_sv_user(request, session)
         # ..
         context = {
             "request": request,
             "odj_list": odj_list,
+            "odj_count": odj_count,
         }
         return templates.TemplateResponse(template, context)
     await engine.dispose()
@@ -58,7 +59,7 @@ async def list_service_id(request):
 
     async with async_session() as session:
         # ..
-        odj_list = await schedule_srv(request, session, id)
+        odj_list = await schedule_sv(request, session, id)
         # ..
         context = {
             "request": request,
@@ -204,13 +205,13 @@ async def update_service(request):
             # ..
             form = await request.form()
             # ..
-            str_date = form["dates"]
+            str_date = form["number_on"]
             str_there_is = form["there_is"]
             # ..
             name = form["name"]
-            type_on = form["type_on"]
             title = form["title"]
             description = form["description"]
+            type_on = form["type_on"]
             # ..
             number_on = datetime.strptime(str_date, settings.DATE)
             there_is = datetime.strptime(str_there_is, settings.DATE_T)
@@ -225,6 +226,7 @@ async def update_service(request):
                     there_is=there_is,
                     title=title,
                     description=description,
+                    modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
             )
@@ -236,11 +238,10 @@ async def update_service(request):
                 f"changes were made at the facility - {detail}: {detail.name}"
             )
             # ..
-            response = RedirectResponse(
+            return RedirectResponse(
                 f"/item/schedule-service/details/{detail.sch_s_service_id}/{ detail.id }",
                 status_code=302,
             )
-            return response
     await engine.dispose()
 
 

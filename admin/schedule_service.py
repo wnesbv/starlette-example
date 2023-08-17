@@ -135,22 +135,59 @@ async def all_user_sch_list(
         admin = await in_admin(request, session)
         # ..
         if admin:
+
+            # ..
+            stmt = await session.execute(
+                select(ScheduleService.id)
+                .join(ScheduleService.sch_s_service)
+            )
+            result = stmt.scalars().all()
+            i = await session.execute(
+                select(Service)
+                .where(Service.id.not_in(result))
+            )
+            not_service_list = i.scalars().all()
             # ..
             stmt = await session.execute(
                 select(ScheduleService.id)
                 .join(ScheduleService.sch_s_user)
             )
             result = stmt.scalars().all()
-            print(" result..", result)
-            srv = await session.execute(
+            i = await session.execute(
+                select(User)
+                .where(User.id.not_in(result))
+            )
+            not_sch_user_list = i.scalars().all()
+            # ..
+            # ..
+            stmt = await session.execute(
+                select(ScheduleService.id)
+                .join(ScheduleService.sch_s_service)
+            )
+            result = stmt.scalars().all()
+            i = await session.execute(
+                select(Service)
+                .where(Service.id.in_(result))
+            )
+            service_list = i.scalars().all()
+            # ..
+            stmt = await session.execute(
+                select(ScheduleService.id)
+                .join(ScheduleService.sch_s_user)
+            )
+            result = stmt.scalars().all()
+            i = await session.execute(
                 select(User)
                 .where(User.id.in_(result))
             )
-            obj_list = srv.scalars().all()
+            sch_user_list = i.scalars().all()
             # ..
             context = {
                 "request": request,
-                "obj_list": obj_list,
+                "service_list": service_list,
+                "sch_user_list": sch_user_list,
+                "not_service_list": not_service_list,
+                "not_sch_user_list": not_sch_user_list,
             }
             return templates.TemplateResponse(
                 template, context

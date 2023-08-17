@@ -11,16 +11,6 @@ from item.models import Item, Rent, Service, ScheduleRent, ScheduleService
 templates = Jinja2Templates(directory="templates")
 
 
-async def all_count(
-    session
-):
-    stmt = await session.execute(
-        select(func.count(User.id))
-    )
-    result = stmt.scalars().all()
-    return result
-
-
 async def all_user(
     session
 ):

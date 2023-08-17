@@ -15,18 +15,18 @@
 <div class="flex_start">
 {% if odj_list %}
 {% for obj in odj_list %}
-    <div class="card m-1">
+    <div class="card mt-2 me-1">
 
         <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">id:</sup>
                 <span class="me-3">{{ obj.id }}</span>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">owner:</sup>
                 <span>{{ obj.rent_owner }}</span>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">rent to item:</sup>
                 {{ obj.rent_belongs }}
             </li>

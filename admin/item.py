@@ -1,4 +1,6 @@
 
+from datetime import datetime, date
+
 from sqlalchemy import select, update as sqlalchemy_update, delete, func, true
 
 from starlette.authentication import requires
@@ -150,6 +152,7 @@ async def item_create(
             new.file = file
             new.item_owner = item_owner
             new.description = description
+            new.created_at = datetime.now()
             # ..
             session.add(new)
             await session.commit()
@@ -203,7 +206,8 @@ async def item_update(
                 .values(
                     file=file,
                     title=title,
-                    description=description
+                    description=description,
+                    modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
             )

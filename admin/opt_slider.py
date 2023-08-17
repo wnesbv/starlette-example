@@ -4,6 +4,7 @@ from sqlalchemy import select, func
 from starlette.templating import Jinja2Templates
 
 from item.models import Slider
+from options_select.opt_slc import all_total
 
 
 templates = Jinja2Templates(directory="templates")

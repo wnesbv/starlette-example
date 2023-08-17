@@ -11,13 +11,14 @@ from db_config.storage_config import engine, async_session
 
 from item.models import Service, ScheduleService
 from make_an_appointment.models import ReserveServicerFor
+from options_select.opt_slc import all_total
+
 from .opt_slc import (
     in_admin,
     in_service,
     all_item,
     all_schedule,
     all_service,
-    all_count,
     service_comment,
 )
 
@@ -39,8 +40,7 @@ async def item_list(request):
             # ..
             stmt = await session.execute(select(Service).order_by(Service.id))
             odj_list = stmt.scalars().all()
-            # ..
-            odj_count = await all_count(session)
+            odj_count = await all_total(session, Service)
             # ..
             context = {
                 "request": request,

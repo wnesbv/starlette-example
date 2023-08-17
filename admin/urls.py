@@ -42,11 +42,13 @@ routes = [
         schedule_service.delete_service_csv,
         methods=["GET"],
     ),
-    # ..schedule
-    Route("/schedule-rent/list", schedule_rent.item_list),
+
+
+    # ..schedule rent
+    Route("/schedule-rent/list", schedule_rent.rent_list),
     Route(
         "/schedule-rent/details/{id:int}",
-        schedule_rent.item_details,
+        schedule_rent.rent_details,
         methods=["GET", "POST"],
     ),
     Route("/schedule-rent/create/", schedule_rent.item_create, methods=["GET", "POST"]),

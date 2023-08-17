@@ -35,7 +35,7 @@ templates = Jinja2Templates(directory="templates")
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def item_list(
+async def rent_list(
     request
 ):
 
@@ -64,7 +64,7 @@ async def item_list(
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def item_details(
+async def rent_details(
     request
 ):
 

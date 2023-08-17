@@ -8,30 +8,30 @@
 <div class="card p-3">
 
     <ul class="card-header list-group list-group-horizontal">
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">id:</sup>
             <span class="me-3">{{ sch.id }}</span>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">owner:</sup>
             <span>{{ sch.sch_s_owner }}</span>
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">service id:</sup>
             <span>{{ sch.sch_s_service_id }}</span>
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">name</sup>
             <span>{{ sch.name }}</span>
         </li>
-        <li class="list-group-item">
-            <sup class="float-start">number on the schedule:</sup>
-            <span>{{ sch.type_on }}</span>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">type_on:</sup>
+            <span>{{ sch.type_on.name }}</span>
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">number on the schedule:</sup>
            <span> {{ sch.number_on }}</span>
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">there_is:</sup>
             <span>{{ sch.there_is }}</span>
         </li>
