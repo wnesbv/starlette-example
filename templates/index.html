@@ -17,58 +17,63 @@
     <section class="promo_slider">
         <div class="sl_content">
 
-            {% for item in odj_sl %}
-                <div id="item-{{ item.id }}" class="card_item">
-                    {% if item.file %}
-                        <style>
-                            #item-{{ item.id }}.card_item .content::before,
-                            #item-{{ item.id }}.card_item .content .inner::after{
-                                background-image: url('/static/upload/img/{{ item.file.saved_filename }}')
-                            }
-                        </style>
+        {% for item in odj_sl %}
+        <div id="item-{{ item.id }}" class="card_item">
+
+            {% if item.file %}
+                <style>
+                    #item-{{ item.id }}.card_item .content::before,
+                    #item-{{ item.id }}.card_item .content .inner::after{
+                        background-image: url('{{ item.file }}')
+                    }
+                </style>
+                    {% else %}
+                    <style>
+                        #item-{{ item.id }}.card_item .content::before,
+                        #item-{{ item.id }}.card_item .content .inner::after{
+                            background-image: url('/static/slider/publisher_photo.jpg')
+                        }
+                    </style>
+            {% endif %}
+
+            <div class="content">
+
+                <span class="item_name">
+                    <span>
+                        {{ item.title }}
+                    </span>
+                </span>
+                <span class="number" data-text="{{ item.id }}">
+                    {{ item.id }}
+                </span>
+
+                <div class="content_text">
+                    {% if item.description %}
+                        {{ item.description | truncate(180, True, '...', 5) }}
                             {% else %}
-                            <style>
-                                #item-{{ item.id }}.card_item .content::before,
-                                #item-{{ item.id }}.card_item .content .inner::after{
-                                    background-image: url('/static/slider/publisher_photo.jpg')
-                                }
-                            </style>
+                            not description
                     {% endif %}
-
-                    <div class="content">
-
-                        <span class="item_name">
-                            <span>
-                                {{ item.title }}
-                            </span>
-                        </span>
-                        <span class="number" data-text="{{ item.id }}">
-                            {{ item.id }}
-                        </span>
-
-                        <div class="content_text">
-                            {% if item.description %}
-                                {{ item.description | truncate(180, True, '...', 5) }}
-                                    {% else %}
-                                    not description
-                            {% endif %}
-                            <hr>
-                            <a class="btn btn-outline-primary btn-sm" href="">
-                                {{ item.title }}
-                            </a>
-                        </div>
-
-                        <span class="publish_date">
-                            <time>{{ item.created_at }}</time>
-                        </span>
-
-                        <div class="inner"></div>
-                        <div class="inner_shadow"></div>
-
-                    </div>
-
+                    <hr>
+                    <a class="btn btn-outline-primary btn-sm" href="">
+                        {{ item.title }}
+                    </a>
                 </div>
-            {% endfor %}
+
+                <span class="publish_date">
+                    <time>
+                    <sub>
+                    {{ item.created_at.strftime("%d-%m-%y %H:%M") }}
+                    </sub>
+                    </time>
+                </span>
+
+                <div class="inner"></div>
+                <div class="inner_shadow"></div>
+
+            </div>
+
+        </div>
+        {% endfor %}
 
         </div>
         <div class="sld_trigger"></div>

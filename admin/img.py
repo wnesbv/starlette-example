@@ -1,4 +1,5 @@
 
+from datetime import datetime, timedelta
 import os
 from pathlib import Path, PurePosixPath
 
@@ -10,10 +11,11 @@ async def img_creat(
     request, file, mdl, basewidth
 ):
 
+    name = datetime.now().strftime("%d-%m-%y-%H-%M")
     save_path = f"./static/upload/{mdl}/{request.user.email}"
-    file_path = f"{save_path}/{file.filename}"
 
     ext = PurePosixPath(file.filename).suffix
+    file_path = f"{save_path}/{name}{ext}"
     if ext not in (".png", ".jpg", ".jpeg"):
         raise HTTPException(
             status_code=400,

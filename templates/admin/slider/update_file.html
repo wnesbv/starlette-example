@@ -17,22 +17,15 @@
                 <sup class="float-start">created:</sup>
                 <time>{{ detail.created_at }}</time>
             </li>
-        </ul>
-
-        <ul class="card-body list-group list-group-flush">
             <li class="list-group-item">
-                <sup class="float-start">original_filename:</sup>
-                <p>{{ detail.file.original_filename }}</p>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">saved_filename:</sup>
-                <p>{{ detail.file.saved_filename }}</p>
+                <sup class="float-start">modified_at:</sup>
+                <time>{{ detail.modified_at }}</time>
             </li>
         </ul>
 
         <div>
         {% if detail.file %}
-        <img class="w-100 shadow-sm mb-5" src="/static/upload/{{ detail.file.path }}" alt="img">
+        <img width="800" class="w-100 shadow-sm mb-5" src="{{ detail.file }}" alt="img">
         {% endif %}
         </div>
 

@@ -1,4 +1,5 @@
 
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from sqlalchemy import select, update as sqlalchemy_update, delete
@@ -15,9 +16,7 @@ from options_select.opt_slc import all_total
 from .opt_slc import in_admin
 from .opt_slider import all_slider, in_slider
 
-
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
-root_directory = BASE_DIR / "static/upload"
+from . import img
 
 
 templates = Jinja2Templates(directory="templates")
@@ -102,6 +101,8 @@ async def slider_create(request):
                 )
         # ...
         if request.method == "POST":
+            mdl = "slider"
+            basewidth = 800
             # ..
             form = await request.form()
             # ..
@@ -112,7 +113,8 @@ async def slider_create(request):
             new = Slider()
             new.title = title
             new.description = description
-            new.file = file
+            new.file = await img.img_creat(request, file, mdl, basewidth)
+            new.created_at = datetime.now()
             # ..
             session.add(new)
             await session.commit()
@@ -201,6 +203,8 @@ async def slider_file_update(
             )
         # ...
         if request.method == "POST":
+            mdl = "slider"
+            basewidth = 800
             #..
             form = await request.form()
             file = form["file"]
@@ -209,7 +213,8 @@ async def slider_file_update(
                 sqlalchemy_update(Slider)
                 .where(Slider.id == id)
                 .values(
-                    file=file,
+                    file= await img.img_creat(request, file, mdl, basewidth),
+                    modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
             )

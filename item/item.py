@@ -70,9 +70,9 @@ async def item_create(request):
 
             new = Item()
             new.title = title
-            new.file = await file_img.img_creat(request, file, mdl, basewidth)
             new.item_owner = item_owner
             new.description = description
+            new.file = await file_img.img_creat(request, file, mdl, basewidth)
             new.created_at = datetime.now()
             # ..
             session.add(new)
