@@ -76,17 +76,24 @@ async def on_app_startup() -> None:
                         created_at=datetime.now()
                     ),
                     Rent(
-                        title="rent 01",
+                        title="rent 01 to it 1",
                         description="description.. rent 01",
                         rent_owner=1,
                         rent_belongs=1,
                         created_at=datetime.now()
                     ),
                     Rent(
-                        title="rent 02",
+                        title="rent 02 to it 1",
                         description="description.. rent 02",
                         rent_owner=1,
                         rent_belongs=1,
+                        created_at=datetime.now()
+                    ),
+                    Rent(
+                        title="rent 03 to it 2",
+                        description="description.. rent 03",
+                        rent_owner=1,
+                        rent_belongs=2,
                         created_at=datetime.now()
                     ),
                     Service(
@@ -149,6 +156,15 @@ async def on_app_startup() -> None:
                     ReserveRentFor(
                         time_start=date.today(),
                         time_end=date.today() + timedelta(days=1),
+                        rrf_owner=1,
+                        rrf_item_id=1,
+                        rrf_rent_id=1,
+                        rrf_sch_r_id=1,
+                        created_at=datetime.now()
+                    ),
+                    ReserveRentFor(
+                        time_start=date.today() + timedelta(days=3),
+                        time_end=date.today() + timedelta(days=4),
                         rrf_owner=1,
                         rrf_item_id=1,
                         rrf_rent_id=1,

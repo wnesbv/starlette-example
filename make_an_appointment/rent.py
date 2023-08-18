@@ -1,9 +1,10 @@
-
 from datetime import date, datetime, timedelta
-
+import json
 from sqlalchemy import insert, update as sqlalchemy_update, delete
 from sqlalchemy.future import select
 
+from starlette import status
+from starlette.exceptions import HTTPException
 from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
@@ -11,7 +12,13 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 from db_config.settings import settings
 from db_config.storage_config import engine, async_session
 
-from options_select.opt_slc import in_rrf, period_item, not_period
+from options_select.opt_slc import (
+    in_rrf,
+    period_item,
+    period_rent,
+    not_period_item,
+    not_period_rent,
+)
 
 from .models import ReserveRentFor
 
@@ -22,107 +29,152 @@ templates = Jinja2Templates(directory="templates")
 @requires("authenticated", redirect="user_login")
 # ...
 async def reserve_add(request):
-
+    # ..
     template = "make_an_appointment/index.html"
+    # ..
+    if request.method == "GET":
+        return templates.TemplateResponse(template, {"request": request})
+    # ...
+    if request.method == "POST":
+        # ..
+        form = await request.form()
+        end = form["time_end"]
+        start = form["time_start"]
+        # ..
+        time_start = datetime.strptime(start, settings.DATE_T)
+        time_end = datetime.strptime(end, settings.DATE_T)
+        # ..
+        if start >= end or start < date.today().strftime(settings.DATE):
+            return PlainTextResponse("please enter proper dates")
+        # ...
+        generated = [
+            time_start + timedelta(days=x)
+            for x in range(0, (time_end - time_start).days + 1)
+        ]
+
+        reserve_period = []
+        for period in generated:
+            reserve_period.append(period.strftime(settings.DATE))
+
+        reserve_period = str(reserve_period)
+        # ..
+        payload = {
+            "reserve_period": reserve_period,
+            "start": start,
+            "end": end,
+        }
+        reserve = json.dumps(payload)
+        # ..
+        response = RedirectResponse(
+            "/reserve/choice-item",
+            status_code=302,
+        )
+        response.set_cookie("reserve", reserve)
+        return response
+
+
+async def get_token_reserve(request):
+    if not request.cookies.get("reserve"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="not reserve token ..!",
+        )
+    token_get = request.cookies.get("reserve")
+    token_loads = json.loads(token_get)
+
+    return token_loads
+
+
+# ..IT
+@requires("authenticated", redirect="user_login")
+# ...
+async def reserve_choice_item(request):
+    # ..
+    token = await get_token_reserve(request)
+    start = token["start"]
+    end = token["end"]
+    reserve_period = token["reserve_period"]
+
+    time_start = datetime.strptime(start, settings.DATE_T)
+    time_end = datetime.strptime(end, settings.DATE_T)
+
+    template = "make_an_appointment/choice_item.html"
 
     async with async_session() as session:
-        # ..
         if request.method == "GET":
-            return templates.TemplateResponse(template, {"request": request})
-        # ...
-        if request.method == "POST":
-            # ..
-            form = await request.form()
-            end = form["time_end"]
-            start = form["time_start"]
-            # ..
-            time_start = datetime.strptime(start, settings.DATE_T)
-            time_end = datetime.strptime(end, settings.DATE_T)
-            # ..
-            if start >= end or start < date.today().strftime(settings.DATE):
-                return PlainTextResponse("please enter proper dates")
-            # ...
-            generated = [
-                time_start + timedelta(days=x)
-                for x in range(0, (time_end - time_start).days + 1)
-            ]
+            if token:
+                obj_list = await period_item(time_start, time_end, session)
+                not_list = await not_period_item(session)
 
-            reserve_period = []
-            for period in generated:
-                reserve_period.append(period.strftime(settings.DATE))
+                context = {
+                    "request": request,
+                    "time_start": time_start,
+                    "time_end": time_end,
+                    "reserve_period": str(reserve_period)
+                    .replace("'", "")
+                    .replace("[", "")
+                    .replace("]", ""),
+                    "obj_list": obj_list,
+                    "not_list": not_list,
+                }
 
-            reserve_period = str(reserve_period)
-
-            # ..
-            rrf_owner = request.user.user_id
-            rrf_item_id = 1
-            # ..
-            new = ReserveRentFor()
-            new.time_end = time_end
-            new.time_start = time_start
-            new.rrf_owner = rrf_owner
-            new.reserve_period = reserve_period
-            new.rrf_item_id = rrf_item_id
-            # ..
-            session.add(new)
-            await session.commit()
-            # ..
-            response = RedirectResponse(
-                f"/reserve/choice/{new.id}/",
-                status_code=302,
-            )
-            return response
+                return templates.TemplateResponse(template, context)
+            return PlainTextResponse("You are banned - this is not your token..!")
     await engine.dispose()
 
 
+# ..RE
 @requires("authenticated", redirect="user_login")
 # ...
-async def reserve_choice(request):
+async def reserve_choice_rent(request):
+    # ..
+    token = await get_token_reserve(request)
+    start = token["start"]
+    end = token["end"]
+    reserve_period = token["reserve_period"]
+
+    time_start = datetime.strptime(start, settings.DATE_T)
+    time_end = datetime.strptime(end, settings.DATE_T)
 
     id = request.path_params["id"]
-    template = "make_an_appointment/choice.html"
+    template = "make_an_appointment/choice_rent.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
-            # ..
-            rrf = await in_rrf(request, session, id)
-            if rrf:
-                # ..
-                obj_item = await period_item(rrf, session)
-                not_item = await not_period(session)
+            if token:
+                obj_list = await period_rent(time_start, time_end, session)
+                not_list = await not_period_rent(session, id)
 
-                reserve_period = rrf.reserve_period
                 context = {
                     "request": request,
-                    "rrf": rrf,
-                    "not_item": not_item,
-                    "obj_item": obj_item,
+                    "time_start": time_start,
+                    "time_end": time_end,
                     "reserve_period": reserve_period,
+                    "obj_list": obj_list,
+                    "not_list": not_list,
                 }
+
                 return templates.TemplateResponse(template, context)
-            return PlainTextResponse("You are banned - this is not your account..!")
+            return PlainTextResponse("You are banned - this is not your token..!")
         # ...
         if request.method == "POST":
             # ..
             form = await request.form()
-            rrf_item_id = form["rrf_item_id"]
-            # ..
-            time_start = rrf.time_start
-            time_end = rrf.time_end
-            rrf_owner = request.user.user_id
+            rrf_rent_id = form["rrf_rent_id"]
             # ..
             query = insert(ReserveRentFor).values(
-                rrf_owner=rrf_owner,
-                rrf_item_id=rrf_item_id,
                 time_start=time_start,
                 time_end=time_end,
+                rrf_owner=request.user.user_id,
+                rrf_item_id=id,
+                rrf_rent_id=rrf_rent_id,
+                created_at=datetime.now(),
             )
             await session.execute(query)
             await session.commit()
             # ..
             response = RedirectResponse(
-                f"/item/details/{ rrf_item_id }",
+                f"/item/rent/details/{ rrf_rent_id }",
                 status_code=302,
             )
             return response
@@ -132,14 +184,15 @@ async def reserve_choice(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def reserve_list_rent(request):
-
+    # ..
     template = "make_an_appointment/list_rent.html"
 
     async with async_session() as session:
         # ..
         stmt = await session.execute(
-            select(ReserveRentFor)
-            .where(ReserveRentFor.rrf_owner == request.user.user_id)
+            select(ReserveRentFor).where(
+                ReserveRentFor.rrf_owner == request.user.user_id
+            )
         )
         # ..
         obj_list = stmt.scalars().all()
@@ -156,7 +209,7 @@ async def reserve_list_rent(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def reserve_detail_rent(request):
-
+    # ..
     id = request.path_params["id"]
     template = "make_an_appointment/details_rent.html"
 
@@ -176,7 +229,7 @@ async def reserve_detail_rent(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def reserve_update_rent(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/make_an_appointment/update_rent.html"
 
@@ -224,6 +277,7 @@ async def reserve_update_rent(request):
                     time_start=time_start,
                     description=description,
                     reserve_period=reserve_period,
+                    modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
             )
@@ -241,7 +295,7 @@ async def reserve_update_rent(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def delete(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/make_an_appointment/delete.html"
 
@@ -262,10 +316,7 @@ async def delete(request):
         # ...
         if request.method == "POST":
             # ..
-            query = (
-                delete(ReserveRentFor)
-                .where(ReserveRentFor.id == id)
-            )
+            query = delete(ReserveRentFor).where(ReserveRentFor.id == id)
             await session.execute(query)
             await session.commit()
             # ..

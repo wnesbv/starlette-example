@@ -44,11 +44,11 @@ async def list_rent(
     template = "/schedule/list_rent.html"
     async with async_session() as session:
         #..
-        odj_list = await schedule_rent_user(request, session)
+        obj_list = await schedule_rent_user(request, session)
         #..
         context = {
             "request": request,
-            "odj_list": odj_list,
+            "obj_list": obj_list,
         }
         return templates.TemplateResponse(
             template, context

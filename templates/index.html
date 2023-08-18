@@ -17,20 +17,20 @@
     <section class="promo_slider">
         <div class="sl_content">
 
-        {% for item in odj_sl %}
-        <div id="item-{{ item.id }}" class="card_item">
+        {% for i in odj_sl %}
+        <div id="item-{{ i.id }}" class="card_item">
 
-            {% if item.file %}
+            {% if i.file %}
                 <style>
-                    #item-{{ item.id }}.card_item .content::before,
-                    #item-{{ item.id }}.card_item .content .inner::after{
-                        background-image: url('{{ item.file }}')
+                    #item-{{ i.id }}.card_item .content::before,
+                    #item-{{ i.id }}.card_item .content .inner::after{
+                        background-image: url('{{ i.file }}')
                     }
                 </style>
                     {% else %}
                     <style>
-                        #item-{{ item.id }}.card_item .content::before,
-                        #item-{{ item.id }}.card_item .content .inner::after{
+                        #item-{{ i.id }}.card_item .content::before,
+                        #item-{{ i.id }}.card_item .content .inner::after{
                             background-image: url('/static/slider/publisher_photo.jpg')
                         }
                     </style>
@@ -40,31 +40,33 @@
 
                 <span class="item_name">
                     <span>
-                        {{ item.title }}
+                        {{ i.title }}
                     </span>
                 </span>
-                <span class="number" data-text="{{ item.id }}">
-                    {{ item.id }}
+                <span class="number" data-text="{{ i.id }}">
+                    {{ i.id }}
                 </span>
 
                 <div class="content_text">
-                    {% if item.description %}
-                        {{ item.description | truncate(180, True, '...', 5) }}
+                    {% if i.description %}
+                        {{ i.description | truncate(180, True, '...', 5) }}
                             {% else %}
                             not description
                     {% endif %}
                     <hr>
                     <a class="btn btn-outline-primary btn-sm" href="">
-                        {{ item.title }}
+                        {{ i.title }}
                     </a>
                 </div>
 
                 <span class="publish_date">
+                    {% if i.description %}
                     <time>
                     <sub>
-                    {{ item.created_at.strftime("%d-%m-%y %H:%M") }}
+                    {{ i.created_at.strftime("%d-%m-%y %H:%M") }}
                     </sub>
                     </time>
+                    {% endif %}
                 </span>
 
                 <div class="inner"></div>

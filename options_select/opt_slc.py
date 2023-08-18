@@ -359,46 +359,77 @@ async def service_comment(session, id):
 
 
 #..
-async def period_item(rtf, session):
-    time_start = rtf.time_start
-    time_end = rtf.time_end
+async def period_item(time_start, time_end, session):
     #..
-    rsv = await session.execute(
+    stmt = await session.execute(
         select(Item.id)
         .join(ReserveRentFor.rrf_item)
     )
-    rsv_list = rsv.scalars().all()
-    # ..
+    result = stmt.scalars().all()
+    print(" it result..", result)
     stmt = await session.execute(
         select(Item)
         .join(
             ReserveRentFor.rrf_item,
         )
-        .where(Rent.id.in_(rsv_list))
+        .where(Item.id.in_(result))
         .where(func.datetime(ReserveRentFor.time_end) < time_start)
         .where(func.datetime(ReserveRentFor.time_start) < time_start)
         .where(func.datetime(ReserveRentFor.time_end) < time_end)
     )
     result = stmt.scalars().unique()
-    # ..
     return result
 
 
-async def not_period(session):
+async def period_rent(time_start, time_end, session):
+    #..
+    stmt = await session.execute(
+        select(Rent.id)
+        .join(ReserveRentFor.rrf_rent)
+    )
+    result = stmt.scalars().all()
+    print(" rent result..", result)
+    stmt = await session.execute(
+        select(Rent)
+        .join(
+            ReserveRentFor.rrf_rent,
+        )
+        .where(Rent.id.in_(result))
+        .where(func.datetime(ReserveRentFor.time_end) < time_start)
+        .where(func.datetime(ReserveRentFor.time_start) < time_start)
+        .where(func.datetime(ReserveRentFor.time_end) < time_end)
+    )
+    result = stmt.scalars().unique()
+    return result
+
+
+async def not_period_item(session):
     # ..
-    rsv = await session.execute(
+    stmt = await session.execute(
         select(Item.id)
         .join(ReserveRentFor.rrf_item)
     )
-    rsv_list = rsv.scalars().all()
-    #..
+    result = stmt.scalars().all()
+    print(" not it res..", result)
     stmt = await session.execute(
         select(Item)
-        .join(Rent.rent_item)
-        .where(
-            Item.id.not_in(rsv_list)
-        )
+        .where(Item.id.not_in(result))
     )
     result = stmt.scalars().unique()
+    return result
+
+async def not_period_rent(session, id):
     # ..
+    stmt = await session.execute(
+        select(Rent.id)
+        .join(ReserveRentFor.rrf_rent)
+    )
+    result = stmt.scalars().all()
+    print(" not rent res..", result)
+    stmt = await session.execute(
+        select(Rent)
+        .where(Rent.id.not_in(result))
+        .where(Rent.rent_belongs == id)
+    )
+    result = stmt.scalars().unique()
     return result

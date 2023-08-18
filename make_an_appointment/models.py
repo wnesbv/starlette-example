@@ -24,18 +24,18 @@ class ReserveRentFor(Base):
 
     # ...
     rrf_owner: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE")
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=True
     )
     rrf_item_id: Mapped[int] = mapped_column(
-        ForeignKey("item_tm.id", ondelete="CASCADE")
+        ForeignKey("item_tm.id", ondelete="CASCADE"), nullable=True
     )
     rrf_rent_id: Mapped[int] = mapped_column(
-        ForeignKey("rent_tm.id", ondelete="CASCADE")
+        ForeignKey("rent_tm.id", ondelete="CASCADE"), nullable=True
     )
     rrf_sch_r_id: Mapped[int] = mapped_column(
-        ForeignKey("sch_r.id", ondelete="CASCADE")
+        ForeignKey("sch_r.id", ondelete="CASCADE"), nullable=True
     )
-    
+
     # ...
     rrf_user: Mapped[list["User"]] = relationship(
         back_populates="user_rrf",

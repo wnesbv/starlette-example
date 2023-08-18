@@ -23,9 +23,7 @@
         </li>
         <li class="list-group-item">
             <sup class="float-start">rent to item:</sup>
-            <span class="me-3">
-                {{ i.rent_belongs }}
-            </span>
+            <span>{{ i.rent_belongs }}</span>
         </li>
     </ul>
 
@@ -40,10 +38,14 @@
         </li>
     </ul>
 
-    <ul class="card-footer">
+    <ul class="card-footer list-group list-group-flush">
         <li class="list-group-item">
             <sup class="float-start">created:</sup>
             <time>{{ i.created_at }}</time>
+        </li>
+        <li class="list-group-item">
+            <sup class="float-start">modified</sup>
+            <time>{{ i.modified_at }}</time>
         </li>
     </ul>
 </div>

@@ -1,0 +1,151 @@
+
+{% extends "base.html" %}
+{% block title %} choice rent {% endblock %}
+
+{% block content %}
+
+    <h1 class="lead my-3">choice rent...</h1>
+
+    {% if time_start and time_end %}
+    <div class="card">
+    <h2 class="lead m-2"> <sup>period from and to, all days..</sup></h2>
+    <ul class="card-footer list-group list-group-horizontal">
+
+        <li class="list-group-item pt-3">
+            <sup class="float-start">start</sup>
+            <time>
+                {{ time_start.strftime("%d-%m-%Y %H:%M") }}
+            </time>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">end</sup>
+            <time>
+                {{ time_end.strftime("%d-%m-%Y %H:%M") }}
+            </time>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">reserve period:</sup>
+            {{ reserve_period | safe }}
+        </li>
+    </ul>
+    </div>
+    {% endif %}
+
+    <div class="flex_start">
+    {% for i in obj_list %}
+        <div class="card mt-2 me-1">
+        <h6><sup class="m-2">item: {{ i.rent_belongs }}</sup></h6>
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item pt-3">
+                <sup class="float-start">id:</sup>
+                <span>{{ i.id }}</span>
+            </li>
+            <li class="list-group-item pt-3">
+                <sup class="float-start">owner item:</sup>
+                <span>{{ i.item_owner }}</span>
+            </li>
+        </ul>
+
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">title:</sup>
+                <p>{{ i.title }}</p>
+            </li>
+            <li class="list-group-item">
+                <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+            </li>
+        </ul>
+
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup>created</sup>
+                <time>{{ i.created_at }}</time>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">modified</sup>
+                <time>{{ i.modified_at }}</time>
+            </li>
+        </ul>
+        <div class="card-footer">
+            <a class="m-2" href="/item/rent/details/{{ i.id }}">
+                details
+            </a>
+        </div>
+        <form class="card-footer mt-3" method="POST">
+            <input type="hidden" name="rrf_item_id" value="{{ i.id }}">
+
+            <div>
+                <button type="submit" class="btn btn-outline-primary btn-sm">
+                    submit
+                </button>
+            </div>
+
+        </form>
+        </div>
+        {% else %}
+        <span class="mt-5">there are no items with periods</span>
+    {% endfor %}
+    </div>
+
+
+    <div class="flex_start">
+    {% for i in not_list %}
+        <div class="card mt-2 me-1">
+        <h6><sup class="m-2">item: {{ i.rent_belongs }}</sup></h6>
+
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item">
+                <span class="badge bg-success">not reserve</span>
+            </li>
+            <li class="list-group-item pt-3">
+                <sup class="float-start">id:</sup>
+                {{ i.id }}
+            </li>
+            <li class="list-group-item pt-3">
+                <sup class="float-start">owner rent:</sup>
+                {{ i.rent_owner }}
+            </li>
+        </ul>
+
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">title:</sup>
+                {{ i.title }}
+            </li>
+            <li class="list-group-item">
+                {{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}
+            </li>
+        </ul>
+
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">created</sup>
+                <time>{{ i.created_at }}</time>
+            </li>
+            <li class="list-group-item">
+                <sup class="float-start">modified</sup>
+                <time>{{ i.modified_at }}</time>
+            </li>
+        </ul>
+
+        <div class="card-footer">
+            <a class="m-2" href="/item/rent/details/{{ i.id }}">
+                details
+            </a>
+        </div>
+
+        <form class="card-footer mt-3" method="POST">
+        <input type="hidden" name="rrf_rent_id" value="{{ i.id }}">
+            <button type="submit" class="btn btn-outline-primary btn-sm">
+                submit
+            </button>
+        </form>
+        </div>
+
+        {% else %}
+        <span class="mt-5">no we go without periods</span>
+    {% endfor %}
+
+    </div>
+
+{% endblock %}
