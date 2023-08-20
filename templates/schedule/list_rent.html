@@ -4,7 +4,9 @@
 
 {% block content %}
 
-<h1 class="lead my-3">list rent schedule.. {{ request.user.user_id }}</h1>
+<h1 class="lead my-3">
+list rent schedule.. user: {{ request.user.user_id }}
+</h1>
 
 <div class="flex_start">
     {% if obj_list %}

@@ -14,13 +14,13 @@
         <li class="list-group-item pt-3">
             <sup class="float-start">start</sup>
             <time>
-                {{ time_start.strftime("%d-%m-%Y %H:%M") }}
+                {{ time_start.strftime("%d-%m-%Y") }}
             </time>
         </li>
         <li class="list-group-item pt-3">
             <sup class="float-start">end</sup>
             <time>
-                {{ time_end.strftime("%d-%m-%Y %H:%M") }}
+                {{ time_end.strftime("%d-%m-%Y") }}
             </time>
         </li>
         <li class="list-group-item pt-3">
@@ -42,7 +42,7 @@
             </li>
             <li class="list-group-item pt-3">
                 <sup class="float-start">owner item:</sup>
-                <span>{{ i.item_owner }}</span>
+                <span>{{ i.rent_owner }}</span>
             </li>
         </ul>
 
@@ -58,7 +58,7 @@
 
         <ul class="card-body list-group list-group-flush">
             <li class="list-group-item">
-                <sup>created</sup>
+                <sup class="float-start">created</sup>
                 <time>{{ i.created_at }}</time>
             </li>
             <li class="list-group-item">
@@ -72,7 +72,7 @@
             </a>
         </div>
         <form class="card-footer mt-3" method="POST">
-            <input type="hidden" name="rrf_item_id" value="{{ i.id }}">
+            <input type="hidden" name="rrf_rent_id" value="{{ i.id }}">
 
             <div>
                 <button type="submit" class="btn btn-outline-primary btn-sm">

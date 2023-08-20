@@ -3,7 +3,7 @@
 
 {% block content %}
 
-    <h1 class="lead my-5">search reserve</h1>
+    <h1 class="lead my-3">search reserve</h1>
 
     <form class="card p-3" method="POST">
         <div class="card-body row m-2">
@@ -11,21 +11,17 @@
                 <sup class="float-start">start</sup>
                 <input
                     class="form-control my-2"
-                    type="datetime-local"
+                    type="date"
                     name="time_start"
-                    value="{{ time_start }}"
                 />
-                <div class="form-text">2023-07-20 00:00:00</div>
             </div>
             <div class="col-sm">
                 <sup class="float-start">end</sup>
                 <input
                     class="form-control my-2"
-                    type="datetime-local"
+                    type="date"
                     name="time_end"
-                    value="{{ time_end }}"
                 />
-                <div class="form-text">2023-07-25 23:00:00</div>
             </div>
         </div>
         <div class="card-footer m-2">

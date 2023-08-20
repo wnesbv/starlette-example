@@ -1,5 +1,5 @@
 
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, or_, not_
 from sqlalchemy.future import select
 
 from comment.models import Comment
@@ -10,17 +10,14 @@ from make_an_appointment.models import ReserveRentFor, ReserveServicerFor
 
 
 async def all_total(session, model):
-    stmt = await session.execute(
-        select(func.count(model.id))
-    )
+    stmt = await session.execute(select(func.count(model.id)))
     result = stmt.scalars().all()
     return result
 
 
 async def user_tm(request, session):
     stmt = await session.execute(
-        select(Item)
-        .where(Item.item_owner == request.user.user_id)
+        select(Item).where(Item.item_owner == request.user.user_id)
     )
     result = stmt.scalars().all()
     return result
@@ -28,8 +25,7 @@ async def user_tm(request, session):
 
 async def user_rt(request, session):
     stmt = await session.execute(
-        select(Rent)
-        .where(Rent.rent_owner == request.user.user_id)
+        select(Rent).where(Rent.rent_owner == request.user.user_id)
     )
     result = stmt.scalars().all()
     return result
@@ -37,14 +33,13 @@ async def user_rt(request, session):
 
 async def user_sv(request, session):
     stmt = await session.execute(
-        select(Service)
-        .where(Service.service_owner == request.user.user_id)
+        select(Service).where(Service.service_owner == request.user.user_id)
     )
     result = stmt.scalars().all()
     return result
 
 
-#..
+# ..
 async def schedule_rent_user(request, session):
     stmt = await session.execute(
         select(ScheduleRent)
@@ -84,9 +79,7 @@ async def schedule_sv(request, session, id):
 async def details_schedule_rent(request, session):
     stmt = await session.execute(
         select(ScheduleRent)
-        .where(
-            ScheduleRent.sch_r_owner==request.user.user_id
-        )
+        .where(ScheduleRent.sch_r_owner == request.user.user_id)
         .order_by(ScheduleRent.id.desc())
     )
     result = stmt.scalars().all()
@@ -119,11 +112,10 @@ async def dump_schedule_service(request, session, id):
     return result
 
 
-#..
+# ..
 async def sch_sv_user(request, session, id):
     stmt = await session.execute(
-        select(ScheduleService)
-        .where(
+        select(ScheduleService).where(
             and_(
                 ScheduleService.sch_s_service_id == id,
                 ScheduleService.sch_s_owner == request.user.user_id,
@@ -149,7 +141,7 @@ async def sch_sv_id(request, session, id):
     return result
 
 
-#..
+# ..
 async def in_rrf(request, session, id):
     stmt = await session.execute(
         select(ReserveRentFor).where(
@@ -178,13 +170,7 @@ async def in_rsf(request, session, id):
 
 async def in_item_user(request, session, id):
     stmt = await session.execute(
-        select(Item)
-        .where(
-            and_(
-                Item.id == id,
-                Item.item_owner == request.user.user_id
-            )
-        )
+        select(Item).where(and_(Item.id == id, Item.item_owner == request.user.user_id))
     )
     result = stmt.scalars().first()
     return result
@@ -192,13 +178,7 @@ async def in_item_user(request, session, id):
 
 async def in_rent_user(request, session, id):
     stmt = await session.execute(
-        select(Rent)
-        .where(
-            and_(
-                Rent.id == id,
-                Rent.rent_owner == request.user.user_id
-            )
-        )
+        select(Rent).where(and_(Rent.id == id, Rent.rent_owner == request.user.user_id))
     )
     result = stmt.scalars().first()
     return result
@@ -206,12 +186,8 @@ async def in_rent_user(request, session, id):
 
 async def in_service_user(request, session, id):
     stmt = await session.execute(
-        select(Service)
-        .where(
-            and_(
-                Service.id == id,
-                Service.service_owner == request.user.user_id
-            )
+        select(Service).where(
+            and_(Service.id == id, Service.service_owner == request.user.user_id)
         )
     )
     result = stmt.scalars().first()
@@ -233,8 +209,7 @@ async def in_schedule_rent(request, session, id):
 
 async def in_schedule_service(request, session, id):
     stmt = await session.execute(
-        select(ScheduleService)
-        .where(
+        select(ScheduleService).where(
             and_(
                 ScheduleService.id == id,
                 ScheduleService.sch_s_owner == request.user.user_id,
@@ -247,12 +222,8 @@ async def in_schedule_service(request, session, id):
 
 async def in_dump(request, session, id):
     stmt = await session.execute(
-        select(DumpService)
-        .where(
-            and_(
-                DumpService.id == id,
-                DumpService.dump_s_owner == request.user.user_id
-            )
+        select(DumpService).where(
+            and_(DumpService.id == id, DumpService.dump_s_owner == request.user.user_id)
         )
     )
     result = stmt.scalars().first()
@@ -261,8 +232,7 @@ async def in_dump(request, session, id):
 
 async def in_comment(request, session, id):
     stmt = await session.execute(
-        select(Comment)
-        .where(Comment.cmt_user_id == request.user.user_id)
+        select(Comment).where(Comment.cmt_user_id == request.user.user_id)
     )
     result = stmt.scalars().all()
     return result
@@ -271,12 +241,8 @@ async def in_comment(request, session, id):
 # ..
 async def in_group_chat(request, session, id):
     stmt = await session.execute(
-        select(GroupChat)
-        .where(
-            and_(
-                GroupChat.id == id,
-                GroupChat.admin_group == request.user.user_id
-            )
+        select(GroupChat).where(
+            and_(GroupChat.id == id, GroupChat.admin_group == request.user.user_id)
         )
     )
     result = stmt.scalars().first()
@@ -285,12 +251,8 @@ async def in_group_chat(request, session, id):
 
 async def in_chat(request, session, id):
     stmt = await session.execute(
-        select(MessageChat)
-        .where(
-            and_(
-                MessageChat.id == id,
-                MessageChat.owner_chat == request.user.user_id
-            )
+        select(MessageChat).where(
+            and_(MessageChat.id == id, MessageChat.owner_chat == request.user.user_id)
         )
     )
     result = stmt.scalars().first()
@@ -300,11 +262,10 @@ async def in_chat(request, session, id):
 # ..
 async def in_person_participant(request, session, id):
     stmt = await session.execute(
-        select(PersonParticipant)
-        .where(
+        select(PersonParticipant).where(
             and_(
                 PersonParticipant.id == id,
-                PersonParticipant.participant == request.user.user_id
+                PersonParticipant.participant == request.user.user_id,
             )
         )
     )
@@ -319,7 +280,7 @@ async def person_participant(request, session, id):
         .where(
             and_(
                 PersonParticipant.group_participant == id,
-                GroupChat.admin_group == request.user.user_id
+                GroupChat.admin_group == request.user.user_id,
             )
         )
     )
@@ -327,7 +288,7 @@ async def person_participant(request, session, id):
     return result
 
 
-#..
+# ..
 async def item_comment(session, id):
     stmt = await session.execute(
         select(Comment)
@@ -358,46 +319,58 @@ async def service_comment(session, id):
     return result
 
 
-#..
-async def period_item(time_start, time_end, session):
-    #..
-    stmt = await session.execute(
-        select(Item.id)
-        .join(ReserveRentFor.rrf_item)
-    )
+# ..IT
+
+
+async def period_item(time_start, time_end, reserve_period, session):
+    # ..
+    stmt = await session.execute(select(Item.id).join(ReserveRentFor.rrf_item))
     result = stmt.scalars().all()
     print(" it result..", result)
+
+    i = await session.execute(select(ReserveRentFor.time_start))
+    start = i.scalars().all()
+    print(" start..", start)
+    i = await session.execute(select(ReserveRentFor.time_end))
+    end = i.scalars().all()
+    print(" start..", end)
+
     stmt = await session.execute(
         select(Item)
         .join(
             ReserveRentFor.rrf_item,
         )
         .where(Item.id.in_(result))
-        .where(func.datetime(ReserveRentFor.time_end) < time_start)
-        .where(func.datetime(ReserveRentFor.time_start) < time_start)
-        .where(func.datetime(ReserveRentFor.time_end) < time_end)
+        .where(func.date(time_start).not_in(start))
+        .where(func.date(time_end).not_in(end))
     )
     result = stmt.scalars().unique()
     return result
 
 
 async def period_rent(time_start, time_end, session):
-    #..
+    # ..
     stmt = await session.execute(
-        select(Rent.id)
-        .join(ReserveRentFor.rrf_rent)
+        select(Rent.id).join(ReserveRentFor.rrf_rent)
     )
     result = stmt.scalars().all()
     print(" rent result..", result)
+    # ..
+    i = await session.execute(select(ReserveRentFor.time_start))
+    start = i.scalars().all()
+    print(" start..", start)
+    i = await session.execute(select(ReserveRentFor.time_end))
+    end = i.scalars().all()
+    print(" start..", end)
+    # ..
     stmt = await session.execute(
         select(Rent)
         .join(
             ReserveRentFor.rrf_rent,
         )
         .where(Rent.id.in_(result))
-        .where(func.datetime(ReserveRentFor.time_end) < time_start)
-        .where(func.datetime(ReserveRentFor.time_start) < time_start)
-        .where(func.datetime(ReserveRentFor.time_end) < time_end)
+        .where(func.date(time_start).not_in(start))
+        .where(func.date(time_end).not_in(end))
     )
     result = stmt.scalars().unique()
     return result
@@ -405,31 +378,21 @@ async def period_rent(time_start, time_end, session):
 
 async def not_period_item(session):
     # ..
-    stmt = await session.execute(
-        select(Item.id)
-        .join(ReserveRentFor.rrf_item)
-    )
+    stmt = await session.execute(select(Item.id).join(ReserveRentFor.rrf_item))
     result = stmt.scalars().all()
     print(" not it res..", result)
-    stmt = await session.execute(
-        select(Item)
-        .where(Item.id.not_in(result))
-    )
+    stmt = await session.execute(select(Item).where(Item.id.not_in(result)))
     result = stmt.scalars().unique()
     return result
 
+
 async def not_period_rent(session, id):
     # ..
-    stmt = await session.execute(
-        select(Rent.id)
-        .join(ReserveRentFor.rrf_rent)
-    )
+    stmt = await session.execute(select(Rent.id).join(ReserveRentFor.rrf_rent))
     result = stmt.scalars().all()
     print(" not rent res..", result)
     stmt = await session.execute(
-        select(Rent)
-        .where(Rent.id.not_in(result))
-        .where(Rent.rent_belongs == id)
+        select(Rent).where(Rent.id.not_in(result)).where(Rent.rent_belongs == id)
     )
     result = stmt.scalars().unique()
     return result

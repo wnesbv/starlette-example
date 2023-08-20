@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import String, Text, ForeignKey, DateTime
+from sqlalchemy import String, Text, ForeignKey, Date, DateTime
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -15,9 +15,8 @@ class ReserveRentFor(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     description: Mapped[str] = mapped_column(Text(200), nullable=True)
-    time_start: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    time_end: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    reserve_period: Mapped[str] = mapped_column(String(), nullable=True)
+    time_start: Mapped[datetime] = mapped_column(Date, nullable=True)
+    time_end: Mapped[datetime] = mapped_column(Date, nullable=True)
     # ...
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
