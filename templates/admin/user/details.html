@@ -77,14 +77,7 @@
             <sup class="float-start">last_login_date:</sup>
             <time>{{ i.last_login_date }}</time>
         </li>
-        <li class="list-group-item">
-            <sup class="float-start">created_at:</sup>
-            <time>{{ i.created_at }}</time>
-        </li>
-        <li class="list-group-item">
-            <sup class="float-start">modified</sup>
-            <time>{{ i.modified_at }}</time>
-        </li>
+        {% include "created_modified.html" %}
     </ul>
 
 

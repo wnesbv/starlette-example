@@ -1,6 +1,6 @@
 
 {% extends "base.html" %}
-{% block title %} slider {{ detail.title }} {% endblock %}
+{% block title %} slider {{ i.title }} {% endblock %}
 
 {% block content %}
 
@@ -12,40 +12,33 @@
         <ul class="card-header list-group list-group-horizontal">
             <li class="list-group-item pt-3">
                 <sup class="float-start">id:</sup>
-                <span>{{ detail.id }}...</span>
-                <input type="hidden" id="detail" name="id" value="{{ detail.id }}">
+                <span>{{ i.id }}...</span>
+                <input type="hidden" id="detail" name="id" value="{{ i.id }}">
             </li>
         </ul>
 
         <ul class="card-body list-group list-group-flush">
             <li class="list-group-item">
                 <sup class="float-start">title:</sup>
-                <p>{{ detail.title }}</p>
+                <p>{{ i.title }}</p>
             </li>
             <li class="list-group-item">
                 <sup class="float-start">description:</sup>
-                <p>{{ detail.description | safe }}</p>
+                <p>{{ i.description | safe }}</p>
             </li>
         </ul>
 
         <ul class="card-footer list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">created:</sup>
-                <time>{{ detail.created_at }}</time>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">modified_at:</sup>
-                <time>{{ detail.modified_at }}</time>
-            </li>
+            {% include "created_modified.html" %}
         </ul>
 
         </div>
 
-        {% if detail.file %}
+        {% if i.file %}
         <div class="col-xxl-5 col-sm-10 ms-3">
-        <img class="w-100 shadow-sm mb-5" src="{{ detail.file }}" alt="">
+        <img class="w-100 shadow-sm mb-5" src="{{ i.file }}" alt="">
 
-        <a class="btn btn-outline-primary btn-sm mb-2" href="/admin/slider/file-update/{{ detail.id }}" role="button">
+        <a class="btn btn-outline-primary btn-sm mb-2" href="/admin/slider/file-update/{{ i.id }}" role="button">
             image <i class="bi bi-pencil"></i> &raquo;
         </a>
 
@@ -53,7 +46,7 @@
 
         {% else %}
         <div class="w-100 my-3">
-            <a class="btn btn-outline-primary btn-sm mb-2" href="/admin/slider/file-update/{{ detail.id }}" role="button">
+            <a class="btn btn-outline-primary btn-sm mb-2" href="/admin/slider/file-update/{{ i.id }}" role="button">
                 image <i class="bi bi-pencil"></i> &raquo;
             </a>
         </div>
@@ -66,10 +59,10 @@
     <div class="mt-2">
         <div class="card">
             <div class="card-header">
-                <a class="btn btn-outline-primary btn-sm me-2" href="/admin/slider/update/{{ detail.id }}" role="button">
+                <a class="btn btn-outline-primary btn-sm me-2" href="/admin/slider/update/{{ i.id }}" role="button">
                     <i class="bi bi-pencil"></i> &raquo;
                 </a>
-                <a class="btn btn-outline-danger btn-sm" href="/admin/slider/delete/{{ detail.id }}" role="button">
+                <a class="btn btn-outline-danger btn-sm" href="/admin/slider/delete/{{ i.id }}" role="button">
                     <i class="bi bi-trash3"></i> &raquo;
                 </a>
             </div>

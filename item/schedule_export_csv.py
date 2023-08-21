@@ -119,7 +119,7 @@ async def export_csv(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def dump_csv(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/item/schedule/dump_csv.html"
 
@@ -127,14 +127,14 @@ async def dump_csv(request):
 
         if request.method == "GET":
             #..
-            odj_list = await dump_schedule_service(request, session, id)
+            obj_list = await dump_schedule_service(request, session, id)
             #..
-            if not odj_list:
+            if not obj_list:
                 return PlainTextResponse(
                     "no information available..!"
                 )
                 #..
-            context = {"request": request, "odj_list": odj_list}
+            context = {"request": request, "obj_list": obj_list}
             return templates.TemplateResponse(
                 template, context
             )

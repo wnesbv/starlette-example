@@ -12,12 +12,12 @@
             services: who have a ScheduleService from your account
         </sup>
     </h2>
-    <span class="card-header">total services: {{ odj_count | max }}</span>
+    <span class="card-header">total services: {{ obj_count | max }}</span>
     </div>
 </div>
 
 <div class="flex_start">
-    {% for i in odj_list %}
+    {% for i in obj_list %}
     <div class="card mt-2 me-1">
 
         <ul class="card-header list-group list-group-horizontal">
@@ -46,14 +46,7 @@
                     {{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}
                 </p>
             </li>
-            <li class="list-group-item">
-                <sup class="float-start">created:</sup>
-                <time>{{ i.created_at }}</time>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">modified:</sup>
-                <time>{{ i.modified_at }}</time>
-            </li>
+            {% include "created_modified.html" %}
         </ul>
 
         <div class="card-footer">

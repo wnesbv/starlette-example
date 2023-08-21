@@ -40,13 +40,13 @@ async def service_create(request):
         # ...
         if request.method == "GET":
             # ..
-            odj_item = await user_tm(request, session)
+            obj_item = await user_tm(request, session)
             # ..
             return templates.TemplateResponse(
                 template,
                 {
                     "request": request,
-                    "odj_item": odj_item,
+                    "obj_item": obj_item,
                 },
             )
         # ...
@@ -245,11 +245,11 @@ async def service_list(request):
             select(Service)
             .order_by(Service.id)
         )
-        odj_list = result.scalars().all()
+        obj_list = result.scalars().all()
         # ..
         context = {
             "request": request,
-            "odj_list": odj_list,
+            "obj_list": obj_list,
         }
         return templates.TemplateResponse(template, context)
     await engine.dispose()

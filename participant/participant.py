@@ -76,18 +76,18 @@ async def participant_list(
 
     async with async_session() as session:
         #..
-        odj_admin = person_participant(request, session, id)
-        if odj_admin:
+        obj_admin = person_participant(request, session, id)
+        if obj_admin:
             stmt = await session.execute(
                 select(PersonParticipant)
                 .where(
                     PersonParticipant.group_participant == id
                 )
             )
-            odj_list = stmt.scalars().all()
+            obj_list = stmt.scalars().all()
             context = {
                 "request": request,
-                "odj_list": odj_list,
+                "obj_list": obj_list,
             }
             return templates.TemplateResponse(
                 template, context
@@ -105,8 +105,8 @@ async def participant_add(
 
     async with async_session() as session:
         #..
-        odj_admin = person_participant(request, session, id)
-        if odj_admin:
+        obj_admin = person_participant(request, session, id)
+        if obj_admin:
             stmt = await session.execute(
                 select(PersonParticipant)
                 .where(
@@ -131,12 +131,13 @@ async def participant_add(
 async def participant_delete(
     request
 ):
+    # ..
     id = request.path_params["id"]
 
     async with async_session() as session:
         #..
-        odj_admin = person_participant(request, session, id)
-        if odj_admin:
+        obj_admin = person_participant(request, session, id)
+        if obj_admin:
             # ..
             query = (
                 delete(PersonParticipant)

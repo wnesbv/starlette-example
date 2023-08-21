@@ -18,7 +18,7 @@ from .opt_slider import all_slider, in_slider
 
 from . import img
 
-
+BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 templates = Jinja2Templates(directory="templates")
 
 
@@ -33,17 +33,14 @@ async def slider_list(request):
         # ..
         if admin:
             # ..
-            stmt = await session.execute(
-                    select(Slider)
-                    .order_by(Slider.id)
-                )
-            odj_list = stmt.scalars().all()
-            odj_count = await all_total(session, Slider)
+            obj_list = await all_slider(session)
+            # ..
+            obj_count = await all_total(session, Slider)
             # ..
             context = {
                 "request": request,
-                "odj_list": odj_list,
-                "odj_count": odj_count,
+                "obj_list": obj_list,
+                "obj_count": obj_count,
             }
             return templates.TemplateResponse(template, context)
         return PlainTextResponse("You are banned - this is not your account..!")
@@ -53,7 +50,7 @@ async def slider_list(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def slider_details(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/admin/slider/details.html"
 
@@ -63,18 +60,11 @@ async def slider_details(request):
         # ..
         if admin:
             # ..
-            detail = await in_slider(request, session)
+            i = await in_slider(session, id)
             # ..
-            stmt = await session.execute(
-                select(Slider)
-                .where(
-                    Slider.id == id,
-                )
-            )
-            detail = stmt.scalars().first()
             context = {
                 "request": request,
-                "detail": detail,
+                "i": i,
             }
             return templates.TemplateResponse(template, context)
     await engine.dispose()
@@ -89,15 +79,10 @@ async def slider_create(request):
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            odj_item = await all_slider(session)
             # ..
             if admin:
                 return templates.TemplateResponse(
-                    template,
-                    {
-                        "request": request,
-                        "odj_item": odj_item,
-                    },
+                    template, {"request": request}
                 )
         # ...
         if request.method == "POST":
@@ -130,14 +115,14 @@ async def slider_create(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def slider_update(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/admin/slider/update.html"
 
     async with async_session() as session:
         # ..
         admin = await in_admin(request, session)
-        detail = await in_slider(request, session)
+        detail = await in_slider(session, id)
         # ..
         context = {
             "request": request,
@@ -181,20 +166,21 @@ async def slider_update(request):
 async def slider_file_update(
     request
 ):
+    # ..
     id = request.path_params["id"]
     template = "/admin/slider/update_file.html"
 
     async with async_session() as session:
         # ..
-        detail = await in_slider(request, session)
+        i = await in_slider(session, id)
         # ..
         context = {
             "request": request,
-            "detail": detail,
+            "i": i,
         }
         # ...
         if request.method == "GET":
-            if detail:
+            if i:
                 return templates.TemplateResponse(
                     template, context
                 )
@@ -222,7 +208,7 @@ async def slider_file_update(
             await session.commit()
             #..
             response = RedirectResponse(
-                f"/admin/slider/details/{ detail.id }",
+                f"/admin/slider/details/{ i.id }",
                 status_code=302,
             )
             return response
@@ -232,7 +218,7 @@ async def slider_file_update(
 @requires("authenticated", redirect="user_login")
 # ...
 async def slider_delete(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/admin/slider/delete.html"
 
@@ -241,7 +227,7 @@ async def slider_delete(request):
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            detail = await in_slider(request, session)
+            detail = await in_slider(session, id)
             # ..
             if admin:
                 return templates.TemplateResponse(
@@ -272,19 +258,19 @@ async def slider_delete(request):
 async def slider_file_delete(
     request
 ):
-
+    # ..
     id = request.path_params["id"]
 
     async with async_session() as session:
 
         if request.method == "GET":
             # ..
-            detail = await in_slider(request, session)
-            if detail:
+            i = await in_slider(request, session)
+            if i:
                 # ..
                 root_directory = (
                     BASE_DIR
-                    / f"static/upload/img/{detail.file.saved_filename}"
+                    / f"static/upload/slider/{request.user.email}/{i.file}"
                 )
                 Path(root_directory).unlink()
                 # ..
@@ -300,7 +286,7 @@ async def slider_file_delete(
                 await session.commit()
                 # ..
                 return RedirectResponse(
-                    f"/admin/slider/details/{detail.id}",
+                    f"/admin/slider/details/{i.id}",
                     status_code=302,
                 )
             return PlainTextResponse(

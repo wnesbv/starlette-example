@@ -33,15 +33,15 @@ async def item_list(request):
         if admin:
             # ..
             stmt = await session.execute(select(Rent).order_by(Rent.created_at.desc()))
-            odj_list = stmt.scalars().all()
+            obj_list = stmt.scalars().all()
             # ..
             stmt = await session.execute(select(func.count(Rent.id)))
-            odj_count = stmt.scalars().all()
+            obj_count = stmt.scalars().all()
             # ..
             context = {
                 "request": request,
-                "odj_list": odj_list,
-                "odj_count": odj_count,
+                "obj_list": obj_list,
+                "obj_count": obj_count,
             }
             return templates.TemplateResponse(template, context)
         return PlainTextResponse("You are banned - this is not your account..!")
@@ -51,7 +51,7 @@ async def item_list(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def item_details(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/admin/rent/details.html"
 
@@ -103,14 +103,14 @@ async def item_create(request):
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            odj_item = await all_item(session)
+            obj_item = await all_item(session)
             # ..
             if admin:
                 return templates.TemplateResponse(
                     template,
                     {
                         "request": request,
-                        "odj_item": odj_item,
+                        "obj_item": obj_item,
                     },
                 )
         # ...

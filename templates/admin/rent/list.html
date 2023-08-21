@@ -7,12 +7,12 @@
 <h1 class="lead my-3">admin list rent..</h1>
 
 <div class="card">
-    <p class="card-header">rent count {{ odj_count | max }}</p>
+    <p class="card-header">rent count {{ obj_count | max }}</p>
 </div>
 
 <div class="flex_cont">
-    {% if odj_list %}
-    {% for obj in odj_list %}
+    {% if obj_list %}
+    {% for obj in obj_list %}
     <div class="card mt-2 me-1">
 
         <ul class="card-header list-group list-group-horizontal">

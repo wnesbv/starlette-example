@@ -103,7 +103,7 @@ class ChannelOne(WebSocketEndpoint):
                     PersonParticipant.group_participant == self.group_name,
                 )
             )
-            odj_true = stmt.scalars().first()
+            obj_true = stmt.scalars().first()
             # ..
             stmt_admin = await session.execute(
                 select(MessageChat)
@@ -113,11 +113,11 @@ class ChannelOne(WebSocketEndpoint):
                     GroupChat.admin_group == name,
                 )
             )
-            odj_admin = stmt_admin.scalars().first()
+            obj_admin = stmt_admin.scalars().first()
             # ..
 
             if message:
-                if odj_true or odj_admin:
+                if obj_true or obj_admin:
                     payload = {
                         "owner_msg": owner_msg,
                         "message": message,
@@ -134,7 +134,7 @@ class ChannelOne(WebSocketEndpoint):
                     session.add(new)
                     await session.commit()
             if file:
-                if odj_true or odj_admin:
+                if obj_true or obj_admin:
                     payload = {
                         "file": file,
                         "owner_msg": owner_msg,

@@ -39,14 +39,7 @@
     </ul>
 
     <ul class="card-footer list-group list-group-flush">
-        <li class="list-group-item">
-            <sup class="float-start">created:</sup>
-            <time>{{ i.created_at }}</time>
-        </li>
-        <li class="list-group-item">
-            <sup class="float-start">modified</sup>
-            <time>{{ i.modified_at }}</time>
-        </li>
+        {% include "created_modified.html" %}
     </ul>
 </div>
 

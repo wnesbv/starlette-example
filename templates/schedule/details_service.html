@@ -1,59 +1,53 @@
 
 {% extends "base.html" %}
-{% block title %} schedule {{ sch.title }} {% endblock %}
+{% block title %} {{ i.title }} {% endblock %}
 
 {% block content %}
-<h1 class="lead my-3">schedule detail</h1>
+
+<h1 class="lead my-3">schedule detail.. {{ i.title }}</h1>
 
 <div class="card p-3">
 
     <ul class="card-header list-group list-group-horizontal">
         <li class="list-group-item pt-3">
             <sup class="float-start">id:</sup>
-            <span class="me-3">{{ sch.id }}</span>
+            <span class="me-3">{{ i.id }}</span>
         <li class="list-group-item pt-3">
             <sup class="float-start">owner:</sup>
-            <span>{{ sch.sch_s_owner }}</span>
+            <span>{{ i.sch_s_owner }}</span>
         </li>
         <li class="list-group-item pt-3">
             <sup class="float-start">service id:</sup>
-            <span>{{ sch.sch_s_service_id }}</span>
+            <span>{{ i.sch_s_service_id }}</span>
         </li>
         <li class="list-group-item pt-3">
             <sup class="float-start">name</sup>
-            <span>{{ sch.name }}</span>
+            <span>{{ i.name }}</span>
         </li>
         <li class="list-group-item pt-3">
             <sup class="float-start">type_on:</sup>
-            <span>{{ sch.type_on.name }}</span>
+            <span>{{ i.type_on.name }}</span>
         </li>
         <li class="list-group-item pt-3">
             <sup class="float-start">number on the schedule:</sup>
-           <span> {{ sch.number_on }}</span>
+           <span> {{ i.number_on }}</span>
         </li>
         <li class="list-group-item pt-3">
             <sup class="float-start">there_is:</sup>
-            <span>{{ sch.there_is }}</span>
+            <span>{{ i.there_is }}</span>
         </li>
     </ul>
 
     <ul class="card-body list-group list-group-flush">
         <li class="list-group-item">
             <sup class="float-start">title</sup>
-            <p class="mt-2">{{ sch.title }}</p>
+            <p class="mt-2">{{ i.title }}</p>
         </li>
         <li class="list-group-item">
             <sup class="float-start">description</sup>
-            <p class="mt-2">{{ sch.description }}</p>
+            <p class="mt-2">{{ i.description }}</p>
         </li>
-        <li class="list-group-item">
-            <sup class="float-start">created</sup>
-            <time>{{ sch.created_at }}</time>
-        </li>
-        <li class="list-group-item">
-            <sup class="float-start">modified</sup>
-            <time>{{ sch.modified_at }}</time>
-        </li>
+        {% include "created_modified.html" %}
     </ul>
 
     <div class="card-footer mt-3">
@@ -61,14 +55,13 @@
     </div>
 </div>
 
-
 {% if request.user.is_authenticated %}
     <div class="card">
         <div class="card-header">
-            <a class="btn btn-outline-primary btn-sm me-2" href="/item/schedule-service/update/{{ sch.id }}" role="button">
+            <a class="btn btn-outline-primary btn-sm me-2" href="/item/schedule-service/update/{{ i.id }}" role="button">
                 <i class="bi bi-pencil"></i> &raquo;
             </a>
-            <a class="btn btn-outline-danger btn-sm" href="/item/schedule-service/delete/{{ sch.id }}" role="button">
+            <a class="btn btn-outline-danger btn-sm" href="/item/schedule-service/delete/{{ i.id }}" role="button">
                 <i class="bi bi-trash3"></i> &raquo;
             </a>
         </div>

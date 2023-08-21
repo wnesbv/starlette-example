@@ -1,0 +1,13 @@
+
+{% if i.created_at %}
+<li class="list-group-item pt-3">
+    <sup class="float-start">created</sup>
+    <time>{{ i.created_at.strftime("%d-%m-%y %H:%M") }}</time>
+</li>
+{% endif %}
+{% if i.modified_at %}
+<li class="list-group-item pt-3">
+    <sup class="float-start">modified</sup>
+    <time>{{ i.modified_at.strftime("%d-%m-%y %H:%M") }}</time>
+</li>
+{% endif %}

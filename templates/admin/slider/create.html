@@ -4,10 +4,12 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">new slider</h1>
-    <form class="card p-3" method="POST" enctype="multipart/form-data">
-        <div class="m-2">
-            <sup class="float-start">title</sup>
+<h1 class="lead my-4">new slider</h1>
+<form class="card p-3" method="POST" enctype="multipart/form-data">
+
+    <div class="card-body">
+        <div class="mb-2">
+            <sup>title</sup>
             <input
                 required
                 type="text"
@@ -16,11 +18,15 @@
                 class="form-control my-2"
             />
         </div>
-        <div class="m-2">
-        <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ description }}</textarea>
+        <div class="mb-2">
+        <sup>description</sup>
+        <textarea class="form-control" name="description" maxlength="333" spellcheck></textarea>
             <div id="help" class="form-text">help text</div>
         </div>
-        <div class="m-2">
+    </div>
+
+    <div class="card-footer">
+        <div class="mb-2">
             <input
                 required
                 type="file"
@@ -33,6 +39,7 @@
             submit
         </button>
         </div>
-    </form>
+    </div>
+</form>
 
 {% endblock %}

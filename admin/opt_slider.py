@@ -4,21 +4,9 @@ from sqlalchemy import select, func
 from starlette.templating import Jinja2Templates
 
 from item.models import Slider
-from options_select.opt_slc import all_total
 
 
 templates = Jinja2Templates(directory="templates")
-
-
-async def all_count(
-    session
-):
-    stmt = await session.execute(
-        select(func.count(Slider.id))
-    )
-    result = stmt.scalars().all()
-    return result
-
 
 
 async def all_slider(
@@ -32,9 +20,8 @@ async def all_slider(
 
 
 async def in_slider(
-    request, session
+    session, id
 ):
-    id = request.path_params["id"]
     stmt = await session.execute(
         select(Slider)
         .where(

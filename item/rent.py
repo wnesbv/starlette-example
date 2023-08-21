@@ -36,13 +36,13 @@ async def rent_create(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            odj_item = await user_tm(request, session)
+            obj_item = await user_tm(request, session)
             # ..
             return templates.TemplateResponse(
                 template,
                 {
                     "request": request,
-                    "odj_item": odj_item,
+                    "obj_item": obj_item,
                 },
             )
         # ...
@@ -235,11 +235,11 @@ async def rent_list(request):
     async with async_session() as session:
         # ..
         stmt = await session.execute(select(Rent).order_by(Rent.created_at.desc()))
-        odj_list = stmt.scalars().all()
+        obj_list = stmt.scalars().all()
         # ..
         context = {
             "request": request,
-            "odj_list": odj_list,
+            "obj_list": obj_list,
         }
         return templates.TemplateResponse(template, context)
     await engine.dispose()

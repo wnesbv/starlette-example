@@ -333,7 +333,7 @@ async def period_item(time_start, time_end, reserve_period, session):
     print(" start..", start)
     i = await session.execute(select(ReserveRentFor.time_end))
     end = i.scalars().all()
-    print(" start..", end)
+    print(" end..", end)
 
     stmt = await session.execute(
         select(Item)
@@ -345,7 +345,9 @@ async def period_item(time_start, time_end, reserve_period, session):
         .where(func.date(time_end).not_in(end))
     )
     result = stmt.scalars().unique()
+    print(" item..", result)
     return result
+
 
 
 async def period_rent(time_start, time_end, session):
@@ -388,11 +390,16 @@ async def not_period_item(session):
 
 async def not_period_rent(session, id):
     # ..
-    stmt = await session.execute(select(Rent.id).join(ReserveRentFor.rrf_rent))
+    stmt = await session.execute(
+        select(Rent.id)
+        .join(ReserveRentFor.rrf_rent)
+    )
     result = stmt.scalars().all()
     print(" not rent res..", result)
     stmt = await session.execute(
-        select(Rent).where(Rent.id.not_in(result)).where(Rent.rent_belongs == id)
+        select(Rent)
+        .where(Rent.id.not_in(result))
+        .where(Rent.rent_belongs == id)
     )
     result = stmt.scalars().unique()
     return result

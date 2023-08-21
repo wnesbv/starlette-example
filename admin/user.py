@@ -38,12 +38,12 @@ async def i_list(request):
         # ..
         if admin:
             stmt = await session.execute(select(User).order_by(User.created_at.desc()))
-            odj_list = stmt.scalars().all()
-            odj_count = await all_total(session, User)
+            obj_list = stmt.scalars().all()
+            obj_count = await all_total(session, User)
             context = {
                 "request": request,
-                "odj_list": odj_list,
-                "odj_count": odj_count,
+                "obj_list": obj_list,
+                "obj_count": obj_count,
             }
             return templates.TemplateResponse(template, context)
         return PlainTextResponse("You are banned - this is not your account..!")

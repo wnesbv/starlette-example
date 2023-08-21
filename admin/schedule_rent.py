@@ -50,11 +50,11 @@ async def rent_list(
                 select(ScheduleRent)
                 .order_by(ScheduleRent.created_at)
             )
-            odj_list = result.scalars().all()
+            obj_list = result.scalars().all()
             # ..
             context = {
                 "request": request,
-                "odj_list": odj_list,
+                "obj_list": obj_list,
             }
             return templates.TemplateResponse(
                 template, context
@@ -67,7 +67,7 @@ async def rent_list(
 async def rent_details(
     request
 ):
-
+    # ..
     id = request.path_params["id"]
     template = "/admin/schedule_rent/details.html"
 
@@ -121,15 +121,15 @@ async def item_create(
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            odj_service = await all_service(session)
-            odj_rent = await all_rent(session)
+            obj_service = await all_service(session)
+            obj_rent = await all_rent(session)
             # ..
             if admin:
                 return templates.TemplateResponse(
                     template, {
                         "request": request,
-                        "odj_rent": odj_rent,
-                        "odj_service": odj_service,
+                        "obj_rent": obj_rent,
+                        "obj_service": obj_service,
                     }
                 )
         # ...

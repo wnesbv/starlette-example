@@ -256,15 +256,15 @@ async def item_create(
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            odj_service = await all_service(session)
-            odj_rent = await all_rent(session)
+            obj_service = await all_service(session)
+            obj_rent = await all_rent(session)
             # ..
             if admin:
                 return templates.TemplateResponse(
                     template, {
                         "request": request,
-                        "odj_rent": odj_rent,
-                        "odj_service": odj_service,
+                        "obj_rent": obj_rent,
+                        "obj_service": obj_service,
                     }
                 )
         # ...

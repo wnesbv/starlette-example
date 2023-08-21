@@ -38,13 +38,13 @@ async def list_service(request):
     template = "/schedule/list_service.html"
     async with async_session() as session:
         # ..
-        odj_count = await all_total(session, Service)
-        odj_list = await schedule_sv_user(request, session)
+        obj_count = await all_total(session, Service)
+        obj_list = await schedule_sv_user(request, session)
         # ..
         context = {
             "request": request,
-            "odj_list": odj_list,
-            "odj_count": odj_count,
+            "obj_list": obj_list,
+            "obj_count": obj_count,
         }
         return templates.TemplateResponse(template, context)
     await engine.dispose()
@@ -53,17 +53,17 @@ async def list_service(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def list_service_id(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/schedule/list_service_id.html"
 
     async with async_session() as session:
         # ..
-        odj_list = await schedule_sv(request, session, id)
+        obj_list = await schedule_sv(request, session, id)
         # ..
         context = {
             "request": request,
-            "odj_list": odj_list,
+            "obj_list": obj_list,
         }
         return templates.TemplateResponse(template, context)
     await engine.dispose()
@@ -81,8 +81,8 @@ async def details_service(request):
 
         if request.method == "GET":
             # ..
-            sch = await in_schedule_service(request, session, id)
-            if sch:
+            i = await in_schedule_service(request, session, id)
+            if i:
                 # ..
                 obj_list = await details_schedule_service(request, session, service)
                 # ..
@@ -109,7 +109,7 @@ async def details_service(request):
                 context = {
                     "request": request,
                     "sch_json": sch_json,
-                    "sch": sch,
+                    "i": i,
                 }
             return templates.TemplateResponse(template, context)
     await engine.dispose()
@@ -125,14 +125,14 @@ async def create_service(request):
 
         if request.method == "GET":
             # ..
-            odj_service = await user_sv(request, session)
+            obj_service = await user_sv(request, session)
             objects = list(MyEnum)
             # ..
             return templates.TemplateResponse(
                 template,
                 {
                     "request": request,
-                    "odj_service": odj_service,
+                    "obj_service": obj_service,
                     "objects": objects,
                 },
             )

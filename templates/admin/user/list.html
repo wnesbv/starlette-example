@@ -7,26 +7,26 @@
 <h1 class="lead my-3">admin list user..</h1>
 
 <div class="card">
-    <p class="card-header">user count {{ odj_count | max }}</p>
+    <p class="card-header">user count {{ obj_count | max }}</p>
 </div>
 
 <div class="flex_cont">
-    {% if odj_list %}
-    {% for obj in odj_list %}
+    {% if obj_list %}
+    {% for i in obj_list %}
     <div class="card mt-2 me-1">
 
         <ul class="card-header list-group list-group-horizontal">
             <li class="list-group-item">
                 <sup class="float-start">id:</sup>
-                <span class="me-3">{{ obj.id }}</span>
+                <span class="me-3">{{ i.id }}</span>
             </li>
             <li class="list-group-item">
                 <sup class="float-start">name:</sup>
-                <span>{{ obj.name }}</span>
+                <span>{{ i.name }}</span>
             </li>
             <li class="list-group-item">
                 <sup class="float-start">email:</sup>
-                <span>{{ obj.email }}</span>
+                <span>{{ i.email }}</span>
             </li>
         </ul>
 
@@ -35,33 +35,26 @@
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">
                     <sup class="float-start">email verified:</sup>
-                    <span>{{ obj.email_verified }}</span>
+                    <span>{{ i.email_verified }}</span>
                 </li>
                 <li class="list-group-item">
                     <sup class="float-start">active:</sup>
-                    <span>{{ obj.is_active }}</span>
+                    <span>{{ i.is_active }}</span>
                 </li>
                 <li class="list-group-item">
                     <sup class="float-start">admin:</sup>
-                    <span>{{ obj.is_admin }}</span>
+                    <span>{{ i.is_admin }}</span>
                 </li>
                 <li class="list-group-item">
                     <sup class="float-start">last_login_date:</sup>
-                    <span>{{ obj.last_login_date }}</span>
+                    <span>{{ i.last_login_date }}</span>
                 </li>
-                <li class="list-group-item">
-                    <sup class="float-start">created:</sup>
-                    <time>{{ obj.created_at }}</time>
-                </li>
-                <li class="list-group-item">
-                    <sup class="float-start">modified</sup>
-                    <time>{{ obj.modified_at }}</time>
-                </li>
+                {% include "created_modified.html" %}
             </ul>
         </div>
 
         <p class="card-footer">
-        <a class="btn btn-outline-primary btn-sm" href="/admin/user/details/{{ obj.id }}" role="button">View details &raquo;</a>
+        <a class="btn btn-outline-primary btn-sm" href="/admin/user/details/{{ i.id }}" role="button">View details &raquo;</a>
         </p>
 
     </div>

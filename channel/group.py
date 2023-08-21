@@ -25,10 +25,10 @@ async def group_list(request):
             select(GroupChat)
             .order_by(GroupChat.id)
         )
-        odj_list = result.scalars().all()
+        obj_list = result.scalars().all()
         context = {
             "request": request,
-            "odj_list": odj_list,
+            "obj_list": obj_list,
         }
 
         return templates.TemplateResponse(template, context)
@@ -41,7 +41,7 @@ async def group_list(request):
 async def group_details(request):
 
     if request.method == "GET":
-        
+        # ..
         id = request.path_params["id"]
         id_group = request.path_params["id"]
         template = "/group/details.html"
@@ -52,7 +52,7 @@ async def group_details(request):
                 select(GroupChat)
                 .where(GroupChat.id == id)
             )
-            detail = stmt.scalars().first()
+            i = stmt.scalars().first()
             # ..
             stmt_chat = await session.execute(
                 select(MessageChat)
@@ -63,7 +63,7 @@ async def group_details(request):
             group_chat = stmt_chat.scalars()
             context = {
                 "request": request,
-                "detail": detail,
+                "i": i,
                 "id_group": id_group,
                 "group_chat": group_chat,
             }

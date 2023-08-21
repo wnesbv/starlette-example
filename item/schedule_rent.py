@@ -69,8 +69,8 @@ async def details_rent(
 
         if request.method == "GET":
             #..
-            sch = await in_schedule_rent(request, session, id)
-            if sch:
+            i = await in_schedule_rent(request, session, id)
+            if i:
                 #..
                 obj_list = await details_schedule_rent(request, session)
                 #..
@@ -92,7 +92,7 @@ async def details_rent(
                 context = {
                     "request": request,
                     "sch_json": sch_json,
-                    "sch": sch,
+                    "i": i,
                 }
             return templates.TemplateResponse(
                 template, context
@@ -110,12 +110,12 @@ async def create_rent(
 
         if request.method == "GET":
             #..
-            odj_rent = await user_rt(request, session)
+            obj_rent = await user_rt(request, session)
             #..
             return templates.TemplateResponse(
                 template, {
                     "request": request,
-                    "odj_rent": odj_rent,
+                    "obj_rent": obj_rent,
                 }
             )
         # ...

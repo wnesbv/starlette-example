@@ -1,60 +1,55 @@
 
 {% extends "base.html" %}
-{% block title %} slider file update {{ detail.title }} {% endblock %}
+{% block title %} sl file update {{ i.title }} {% endblock %}
 
 {% block content %}
 
-    <h1 class="lead my-3">detail file slider</h1>
-    <div class="flex_cont">
-        <div class="card p-3">
+<h1 class="lead my-3">detail file slider</h1>
 
-        <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item">
-                <sup class="float-start">id:</sup>
-                {{ detail.id }}
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">created:</sup>
-                <time>{{ detail.created_at }}</time>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">modified_at:</sup>
-                <time>{{ detail.modified_at }}</time>
-            </li>
-        </ul>
+<div class="card p-3">
 
-        <div>
-        {% if detail.file %}
-        <img width="800" class="w-100 shadow-sm mb-5" src="{{ detail.file }}" alt="img">
-        {% endif %}
-        </div>
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item pt-3">
+            <sup class="float-start">id:</sup>
+            {{ i.id }}
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">title:</sup>
+            <p>{{ i.title }}</p>
+        </li>
+        {% include "created_modified.html" %}
+    </ul>
 
-        </div>
-
+    <div>
+    {% if i.file %}
+    <img width="800" class="w-100 shadow-sm mb-5" src="{{ i.file }}" alt="img">
+    {% endif %}
     </div>
 
-    <form class="card mt-2"  method="POST" enctype="multipart/form-data">
-        <div class="m-2">
-            <input
-                type="file"
-                name="file"
-                class="form-control"
-            />
-        </div>
+</div>
 
-        <div class="m-2">
-        <button type="submit" class="btn btn-outline-primary btn-sm">
-            submit
-        </button>
-        </div>
-    </form>
-
-    <div class="m-2">
-        <a class="btn btn-outline-danger btn-sm" href="/item/service/file-delete/{{ detail.id }}" role="button">
-            <i class="bi bi-trash3"></i> &raquo;
-        </a>
+<form class="card mt-2"  method="POST" enctype="multipart/form-data">
+    <div class="card-body">
+        <input
+            type="file"
+            name="file"
+            class="form-control"
+        />
     </div>
 
-    <div class="my-5">{{ detail.file }}</div>
+    <div class="card-footer">
+    <button type="submit" class="btn btn-outline-primary btn-sm">
+        submit
+    </button>
+    </div>
+</form>
+
+<div class="m-2">
+    <a class="btn btn-outline-danger btn-sm" href="/admin/slider/delete/{{ i.id }}" role="button">
+        <i class="bi bi-trash3"></i> &raquo;
+    </a>
+</div>
+
+<div class="my-5">{{ i.file }}</div>
 
 {% endblock %}

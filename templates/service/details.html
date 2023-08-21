@@ -12,16 +12,16 @@
 <div class="card p-3">
 
     <ul class="card-header list-group list-group-horizontal">
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">id:</sup>
             <span>{{ i.id }}...</span>
             <input type="hidden" id="detail" name="id" value="{{ i.id }}">
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">owner:</sup>
             <span>{{ i.service_owner }}</span>
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">service_belongs:</sup>
             <span>{{ i.service_belongs }}</span>
         </li>
@@ -38,15 +38,8 @@
         </li>
     </ul>
 
-    <ul class="card-footer">
-        <li class="list-group-item">
-            <sup class="float-start">created:</sup>
-            <time>{{ i.created_at }}</time>
-        </li>
-        <li class="list-group-item">
-            <sup class="float-start">modified</sup>
-            <time>{{ i.modified_at }}</time>
-        </li>
+    <ul class="card-footer list-group list-group-flush">
+        {% include "created_modified.html" %}
     </ul>
 
 </div>

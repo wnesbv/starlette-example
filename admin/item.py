@@ -10,6 +10,7 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 from db_config.storage_config import engine, async_session
 
 from item.models import Item, Service, Rent
+from options_select.opt_slc import all_total
 from .opt_slc import in_admin, all_user, item_comment, in_item
 
 
@@ -50,17 +51,14 @@ async def item_list(
         if admin:
             # ..
             stmt = await session.execute(select(Item).order_by(Item.created_at.desc()))
-            odj_list = stmt.scalars().all()
+            obj_list = stmt.scalars().all()
             # ..
-            stmt = await session.execute(
-                select(func.count(Item.id))
-            )
-            odj_count = stmt.scalars().all()
+            obj_count = await all_total(session, Item)
             # ..
             context = {
                 "request": request,
-                "odj_list": odj_list,
-                "odj_count": odj_count,
+                "obj_list": obj_list,
+                "obj_count": obj_count,
             }
             return templates.TemplateResponse(
                 template, context

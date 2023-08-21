@@ -60,11 +60,11 @@ async def homepage(
         stmt_sl = await session.execute(
             select(Slider)
         )
-        odj_sl = stmt_sl.scalars().all()
+        obj_sl = stmt_sl.scalars().all()
         # ..
         if not request.user.is_authenticated:
             response = templates.TemplateResponse(
-                template, {"request": request, "odj_sl": odj_sl}
+                template, {"request": request, "obj_sl": obj_sl}
             )
             return response
 
@@ -72,12 +72,12 @@ async def homepage(
             select(User)
             .where(User.id==request.user.user_id)
         )
-        odj_list = stmt.scalars().all()
+        obj_list = stmt.scalars().all()
         # ..
         context = {
             "request": request,
-            "odj_list": odj_list,
-            "odj_sl": odj_sl,
+            "obj_sl": obj_sl,
+            "obj_list": obj_list,
         }
         return templates.TemplateResponse(template, context)
     await engine.dispose()

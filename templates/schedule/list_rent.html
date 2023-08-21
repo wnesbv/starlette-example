@@ -39,14 +39,7 @@ list rent schedule.. user: {{ request.user.user_id }}
                 <sup class="float-start">description:</sup>
                  <span>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</span>
             </li>
-            <li class="list-group-item pt-3">
-                <sup class="float-start">created:</sup>
-                <time>{{ i.created_at }}</time>
-            </li>
-            <li class="list-group-item pt-3">
-                <sup class="float-start">modified</sup>
-                <time>{{ i.modified_at }}</time>
-            </li>
+            {% include "created_modified.html" %}
         </ul>
 
         <div class="card-footer">

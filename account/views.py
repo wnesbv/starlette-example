@@ -323,6 +323,7 @@ async def user_list(request):
 
 
 async def user_detail(request):
+    # ..
     id = request.path_params["id"]
     template = "/auth/details.html"
 
@@ -333,15 +334,15 @@ async def user_detail(request):
                 User.id == id,
             )
         )
-        result = stmt.scalars().first()
+        i = stmt.scalars().first()
         # ..
         context = {
             "request": request,
-            "result": result,
+            "i": i,
         }
         # ...
         if request.method == "GET":
-            if result:
+            if i:
                 return templates.TemplateResponse(template, context)
         return RedirectResponse("/account/list", status_code=302)
     await engine.dispose()

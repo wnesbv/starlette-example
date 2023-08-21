@@ -228,11 +228,11 @@ async def item_list(request):
     async with async_session() as session:
         # ..
         stmt = await session.execute(select(Item).order_by(Item.created_at.desc()))
-        odj_list = stmt.scalars().all()
+        obj_list = stmt.scalars().all()
         # ..
         context = {
             "request": request,
-            "odj_list": odj_list,
+            "obj_list": obj_list,
         }
         return templates.TemplateResponse(template, context)
     await engine.dispose()
