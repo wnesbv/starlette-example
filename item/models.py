@@ -14,6 +14,7 @@ from db_config.storage_config import Base
 class Slider(Base):
     __tablename__ = "slider"
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id_sl: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     title: Mapped[str] = mapped_column(Text, nullable=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
     file: Mapped[str] = mapped_column(String, nullable=True)

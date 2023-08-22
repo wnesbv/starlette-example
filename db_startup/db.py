@@ -1,6 +1,6 @@
 
 from datetime import datetime, date, timedelta
-
+import random
 from passlib.hash import pbkdf2_sha1
 
 from item.models import Slider
@@ -183,7 +183,9 @@ async def on_app_startup() -> None:
                         dump_s_owner=1,
                         dump_s_service_id=1,
                     ),
-                    Slider(),
+                    Slider(
+                        id_sl=random.randint(100, 999)
+                    ),
                 ]
             )
             await session.flush()

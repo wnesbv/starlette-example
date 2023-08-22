@@ -22,34 +22,34 @@
 
     <div>
     {% if i.file %}
-    <img width="800" class="w-100 shadow-sm mb-5" src="{{ i.file }}" alt="img">
+    <figure class="card">
+    <img class="shadow-sm my-3" src="{{ i.file }}" alt="">
+    <figcaption>
+        <span class="m-2"><sub>{{ i.file }}</sub></span>
+    </figcaption>
+    </figure>
     {% endif %}
     </div>
 
 </div>
 
 <form class="card mt-2"  method="POST" enctype="multipart/form-data">
-    <div class="card-body">
+    <div class="card-footer">
         <input
             type="file"
             name="file"
-            class="form-control"
+            class="form-control mb-2"
         />
-    </div>
-
-    <div class="card-footer">
-    <button type="submit" class="btn btn-outline-primary btn-sm">
-        submit
-    </button>
+        <button type="submit" class="btn btn-outline-primary btn-sm l mb-2">
+            submit
+        </button>
     </div>
 </form>
 
-<div class="m-2">
-    <a class="btn btn-outline-danger btn-sm" href="/admin/slider/delete/{{ i.id }}" role="button">
-        <i class="bi bi-trash3"></i> &raquo;
+<div class="bg-light m-2">
+    <a class="btn btn-outline-danger btn-sm" href="/admin/slider/file-delete/{{ i.id }}" role="button">
+        <i class="bi bi-trash3"></i>file &raquo;
     </a>
 </div>
-
-<div class="my-5">{{ i.file }}</div>
 
 {% endblock %}

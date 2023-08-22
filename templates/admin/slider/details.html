@@ -4,70 +4,64 @@
 
 {% block content %}
 
-    <h1 class="lead my-3">slider detail...</h1>
-    <div class="flex_star">
-        <div class="card p-3 mb-5">
-        <h2 class="lead">slider</h2>
+<h1 class="lead my-3">slider detail...</h1>
+<div class="row">
+    <div class="col-md-5 card">
+    <h2 class="lead">slider</h2>
 
-        <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item pt-3">
-                <sup class="float-start">id:</sup>
-                <span>{{ i.id }}...</span>
-                <input type="hidden" id="detail" name="id" value="{{ i.id }}">
-            </li>
-        </ul>
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item pt-3">
+            <sup class="float-start">id:</sup>
+            <span>{{ i.id }}...</span>
+            <input type="hidden" id="detail" name="id" value="{{ i.id }}">
+        </li>
+    </ul>
 
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">title:</sup>
-                <p>{{ i.title }}</p>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">description:</sup>
-                <p>{{ i.description | safe }}</p>
-            </li>
-        </ul>
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">title:</sup>
+            <p>{{ i.title }}</p>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">description:</sup>
+            <p>{{ i.description | safe }}</p>
+        </li>
+    </ul>
 
-        <ul class="card-footer list-group list-group-flush">
-            {% include "created_modified.html" %}
-        </ul>
+    <ul class="card-footer list-group list-group-flush">
+        {% include "created_modified.html" %}
+    </ul>
 
-        </div>
-
-        {% if i.file %}
-        <div class="col-xxl-5 col-sm-10 ms-3">
-        <img class="w-100 shadow-sm mb-5" src="{{ i.file }}" alt="">
-
-        <a class="btn btn-outline-primary btn-sm mb-2" href="/admin/slider/file-update/{{ i.id }}" role="button">
-            image <i class="bi bi-pencil"></i> &raquo;
+    {% if request.user.is_authenticated %}
+    <div class="card-footer">
+        <a class="btn btn-outline-primary btn-sm me-2" href="/admin/slider/update/{{ i.id }}" role="button">
+            <i class="bi bi-pencil"></i>slider &raquo;
         </a>
-
-        </div>
-
-        {% else %}
-        <div class="w-100 my-3">
-            <a class="btn btn-outline-primary btn-sm mb-2" href="/admin/slider/file-update/{{ i.id }}" role="button">
-                image <i class="bi bi-pencil"></i> &raquo;
-            </a>
-        </div>
-        {% endif %}
+        <a class="btn btn-outline-danger btn-sm" href="/admin/slider/delete/{{ i.id }}" role="button">
+            <i class="bi bi-trash3"></i>slider &raquo;
+        </a>
+    </div>
+    {% endif %}
 
     </div>
 
 
-{% if request.user.is_authenticated %}
-    <div class="mt-2">
-        <div class="card">
-            <div class="card-header">
-                <a class="btn btn-outline-primary btn-sm me-2" href="/admin/slider/update/{{ i.id }}" role="button">
-                    <i class="bi bi-pencil"></i> &raquo;
-                </a>
-                <a class="btn btn-outline-danger btn-sm" href="/admin/slider/delete/{{ i.id }}" role="button">
-                    <i class="bi bi-trash3"></i> &raquo;
-                </a>
-            </div>
-        </div>
-  </div>
-{% endif %}
+    {% if i.file %}
+    <figure class="col-md-7 card">
+    <img class="shadow-sm my-3" src="{{ i.file }}" alt="">
+    {% if request.user.is_authenticated %}
+        <figcaption class="card-footer">
+        <a class="btn btn-outline-primary btn-sm me-2" href="/admin/slider/file-update/{{ i.id }}" role="button">
+            <i class="bi bi-pencil"></i>file &raquo;
+        </a>
+        <a class="btn btn-outline-danger btn-sm" href="/admin/slider/file-delete/{{ i.id }}" role="button">
+            <i class="bi bi-trash3"></i>file &raquo;
+        </a>
+        </figcaption>
+    {% endif %}
+    </figure>
+    {% endif %}
+
+</div>
 
 {% endblock %}

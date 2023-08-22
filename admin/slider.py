@@ -2,6 +2,8 @@
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import random, shutil
+
 from sqlalchemy import select, update as sqlalchemy_update, delete
 
 from starlette.authentication import requires
@@ -94,11 +96,13 @@ async def slider_create(request):
             title = form["title"]
             description = form["description"]
             file = form["file"]
+            id_sl = random.randint(100, 999)
             # ..
             new = Slider()
+            new.id_sl = id_sl
             new.title = title
             new.description = description
-            new.file = await img.img_creat(request, file, mdl, basewidth)
+            new.file = await img.sl_img_creat(request, file, mdl, id_sl, basewidth)
             new.created_at = datetime.now()
             # ..
             session.add(new)
@@ -194,12 +198,13 @@ async def slider_file_update(
             #..
             form = await request.form()
             file = form["file"]
+            id_sl = i.id_sl
             #..
             file_query = (
                 sqlalchemy_update(Slider)
                 .where(Slider.id == id)
                 .values(
-                    file= await img.img_creat(request, file, mdl, basewidth),
+                    file= await img.sl_img_creat(request, file, mdl, id_sl, basewidth),
                     modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
@@ -232,14 +237,21 @@ async def slider_delete(request):
             if admin:
                 return templates.TemplateResponse(
                     template,
-                    {
-                        "request": request,
+                    {"request": request,
                         "detail": detail,
                     },
                 )
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
         if request.method == "POST":
+            i = await in_slider(session, id)
+            directory = (
+                BASE_DIR
+                / f"static/upload/slider/{request.user.email}/{i.id_sl}"
+            )
+            shutil.rmtree(directory)
+
+                # ..
             # ..
             query = delete(Slider).where(Slider.id == id)
             await session.execute(query)
@@ -265,14 +277,10 @@ async def slider_file_delete(
 
         if request.method == "GET":
             # ..
-            i = await in_slider(request, session)
+            i = await in_slider(session, id)
             if i:
-                # ..
-                root_directory = (
-                    BASE_DIR
-                    / f"static/upload/slider/{request.user.email}/{i.file}"
-                )
-                Path(root_directory).unlink()
+                if Path(f".{i.file}").exists():
+                    Path.unlink(f".{i.file}")
                 # ..
                 file_query = (
                     sqlalchemy_update(Slider)
