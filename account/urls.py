@@ -10,7 +10,7 @@ from .views import (
     user_logout,
     verify_email,
     resend_email,
-
+    user_delete,
 )
 from .recovery import (
     reset_password,
@@ -80,5 +80,10 @@ routes = [
         endpoint=reset_password_confirm,
         methods=["GET", "POST"],
         name="reset_password_confirm",
+    ),
+    Route(
+        "/delete/{id:int}",
+        user_delete,
+        methods=["GET", "POST"],
     ),
 ]

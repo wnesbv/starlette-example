@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from pathlib import Path, PurePosixPath
 
-import os, jwt
+import os, jwt,  random, shutil
 
 from sqlalchemy import update as sqlalchemy_update, delete
 
@@ -17,17 +17,16 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 from starlette.status import HTTP_400_BAD_REQUEST
 from starlette.authentication import requires
 
+from config.settings import BASE_DIR
 from db_config.settings import settings
 from db_config.storage_config import engine, async_session
 
 from account.models import User
+
 from mail.verify import verify_mail
 
-from .token import (
-    mail_verify,
-)
-from options_select import file_img
-
+from .token import mail_verify
+from . import img
 
 key = settings.SECRET_KEY
 algorithm = settings.JWT_ALGORITHM
@@ -37,6 +36,7 @@ templates = Jinja2Templates(directory="templates")
 
 
 async def user_register(request):
+    # ..
     template = "/auth/register.html"
 
     async with async_session() as session:
@@ -51,7 +51,6 @@ async def user_register(request):
             stmt_email = await session.execute(select(User).where(User.email == email))
             email_exist = stmt_email.scalars().first()
             # ..
-
             if name_exist:
                 raise HTTPException(
                     status_code=HTTP_400_BAD_REQUEST,
@@ -62,7 +61,6 @@ async def user_register(request):
                     status_code=HTTP_400_BAD_REQUEST,
                     detail="email already registered..!",
                 )
-
             new = User()
             new.name = name
             new.email = email
@@ -97,11 +95,11 @@ async def user_register(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def user_update(request):
-
-    id = request.path_params["id"]
-    template = "/auth/update.html"
+    # ..
     mdl = "user"
     basewidth = 256
+    id = request.path_params["id"]
+    template = "/auth/update.html"
 
     async with async_session() as session:
         # ..
@@ -171,12 +169,15 @@ async def user_update(request):
                     status_code=302,
                 )
             # ..
+            if i.id_fle is not None:
+                id_fle = i.id_fle
+            id_fle = random.randint(100, 999)
             file_query = (
                 sqlalchemy_update(User)
                 .where(User.id == id)
                 .values(
                     name=name,
-                    file=await file_img.img_creat(request, file, mdl, basewidth),
+                    file=await img.img_creat(request, file, mdl, id_fle, basewidth),
                     modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
@@ -303,7 +304,6 @@ async def resend_email(request):
     await engine.dispose()
 
 
-
 async def user_list(request):
     template = "/auth/list.html"
 
@@ -345,4 +345,38 @@ async def user_detail(request):
             if i:
                 return templates.TemplateResponse(template, context)
         return RedirectResponse("/account/list", status_code=302)
+    await engine.dispose()
+
+
+@requires("authenticated", redirect="user_login")
+# ...
+async def user_delete(request):
+    # ..
+    id = request.path_params["id"]
+    template = "/auth/delete.html"
+
+    async with async_session() as session:
+        if request.method == "GET":
+            # ..
+            if request.user.user_id == id:
+                return templates.TemplateResponse(
+                    template, {"request": request}
+                )
+            return PlainTextResponse("You are banned - this is not your account..!")
+
+        # ...
+        if request.method == "POST":
+            # ..
+            await img.id_fle_delete(request)
+            # ..
+            query = delete(User).where(User.id == id)
+            # ..
+            await session.execute(query)
+            await session.commit()
+            # ..
+            response = RedirectResponse(
+                "/account/list",
+                status_code=302,
+            )
+            return response
     await engine.dispose()

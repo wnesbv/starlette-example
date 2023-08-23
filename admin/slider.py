@@ -13,6 +13,8 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 from db_config.storage_config import engine, async_session
 
 from item.models import Slider
+
+from config.settings import BASE_DIR
 from options_select.opt_slc import all_total
 
 from .opt_slc import in_admin
@@ -20,7 +22,6 @@ from .opt_slider import all_slider, in_slider
 
 from . import img
 
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 templates = Jinja2Templates(directory="templates")
 
 
@@ -244,14 +245,13 @@ async def slider_delete(request):
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
         if request.method == "POST":
+            # ..
             i = await in_slider(session, id)
             directory = (
                 BASE_DIR
                 / f"static/upload/slider/{request.user.email}/{i.id_sl}"
             )
             shutil.rmtree(directory)
-
-                # ..
             # ..
             query = delete(Slider).where(Slider.id == id)
             await session.execute(query)

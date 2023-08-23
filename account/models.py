@@ -19,6 +19,8 @@ class User(Base):
         String(120), nullable=False, unique=True, index=True
     )
     password: Mapped[str] = mapped_column(String, nullable=False)
+    # ...
+    id_fle: Mapped[str] = mapped_column(String, unique=True, nullable=True)
     file: Mapped[str] = mapped_column(String, nullable=True)
     # ...
     email_verified: Mapped[bool] = mapped_column(Boolean, default=False)

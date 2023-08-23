@@ -1,4 +1,5 @@
 
+from datetime import datetime, timedelta
 import os
 from pathlib import Path, PurePosixPath
 
@@ -7,13 +8,16 @@ from starlette.exceptions import HTTPException
 
 
 async def img_creat(
-    request, file, mdl, basewidth
+    request, file, mdl, id_fle, basewidth
 ):
-
-    save_path = f"./static/upload/{mdl}/{request.user.email}"
-    file_path = f"{save_path}/{file.filename}"
-
+    # ..
+    user = request.user.email
+    name = datetime.now().strftime("%d-%m-%y-%H-%M")
+    save_path = f"./static/upload/{mdl}/{user}/{id_fle}"
+    # ..
     ext = PurePosixPath(file.filename).suffix
+    file_path = f"{save_path}/{name}{ext}"
+    # ..
     if ext not in (".png", ".jpg", ".jpeg"):
         raise HTTPException(
             status_code=400,
@@ -24,7 +28,6 @@ async def img_creat(
             status_code=400,
             detail="Error..! File exists..!"
         )
-
     os.makedirs(save_path, exist_ok=True)
 
     with open(file_path, "wb") as fle:

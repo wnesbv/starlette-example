@@ -10,18 +10,20 @@
 {% block content %}
 
 <h1 class="lead my-4">detail rent...</h1>
-<div class="card p-3">
+
+<div class="row">
+    <div class="col-md-5 card">
 
     <ul class="card-header list-group list-group-horizontal">
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">id:</sup>
             {{ i.id }}...
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">owner:</sup>
             <span>{{ i.rent_owner }}</span>
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">rent to item:</sup>
             <span>{{ i.rent_belongs }}</span>
         </li>
@@ -36,18 +38,17 @@
             <sup class="float-start">description:</sup>
             {{ i.description | safe }}
         </li>
-    </ul>
-
-    <ul class="card-footer list-group list-group-flush">
         {% include "created_modified.html" %}
     </ul>
-</div>
+    </div>
 
-{% if i.file %}
-<figure>
-    <img class="w-100 shadow-sm mb-5" src="{{ i.file }}">
-</figure>
-{% endif %}
+    {% if i.file %}
+    <figure class="col-md-7 card">
+    <img class="shadow-sm my-3" src="{{ i.file }}" alt="">
+    <figcaption class="card-footer"></figcaption>
+    </figure>
+    {% endif %}
+</div>
 
 <h2 class="container lead">schedule</h2>
 <ul class="card-body list-group list-group-flush">

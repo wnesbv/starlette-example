@@ -12,6 +12,8 @@ from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
+from config.settings import BASE_DIR
+
 from db_config.settings import settings
 from db_config.storage_config import engine, async_session
 from options_select.opt_slc import sch_sv_user, sch_sv_id
@@ -19,7 +21,6 @@ from options_select.opt_slc import sch_sv_user, sch_sv_id
 from .models import ScheduleService
 
 
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 root_directory = BASE_DIR / "static/upload"
 
 

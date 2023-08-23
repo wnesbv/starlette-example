@@ -13,6 +13,7 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 
 from json2html import json2html
 
+from config.settings import BASE_DIR
 from db_config.storage_config import engine, async_session
 
 from item.models import ScheduleRent, ScheduleService
@@ -26,9 +27,6 @@ from .opt_slc import(
     all_rent,
 )
 
-
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
-root_directory = BASE_DIR / "static/upload"
 
 templates = Jinja2Templates(directory="templates")
 

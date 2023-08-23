@@ -13,9 +13,9 @@
             class="form-control shadow">
             <option value="">item select</option>
 
-            {% for obj in obj_item %}
-                <option value="{{ obj.id }}">
-                    id: {{ obj.id }} title: {{ obj.title }}
+            {% for i in obj_item %}
+                <option value="{{ i.id }}">
+                    id: {{ i.id }} title: {{ i.title }}
                 </option>
             {% endfor %}
 
@@ -41,7 +41,7 @@
         </div>
         
     </div>
-    <div class="card-footer mb-2">
+    <div class="card-footer">
         <input
             type="file"
             name="file"

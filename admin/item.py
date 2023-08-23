@@ -86,7 +86,7 @@ async def item_details(
             # ..
             cmt_list = await item_comment(session, id)
             # ..
-            detail = await in_item(session, id)
+            i = await in_item(session, id)
             # ..
             opt_service = await session.execute(
                 select(Service)
@@ -103,7 +103,7 @@ async def item_details(
             # ..
             context = {
                 "request": request,
-                "detail": detail,
+                "i": i,
                 "cmt_list": cmt_list,
                 "all_service": all_service,
                 "all_rent": all_rent,

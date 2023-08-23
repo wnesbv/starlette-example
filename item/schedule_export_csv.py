@@ -17,6 +17,8 @@ from starlette.responses import (
     RedirectResponse,
 )
 
+from config.settings import BASE_DIR
+
 from db_config.storage_config import engine, async_session
 from options_select.opt_slc import (
     in_dump,
@@ -28,7 +30,6 @@ from options_select.opt_slc import (
 from .models import DumpService
 
 
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 root_directory = BASE_DIR / "static/upload"
 
 

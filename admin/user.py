@@ -2,6 +2,8 @@
 from pathlib import Path
 from datetime import datetime
 
+import random, shutil
+
 from sqlalchemy import select, update as sqlalchemy_update, delete
 
 from starlette.authentication import requires
@@ -22,6 +24,7 @@ from options_select import file_img
 from options_select.opt_slc import all_total
 
 from .opt_slc import in_admin, in_user
+from . import img
 
 
 templates = Jinja2Templates(directory="templates")
@@ -95,10 +98,10 @@ async def i_details(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def i_create(request):
-
-    template = "/admin/user/create.html"
+    # ..
     mdl = "user"
     basewidth = 800
+    template = "/admin/user/create.html"
 
     async with async_session() as session:
         if request.method == "GET":
@@ -153,11 +156,13 @@ async def i_create(request):
                     f"/admin/user/details/{ new.id }",
                     status_code=302,
                 )
+            # ..
+            id_fle = random.randint(100, 999)
             new = User()
             new.name = name
             new.email = email
             new.password = password
-            new.file = await file_img.img_creat(request, file, mdl, basewidth)
+            new.file = await img.img_creat(file, email, mdl, id_fle, basewidth)
             new.created_at = datetime.now()
             new.email_verified = strtobool(email_verified)
             new.is_active = strtobool(is_active)
@@ -251,13 +256,16 @@ async def i_update(request):
                     status_code=302,
                 )
 
-            query = (
+            if i.id_fle is not None:
+                id_fle = i.id_fle
+            id_fle = random.randint(100, 999)
+            file_query = (
                 sqlalchemy_update(User)
                 .where(User.id == id)
                 .values(
                     name=name,
                     email=email,
-                    file=await file_img.img_creat(request, file, mdl, basewidth),
+                    file=await img.img_creat(file, i.email, mdl,  id_fle, basewidth),
                     email_verified=strtobool(email_verified),
                     modified_at=datetime.now(),
                     is_active=strtobool(is_active),
@@ -265,7 +273,7 @@ async def i_update(request):
                 )
                 .execution_options(synchronize_session="fetch")
             )
-            await session.execute(query)
+            await session.execute(file_query)
             await session.commit()
             # ..
             return RedirectResponse(

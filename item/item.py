@@ -1,6 +1,9 @@
 
 from pathlib import Path
 from datetime import datetime
+
+import random
+
 from sqlalchemy import update as sqlalchemy_update, delete
 from sqlalchemy.future import select
 
@@ -13,7 +16,7 @@ from db_config.storage_config import engine, async_session
 from mail.send import send_mail
 
 from options_select import file_img
-from options_select.opt_slc import item_comment, in_item_user
+from options_select.opt_slc import item_comment, in_item_user, id_fle_delete
 
 from .models import Item, Service, Rent
 
@@ -22,7 +25,7 @@ templates = Jinja2Templates(directory="templates")
 
 
 async def item_create(request):
-
+    # ..
     template = "/item/create.html"
     mdl = "item"
     basewidth = 800
@@ -67,12 +70,14 @@ async def item_create(request):
                     f"/item/details/{ new.id }",
                     status_code=302,
                 )
-
+            # ..
+            id_fle = random.randint(100, 999)
             new = Item()
             new.title = title
-            new.item_owner = item_owner
             new.description = description
-            new.file = await file_img.img_creat(request, file, mdl, basewidth)
+            new.id_fle = id_fle
+            new.file = await file_img.img_creat(request, file, mdl, id_fle, basewidth)
+            new.item_owner = item_owner
             new.created_at = datetime.now()
             # ..
             session.add(new)
@@ -91,7 +96,7 @@ async def item_create(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def item_update(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/item/update.html"
     mdl = "item"
@@ -158,14 +163,17 @@ async def item_update(request):
                     f"/item/details/{id}",
                     status_code=302,
                 )
-
+            # ..
+            if i.id_fle is not None:
+                id_fle = i.id_fle
+            id_fle = random.randint(100, 999)
             file_query = (
                 sqlalchemy_update(Item)
                 .where(Item.id == id)
                 .values(
                     title=title,
                     description=description,
-                    file=await file_img.img_creat(request, file, mdl, basewidth),
+                    file=await file_img.img_creat(request, file, mdl, id_fle, basewidth),
                     modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
@@ -173,7 +181,6 @@ async def item_update(request):
             # ..
             await session.execute(file_query)
             await session.commit()
-
             # ..
             await send_mail(f"changes were made at the facility - {i}: {i.title}")
             # ..
@@ -181,14 +188,14 @@ async def item_update(request):
                 f"/item/details/{id}",
                 status_code=302,
             )
-
     await engine.dispose()
 
 
 @requires("authenticated", redirect="user_login")
 # ...
 async def item_delete(request):
-
+    # ..
+    mdl = "item"
     id = request.path_params["id"]
     template = "/item/delete.html"
 
@@ -207,6 +214,9 @@ async def item_delete(request):
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
         if request.method == "POST":
+            # ..
+            i = await in_item_user(request, session, id)
+            await id_fle_delete(request, mdl, i.id_fle)
             # ..
             query = delete(Item).where(Item.id == id)
             # ..
@@ -273,10 +283,10 @@ async def item_details(request):
 
 
 async def search(request):
-
+    # ..
     query = request.query_params.get("query")
     template = "/item/search.html"
-    
+
     async with async_session() as session:
         if request.method == "GET":
             # ..

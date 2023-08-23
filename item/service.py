@@ -1,7 +1,7 @@
 
 from pathlib import Path
 from datetime import datetime
-import json
+import json, random
 
 from sqlalchemy import update as sqlalchemy_update, delete, and_
 from sqlalchemy.future import select
@@ -22,6 +22,7 @@ from options_select.opt_slc import (
     user_tm,
     service_comment,
     in_service_user,
+    id_fle_delete,
 )
 
 
@@ -31,10 +32,10 @@ templates = Jinja2Templates(directory="templates")
 @requires("authenticated", redirect="user_login")
 # ...
 async def service_create(request):
-
-    template = "/service/create.html"
+    # ..
     mdl = "service"
     basewidth = 800
+    template = "/service/create.html"
 
     async with async_session() as session:
         # ...
@@ -79,11 +80,12 @@ async def service_create(request):
                     f"/item/service/details/{ new.id }",
                     status_code=302,
                 )
-
+            # ..
+            id_fle = random.randint(100, 999)
             new = Service()
             new.title = title
             new.description = description
-            new.file = await file_img.img_creat(request, file, mdl, basewidth)
+            new.file = await file_img.img_creat(request, file, mdl,  id_fle, basewidth)
             new.service_owner = request.user.user_id
             # ..
             new.service_belongs = int(service_belongs)
@@ -106,7 +108,9 @@ async def service_create(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def service_update(request):
-
+    # ..
+    mdl = "service"
+    basewidth = 800
     id = request.path_params["id"]
     template = "/service/update.html"
 
@@ -130,10 +134,9 @@ async def service_update(request):
             title = form["title"]
             file = form["file"]
             description = form["description"]
+            del_obj = form.get("del_bool")
             # ..
-
             if file.filename == "":
-
                 query = (
                     sqlalchemy_update(Service)
                     .where(Service.id == id)
@@ -172,15 +175,15 @@ async def service_update(request):
                     f"/item/service/details/{id}",
                     status_code=302,
                 )
-
-
+            # ..
+            id_fle = i.id_fle
             file_query = (
                 sqlalchemy_update(Service)
                 .where(Service.id == id)
                 .values(
                     title=title,
                     description=description,
-                    file=await file_img.img_creat(request, file, mdl, basewidth),
+                    file=await file_img.img_creat(request, file, mdl, id_fle, basewidth),
                 )
                 .execution_options(synchronize_session="fetch")
             )
@@ -203,7 +206,8 @@ async def service_update(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def service_delete(request):
-
+    # ..
+    mdl = "rent"
     id = request.path_params["id"]
     template = "/service/delete.html"
 
@@ -223,6 +227,9 @@ async def service_delete(request):
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
         if request.method == "POST":
+            # ..
+            i = await in_service_user(request, session, id)
+            await id_fle_delete(request, mdl, i.id_fle)
             # ..
             query = delete(Service).where(Service.id == id)
             await session.execute(query)

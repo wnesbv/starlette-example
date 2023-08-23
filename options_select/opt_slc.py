@@ -1,4 +1,8 @@
 
+from pathlib import Path
+
+import random, shutil
+
 from sqlalchemy import func, and_, or_, not_
 from sqlalchemy.future import select
 
@@ -7,6 +11,8 @@ from participant.models import PersonParticipant
 from channel.models import GroupChat, MessageChat
 from item.models import Item, Rent, Service, ScheduleRent, ScheduleService, DumpService
 from make_an_appointment.models import ReserveRentFor, ReserveServicerFor
+
+from config.settings import BASE_DIR
 
 
 async def all_total(session, model):
@@ -403,3 +409,14 @@ async def not_period_rent(session, id):
     )
     result = stmt.scalars().unique()
     return result
+
+
+async def id_fle_delete(request, mdl, id_fle):
+    # ..
+    directory = (
+        BASE_DIR
+        / f"static/upload/{mdl}/{request.user.email}/{id_fle}"
+    )
+    if Path(directory).exists():
+        result = shutil.rmtree(directory)
+        return result

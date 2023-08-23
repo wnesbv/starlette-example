@@ -11,43 +11,42 @@
     <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
 </div>
 
-<div class="row mt-4">
+<div class="flex_start">
 {% if result %}
 {% for i in result %}
 
-<div class="col-xxl-3 col-xl-4 col-lg-6 col-md-8 col-sm-10">
-<div class="card p-3 mb-2">
+<div class="card mt-2 me-1">
 
-<ul class="card-header list-group list-group-horizontal">
-    <li class="list-group-item pt-3">
-        <sup class="float-start">id:</sup>
-        <span>{{ i.id }}</span>
-    </li>
-    <li class="list-group-item pt-3">
-        <sup class="float-start">name:</sup>
-        <span>{{ i.name }}</span>
-    </li>
-</ul>
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item pt-3">
+            <sup class="float-start">id:</sup>
+            <span>{{ i.id }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">name:</sup>
+            <span>{{ i.name }}</span>
+        </li>
+    </ul>
 
-<ul class="list-group list-group-flush">
+    <ul class="list-group list-group-flush">
 
-    <li class="list-group-item">
-        <sup class="float-start">email:</sup>
-        <p>{{ i.email }}</p>
-    </li>
-    {% include "created_modified.html" %}
-</ul>
+        <li class="list-group-item">
+            <sup class="float-start">email:</sup>
+            <p>{{ i.email }}</p>
+        </li>
+        {% include "created_modified.html" %}
+    </ul>
 
-{% if i.file %}
-<figure>
-<img width="120" class="w-100 shadow-sm mb-2" src="{{ i.file }}" alt="img">
-</figure>
-{% endif %}
+    {% if i.file %}
+    <figure>
+    <img width="120" class="shadow-sm m-2" src="{{ i.file }}" alt="img">
+    </figure>
+    {% endif %}
 
-<p class="card-footer">
-    <a class="btn btn-outline-primary btn-sm" href="/account/details/{{ i.id }}" role="button">view details &raquo;</a>
-</p>
-</div>
+    <div class="card-footer">
+        <a class="btn btn-outline-primary btn-sm" href="/account/details/{{ i.id }}" role="button">view details &raquo;</a>
+    </div>
+
 </div>
 
 {% endfor %}

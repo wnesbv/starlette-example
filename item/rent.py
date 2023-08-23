@@ -1,7 +1,9 @@
 
 from pathlib import Path
-import json
 from datetime import datetime
+
+import json, random
+
 from sqlalchemy import update as sqlalchemy_update, delete
 from sqlalchemy.future import select
 
@@ -18,6 +20,7 @@ from options_select.opt_slc import (
     user_tm,
     rent_comment,
     in_rent_user,
+    id_fle_delete,
 )
 from .models import Rent, ScheduleRent
 
@@ -28,7 +31,7 @@ templates = Jinja2Templates(directory="templates")
 @requires("authenticated", redirect="user_login")
 # ...
 async def rent_create(request):
-
+    # ..
     template = "/rent/create.html"
     mdl = "rent"
     basewidth = 800
@@ -56,7 +59,7 @@ async def rent_create(request):
             rent_belongs = form["rent_belongs"]
             # ..
             if file.filename == "":
-
+                # ..
                 new = Rent()
                 new.title = title
                 new.description = description
@@ -75,11 +78,12 @@ async def rent_create(request):
                     f"/item/rent/details/{ new.id }",
                     status_code=302,
                 )
-
+            # ..
+            id_fle = random.randint(100, 999)
             new = Rent()
             new.title = title
             new.description = description
-            new.file = await file_img.img_creat(request, file, mdl, basewidth)
+            new.file = await file_img.img_creat(request, file, mdl,  id_fle, basewidth)
             new.rent_owner = request.user.user_id
             # ..
             new.rent_belongs = int(rent_belongs)
@@ -102,11 +106,11 @@ async def rent_create(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def rent_update(request):
-
-    id = request.path_params["id"]
-    template = "/rent/update.html"
+    # ..
     mdl = "rent"
     basewidth = 800
+    id = request.path_params["id"]
+    template = "/rent/update.html"
 
     async with async_session() as session:
         # ..
@@ -131,7 +135,6 @@ async def rent_update(request):
             file = form["file"]
             del_obj = form.get("del_bool")
             # ..
-
             if file.filename == "":
                 query = (
                     sqlalchemy_update(Rent)
@@ -167,14 +170,17 @@ async def rent_update(request):
                     f"/item/rent/details/{id}",
                     status_code=302,
                 )
-
+            # ..
+            if i.id_fle is not None:
+                id_fle = i.id_fle
+            id_fle = random.randint(100, 999)
             file_query = (
                 sqlalchemy_update(Rent)
                 .where(Rent.id == id)
                 .values(
                     title=title,
                     description=description,
-                    file=await file_img.img_creat(request, file, mdl, basewidth),
+                    file=await file_img.img_creat(request, file, mdl, id_fle, basewidth),
                 )
                 .execution_options(synchronize_session="fetch")
             )
@@ -197,7 +203,8 @@ async def rent_update(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def rent_delete(request):
-
+    # ..
+    mdl = "rent"
     id = request.path_params["id"]
     template = "/rent/delete.html"
 
@@ -215,6 +222,9 @@ async def rent_delete(request):
         # ...
         if request.method == "POST":
             # ..
+            i = await in_rent_user(request, session, id)
+            await id_fle_delete(request, mdl, i.id_fle)
+            # ..
             query = delete(Rent).where(Rent.id == id)
             # ..
             await session.execute(query)
@@ -229,9 +239,9 @@ async def rent_delete(request):
 
 
 async def rent_list(request):
-
+    # ..
     template = "/rent/list.html"
-    
+
     async with async_session() as session:
         # ..
         stmt = await session.execute(select(Rent).order_by(Rent.created_at.desc()))
@@ -246,7 +256,7 @@ async def rent_list(request):
 
 
 async def rent_details(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/rent/details.html"
 
