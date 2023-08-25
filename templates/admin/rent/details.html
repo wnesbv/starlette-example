@@ -1,6 +1,6 @@
 
 {% extends "admin/base.html" %}
-{% block title %} admin rent {{ detail.title }} {% endblock %}
+{% block title %} admin rent {{ i.title }} {% endblock %}
 
 {% block calendar_css %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css">
@@ -9,23 +9,24 @@
 
 {% block content %}
 
-<h1 class="lead my-3">admin detail rent...</h1>
+<h1 class="lead my-2">admin detail rent...</h1>
 
-<div class="card mb-5">
+<div class="row">
+    <div class="col-md-5 card">
 
     <ul class="card-header list-group list-group-horizontal">
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">id:</sup>
-            <span>{{ detail.id }}...</span>
+            <span>{{ i.id }}...</span>
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">owner:</sup>
-            <span>{{ detail.rent_owner }}</span>
+            <span>{{ i.rent_owner }}</span>
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">rent belongs:</sup>
             <span class="me-3">
-                {{ detail.rent_belongs }}
+                {{ i.rent_belongs }}
             </span>
         </li>
     </ul>
@@ -33,36 +34,31 @@
     <ul class="card-body list-group list-group-flush">
         <li class="list-group-item">
             <sup class="float-start">title:</sup>
-            {{ detail.title }}
+            {{ i.title }}
         </li>
         <li class="list-group-item">
             <sup class="float-start">description:</sup>
-            {{ detail.description | safe }}
+            {{ i.description | safe }}
         </li>
     </ul>
 
     <ul class="card-footer list-group list-group-flush">
-        <li class="list-group-item">
-            <sup class="float-start">created:</sup>
-            <time>{{ detail.created_at }}</time>
-        </li>
-        <li class="list-group-item">
-            <sup class="float-start">modified</sup>
-            <time>{{ detail.modified_at }}</time>
-        </li>
+        {% include "created_modified.html" %}
     </ul>
 
+    </div>
+
+    {% if i.file %}
+    <figure class="col-md-7 card">
+        <img class="w-100 shadow-sm mb-5" src="{{ i.file }}">
+        <figcaption class="card-footer"></figcaption>
+    </figure>
+    {% endif %}
 </div>
 
-{% if detail.file %}
-<figure class="col-xxl-5 col-sm-10 ms-3">
-    <img class="w-100 shadow-sm mb-5" src="{{ detail.file }}">
-</figure>
-{% endif %}
-
-<h2 class="container lead">schedule</h2>
+<h2 class="container lead my-2">schedule</h2>
 <ul class="card-body list-group list-group-flush">
-    <li class="list-group-item">
+    <li class="list-group-item pt-3">
         <sup class="float-start">sch_json:</sup>
         {{ sch_json }}
     </li>
@@ -72,17 +68,17 @@
 {% if obj_list %}
     {% for sch in obj_list %}
 
-    <div class="card mt-2">
+    <div class="card">
         <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup>id</sup>
                 <p>{{ sch.id }}</p>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup>title</sup>
                 <p>{{ sch.title }}</p>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup>description</sup>
                 <p>{{ sch.description }}</p>
             </li>
@@ -104,15 +100,15 @@
 
 <div class="card mt-2">
     <div class="card-header">
-        <a class="btn btn-outline-primary btn-sm me-2" href="/admin/rent/update/{{ detail.id }}" role="button">
+        <a class="btn btn-outline-primary btn-sm me-2" href="/admin/rent/update/{{ i.id }}" role="button">
             <i class="bi bi-pencil"></i> &raquo;
         </a>
-        <a class="btn btn-outline-danger btn-sm" href="/admin/rent/delete/{{ detail.id }}" role="button">
+        <a class="btn btn-outline-danger btn-sm" href="/admin/rent/delete/{{ i.id }}" role="button">
             <i class="bi bi-trash3"></i> &raquo;
         </a>
     </div>
     <div class="card-footer">
-    <a class="btn btn-outline-primary btn-sm" href="/admin/comment/rent/create/{{ detail.id }}">create comment</a>
+    <a class="btn btn-outline-primary btn-sm" href="/admin/comment/rent/create/{{ i.id }}">create comment</a>
     </div>
 </div>
 

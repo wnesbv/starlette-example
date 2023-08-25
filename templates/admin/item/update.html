@@ -1,41 +1,68 @@
 
 {% extends "admin/base.html" %}
-{% block title %} admin update item {{ detail.title }} {% endblock%}
+{% block title %} admin update item {{ i.title }} {% endblock%}
 
 {% block content %}
 
-    <h1 class="lead my-4">admin update item</h1>
+<div class="card mt-2">
+    <div class="card-header">
+        <h3 class="lead">admin item update</h3>
+    </div>
 
-    <form class="card p-3" method="POST" enctype="multipart/form-data">
-        <div class="m-2">
-            <sup class="float-start">title</sup>
-            <input
-                type="text"
-                required
-                name="title"
-                value="{{ detail.title }}"
-                class="form-control my-2"
-            />
+    <form method="POST" enctype="multipart/form-data">
+
+    <div class="card-body">
+        
+        <div class="mb-3">
+        <sup>title</sup>
+        <input
+            type="text"
+            name="title"
+            value="{{ i.title }}"
+            class="form-control"
+        />
         </div>
 
-        <div class="m-2">
-        <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ detail.description }}</textarea>
+        <div class="mb-3">
+        <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ i.description }}</textarea>
         </div>
 
-        <div class="m-2">
-            <input
-                type="file"
-                name="file"
-                value="{{ detail.file }}"
-                class="form-control"
-            />
-        </div>
-        <div class="m-2">
-        <button type="submit" class="btn btn-outline-primary btn-sm">
-            submit
-        </button>
-        </div>
+    </div>
+
+    <div class="card-footer">
+
+    <div class="mb-3">
+        <input
+            type="file"
+            name="file"
+            class="form-control"
+        />
+    </div>
+
+    {% if i.file %}
+    <figure class="list-group-item list-group-item-danger d-inline-block p-3">
+        <figcaption><sup>image</sup></figcaption>
+
+        <img width="128" src="{{ i.file }}" />
+        <input
+            type="checkbox"
+            name="del_bool"
+            class="ms-2 form-check-input"
+        />
+        <sup class="m-2">delete</sup>
+    </figure>
+    {% endif %}
+
+    </div>
+
+    <div class="card-footer">
+    <button type="submit" class="btn btn-outline-primary btn-sm">
+        submit
+    </button>
+    </div>
+    
     </form>
+</div>
 
 {% endblock %}
 

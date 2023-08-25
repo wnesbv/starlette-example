@@ -12,19 +12,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from db_config.storage_config import Base
 
 
-class Slider(Base):
-    __tablename__ = "slider"
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    title: Mapped[str] = mapped_column(Text, nullable=True)
-    description: Mapped[str] = mapped_column(Text, nullable=True)
-    # ...
-    id_sl: Mapped[str] = mapped_column(String, unique=True, nullable=True)
-    file: Mapped[str] = mapped_column(String, nullable=True)
-    # ...
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-
-
 class Item(Base):
     __tablename__ = "item_tm"
 
@@ -37,6 +24,7 @@ class Item(Base):
     # ...
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+
     # ...
     item_owner: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False
@@ -45,18 +33,23 @@ class Item(Base):
     # ...
     item_user: Mapped[list["User"]] = relationship(
         back_populates="user_item",
+
     )
     item_cmt: Mapped[list["Comment"]] = relationship(
-        back_populates="cmt_item"
+        back_populates="cmt_item",
+        cascade="all, delete-orphan"
     )
     item_rent: Mapped[list["Rent"]] = relationship(
         back_populates="rent_item",
+        cascade="all, delete-orphan"
     )
     item_service: Mapped[list["Service"]] = relationship(
         back_populates="service_item",
+        cascade="all, delete-orphan"
     )
     item_rrf: Mapped[list["ReserveRentFor"]] = relationship(
         back_populates="rrf_item",
+        cascade="all, delete-orphan"
     )
 
     def __str__(self):
@@ -259,3 +252,16 @@ class DumpService(Base):
 
     def __str__(self):
         return str(self.id)
+
+
+class Slider(Base):
+    __tablename__ = "slider"
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    title: Mapped[str] = mapped_column(Text, nullable=True)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
+    # ...
+    id_sl: Mapped[str] = mapped_column(String, unique=True, nullable=True)
+    file: Mapped[str] = mapped_column(String, nullable=True)
+    # ...
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)

@@ -4,19 +4,20 @@
 
 {% block content %}
 
-<h1 class="lead my-3">admin new item</h1>
+<h1 class="lead my-2">admin new item</h1>
 
 <form class="card" method="POST" enctype="multipart/form-data">
 
     <div class="card-header mb-3">
         <select
+            required
             name="item_owner"
-            class="form-control shadow">
+            class="form-control shadow-sm">
             <option value="">user select</option>
 
-            {% for obj in owner_all %}
-                <option value="{{ obj.id }}">
-                    {{ obj.id }}
+            {% for i in owner_all %}
+                <option value="{{ i.id }}">
+                    id: {{ i.id }} email: {{ i.email }}
                 </option>
             {% endfor %}
 
@@ -32,7 +33,7 @@
                 required
                 name="title"
                 placeholder="item title"
-                class="form-control my-2"
+                class="form-control"
             />
         </div>
 
@@ -43,15 +44,13 @@
 
     </div>
 
-    <div class="card-footer mb-3">
+    <div class="card-footer">
         <input
             type="file"
-            required
             name="file"
             class="form-control"
         />
     </div>
-
     <div class="card-footer">
     <button type="submit" class="btn btn-outline-primary btn-sm">
         submit

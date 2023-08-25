@@ -26,9 +26,9 @@ templates = Jinja2Templates(directory="templates")
 
 async def item_create(request):
     # ..
-    template = "/item/create.html"
     mdl = "item"
     basewidth = 800
+    template = "/item/create.html"
 
     async with async_session() as session:
         if request.method == "GET":
@@ -97,10 +97,10 @@ async def item_create(request):
 # ...
 async def item_update(request):
     # ..
-    id = request.path_params["id"]
-    template = "/item/update.html"
     mdl = "item"
     basewidth = 800
+    id = request.path_params["id"]
+    template = "/item/update.html"
 
     async with async_session() as session:
         # ..
@@ -125,7 +125,6 @@ async def item_update(request):
             file = form["file"]
             del_obj = form.get("del_bool")
             # ..
-
             if file.filename == "":
                 query = (
                     sqlalchemy_update(Item)
@@ -218,9 +217,12 @@ async def item_delete(request):
             i = await in_item_user(request, session, id)
             await id_fle_delete(request, mdl, i.id_fle)
             # ..
-            query = delete(Item).where(Item.id == id)
+            stmt = await session.execute(
+                select(Item).where(Item.id==id)
+            )
+            result = stmt.scalars().first()
+            await session.delete(result)
             # ..
-            await session.execute(query)
             await session.commit()
             # ..
             response = RedirectResponse(

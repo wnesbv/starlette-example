@@ -1,5 +1,8 @@
 
-import json
+from pathlib import Path
+from datetime import datetime, date
+
+import json, random
 
 from sqlalchemy import select, update as sqlalchemy_update, delete, func
 
@@ -7,23 +10,30 @@ from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
+from account.models import User
+
 from db_config.storage_config import engine, async_session
+from options_select.opt_slc import all_total
 
 from item.models import Rent, ScheduleRent
 from .opt_slc import (
-    all_item,
+    in_user,
     in_admin,
+    all_user,
+    all_item,
     rent_comment,
     in_rent,
 )
+from . import img
+
 
 templates = Jinja2Templates(directory="templates")
 
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def item_list(request):
-
+async def i_list(request):
+    # ..
     template = "/admin/rent/list.html"
 
     async with async_session() as session:
@@ -50,7 +60,7 @@ async def item_list(request):
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def item_details(request):
+async def i_details(request):
     # ..
     id = request.path_params["id"]
     template = "/admin/rent/details.html"
@@ -63,7 +73,7 @@ async def item_details(request):
             # ..
             cmt_list = await rent_comment(session, id)
             # ..
-            detail = await in_rent(session, id)
+            i = await in_rent(session, id)
             # ..
             stmt = await session.execute(
                 select(ScheduleRent)
@@ -84,7 +94,7 @@ async def item_details(request):
             # ..
             context = {
                 "request": request,
-                "detail": detail,
+                "i": i,
                 "cmt_list": cmt_list,
                 "obj_list": obj_list,
                 "sch_json": sch_json,
@@ -95,14 +105,17 @@ async def item_details(request):
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def item_create(request):
-
-    template = "/item/rent/create.html"
+async def i_create(request):
+    # ..
+    mdl = "rent"
+    basewidth = 800
+    template = "/admin/rent/create.html"
 
     async with async_session() as session:
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
+            owner_all = await all_user(session)
             obj_item = await all_item(session)
             # ..
             if admin:
@@ -110,6 +123,7 @@ async def item_create(request):
                     template,
                     {
                         "request": request,
+                        "owner_all": owner_all,
                         "obj_item": obj_item,
                     },
                 )
@@ -121,20 +135,38 @@ async def item_create(request):
             title = form["title"]
             description = form["description"]
             file = form["file"]
+            rent_owner = form["rent_owner"]
             rent_belongs = form["rent_belongs"]
             # ..
-            rent_owner = request.user.user_id
+            if file.filename == "":
+                new = Rent()
+                new.title = title
+                new.description = description
+                new.rent_owner = rent_owner
+                new.rent_belongs = int(rent_belongs)
+                # ..
+                session.add(new)
+                await session.commit()
+                # ..
+                return RedirectResponse(
+                    f"/item/rent/details/{ new.id }",
+                    status_code=302,
+                )
             # ..
+            id_fle = random.randint(100, 999)
+            email = await in_user(session, rent_owner)
             new = Rent()
             new.title = title
             new.description = description
-            new.file = file
+            new.id_fle = id_fle
+            new.file = await img.img_creat(file, mdl, email.email, id_fle, basewidth)
             new.rent_owner = rent_owner
-            # ..
             new.rent_belongs = int(rent_belongs)
+            new.created_at = datetime.now()
             # ..
             session.add(new)
             await session.commit()
+
             # ..
             response = RedirectResponse(
                 f"/item/rent/details/{ new.id }",
@@ -146,25 +178,27 @@ async def item_create(request):
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def item_update(request):
-
+async def i_update(request):
+    # ..
+    mdl = "item"
+    basewidth = 800
     id = request.path_params["id"]
     template = "/item/rent/update.html"
 
     async with async_session() as session:
         # ..
         admin = await in_admin(request, session)
-        detail = await in_rent(session, id)
+        i = await in_rent(session, id)
         # ..
         context = {
             "request": request,
-            "detail": detail,
+            "i": i,
         }
         # ...
         if request.method == "GET":
             if admin:
                 return templates.TemplateResponse(template, context)
-            return PlainTextResponse("You are banned - this is not your account..!")
+            return PlainTextResponse("False..!")
         # ...
         if request.method == "POST":
             # ..
@@ -173,14 +207,53 @@ async def item_update(request):
             title = form["title"]
             description = form["description"]
             file = form["file"]
+            del_obj = form.get("del_bool")
             # ..
+            if file.filename == "":
+                query = (
+                    sqlalchemy_update(Rent)
+                    .where(Rent.id == id)
+                    .values(
+                        title=title, description=description, file=i.file
+                    )
+                    .execution_options(synchronize_session="fetch")
+                )
+                await session.execute(query)
+                await session.commit()
+
+                if del_obj:
+                    if Path(f".{i.file}").exists():
+                        Path.unlink(f".{i.file}")
+
+                    fle_not = (
+                        sqlalchemy_update(Rent)
+                        .where(Rent.id == id)
+                        .values(file=None, modified_at=datetime.now())
+                        .execution_options(synchronize_session="fetch")
+                    )
+                    await session.execute(fle_not)
+                    await session.commit()
+                    return RedirectResponse(
+                        f"/item/rent/details/{id}",
+                        status_code=302,
+                    )
+                return RedirectResponse(
+                    f"/item/rent/details/{id}",
+                    status_code=302,
+                )
+            # ..
+            if i.id_fle is not None:
+                id_fle = i.id_fle
+            id_fle = random.randint(100, 999)
+            email = await in_user(session, i.service_owner)
             file_query = (
                 sqlalchemy_update(Rent)
                 .where(Rent.id == id)
                 .values(
-                    file=file,
                     title=title,
-                    description=description
+                    description=description,
+                    file=await img.img_creat(file, mdl, email.email, id_fle, basewidth),
+                    modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
             )
@@ -188,7 +261,7 @@ async def item_update(request):
             await session.commit()
             # ..
             response = RedirectResponse(
-                f"/item/rent/details/{ detail.id }",
+                f"/item/rent/details/{id}",
                 status_code=302,
             )
             return response
@@ -197,32 +270,39 @@ async def item_update(request):
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def item_delete(request):
-
+async def i_delete(request):
+    # ..
+    mdl = "rent"
     id = request.path_params["id"]
-    template = "/item/rent/delete.html"
+    template = "/admin/rent/delete.html"
 
     async with async_session() as session:
 
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            detail = await in_rent(session, id)
+            i = await in_rent(session, id)
             # ..
             if admin:
                 return templates.TemplateResponse(
                     template,
                     {
                         "request": request,
-                        "detail": detail,
+                        "i": i,
                     },
                 )
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
         if request.method == "POST":
             # ..
-            query = delete(Rent).where(Rent.id == id)
-            await session.execute(query)
+            i = await in_rent(session, id)
+            email = await in_user(session, i.rent_owner)
+            await img.id_fle_delete_tm(
+                mdl, email.email, i.id_fle
+            )
+            # ..
+            await session.delete(i)
+            # ..
             await session.commit()
             # ..
             response = RedirectResponse(

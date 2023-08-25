@@ -4,26 +4,23 @@
 
 {% block content %}
 
-<h1 class="lead my-4">admin detail user...</h1>
+<h1 class="lead my-2">admin detail user...</h1>
 
-<div class="card p-3">
+<div class="row">
+    <div class="col-md-5 card">
 
     <ul class="card-header list-group list-group-horizontal">
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">id:</sup>
             {{ i.id }}...
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">name:</sup>
             <span class="me-3">
                 {{ i.name }}
             </span>
         </li>
-        <li class="list-group-item">
-            <sup class="float-start">name:</sup>
-            <span>{{ i.name }}</span>
-        </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">email:</sup>
             <span>{{ i.email }}</span>
         </li>
@@ -37,19 +34,19 @@
     </ul>
 
     <ul class="card-footer list-group list-group-horizontal">
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">all item:</sup>
             {% for i in all_item %}
             <sub>{{ i.title }},</sub>
             {% endfor %}
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">all service:</sup>
             {% for i in all_service %}
             <sub>{{ i.title }},</sub>
             {% endfor %}
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">all rent:</sup>
             {% for i in all_rent %}
             <sub>{{ i.title }},</sub>
@@ -58,15 +55,15 @@
     </ul>
 
     <ul class="card-footer list-group list-group-horizontal">
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">email_verified:</sup>
             {{ i.email_verified }}
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">is_active:</sup>
             {{ i.is_active }}
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">is_admin:</sup>
             {{ i.is_admin }}
         </li>
@@ -80,12 +77,15 @@
         {% include "created_modified.html" %}
     </ul>
 
+    </div>
 
     {% if i.file %}
-    <div class="col-xxl-5 col-sm-10 ms-3">
+    <figure class="col-md-7 card">
         <img class="w-100 shadow-sm mb-5" src="{{ i.file }}">
-    </div>
+        <figcaption class="card-footer"></figcaption>
+    </figure>
     {% endif %}
+
 </div>
 
 <div class="card my-2">

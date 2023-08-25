@@ -286,6 +286,47 @@ async def i_update(request):
 
 @requires("authenticated", redirect="user_login")
 # ...
+async def i_delete(request):
+
+    id = request.path_params["id"]
+    template = "/admin/user/delete.html"
+
+    async with async_session() as session:
+        if request.method == "GET":
+            # ..
+            admin = await in_admin(request, session)
+            i = await in_user(session, id)
+            # ..
+            if admin:
+                return templates.TemplateResponse(
+                    template,
+                    {
+                        "request": request,
+                        "i": i,
+                    },
+                )
+            return PlainTextResponse("You are banned - this is not your account..!")
+        # ...
+        if request.method == "POST":
+            # ..
+            i = await in_user(session, id)
+            await img.id_fle_delete_user(i.email)
+            # ..
+            await session.delete(i)
+            # ..
+            await session.commit()
+            # ..
+            response = RedirectResponse(
+                "/admin/user/list",
+                status_code=302,
+            )
+            return response
+    await engine.dispose()
+
+
+
+@requires("authenticated", redirect="user_login")
+# ...
 async def i_update_password(request):
 
     id = request.path_params["id"]
@@ -328,41 +369,4 @@ async def i_update_password(request):
                 status_code=302,
             )
 
-    await engine.dispose()
-
-
-@requires("authenticated", redirect="user_login")
-# ...
-async def i_delete(request):
-
-    id = request.path_params["id"]
-    template = "/admin/user/delete.html"
-
-    async with async_session() as session:
-        if request.method == "GET":
-            # ..
-            admin = await in_admin(request, session)
-            detail = await in_user(session, id)
-            # ..
-            if admin:
-                return templates.TemplateResponse(
-                    template,
-                    {
-                        "request": request,
-                        "detail": detail,
-                    },
-                )
-            return PlainTextResponse("You are banned - this is not your account..!")
-        # ...
-        if request.method == "POST":
-            # ..
-            query = delete(User).where(User.id == id)
-            await session.execute(query)
-            await session.commit()
-            # ..
-            response = RedirectResponse(
-                "/admin/user/list",
-                status_code=302,
-            )
-            return response
     await engine.dispose()

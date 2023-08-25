@@ -1,6 +1,6 @@
 
 {% extends "admin/base.html" %}
-{% block title %} admin service {{ detail.title }} {% endblock %}
+{% block title %} admin service {{ i.title }} {% endblock %}
 
 {% block calendar_css %}
 <link href="{{ url_for('static', path='/evo-calendar/css/evo-calendar.css') }}" rel="stylesheet">
@@ -8,77 +8,73 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">admin service detail...</h1>
-    <div class="flex_cont">
-        <div class="card p-3 mb-5">
-        <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item">
-                <sup class="float-start">id:</sup>
-                <span>{{ detail.id }}...</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">owner:</sup>
-                <span>{{ detail.service_owner }}</span>
-            </li>
-        </ul>
+<h1 class="lead my-4">admin service detail...</h1>
 
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
-                <p>{{ detail.title }}</p>
-            </li>
-            <li class="list-group-item">
-                <p>{{ detail.description | safe }}</p>
-            </li>
+<div class="row">
+    <div class="col-md-5 card">
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item pt-3">
+            <sup class="float-start">id:</sup>
+            <span>{{ i.id }}...</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">owner:</sup>
+            <span>{{ i.service_owner }}</span>
+        </li>
+    </ul>
 
-            {% if sch %}
-                <li class="list-group-item">
-                    {{ sch_json }}
-                </li>
-                <li class="list-group-item">
-                    {{ sch.id }}
-                </li>
-            {% endif %}
-        </ul>
-        <ul class="card-footer">
-            <li class="list-group-item">
-                <sup class="float-start">created:</sup>
-                <time>{{ detail.created_at }}</time>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">modified</sup>
-                <time>{{ detail.modified_at }}</time>
-            </li>
-        </ul>
-        </div>
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup>title:</sup>
+            <p>{{ i.title }}</p>
+        </li>
+        <li class="list-group-item">
+            <sup>description:</sup>
+            <p>{{ i.description | safe }}</p>
+        </li>
 
-        {% if detail.file %}
-        <div class="col-xxl-5 col-sm-10 ms-3">
-            <img class="w-100 shadow-sm mb-5" src="/static/upload/{{ detail.file.path }}">
-        </div>
+        {% if sch %}
+            <li class="list-group-item">
+                {{ sch_json }}
+            </li>
+            <li class="list-group-item">
+                {{ sch.id }}
+            </li>
         {% endif %}
+    </ul>
+
+    <ul class="card-footer">
+        {% include "created_modified.html" %}
+    </ul>
     </div>
 
-    <div class="my-5">{{ detail.file }}</div>
+    {% if i.file %}
+    <figure class="col-md-7 card">
+        <img class="shadow-sm my-3" src="{{ i.file }}" alt="">
+        <figcaption class="card-footer"></figcaption>
+    </figure>
+    {% endif %}
+</div>
 
-    <div id="calendar" class="card"></div>
+<div id="calendar" class="card mt-3"></div>
 
-    <div class="mt-2">
-        <div class="card">
-            <div class="card-header">
-                <a class="btn btn-outline-primary btn-sm me-2" href="/admin/service/update/{{ detail.id }}" role="button">
-                    <i class="bi bi-pencil"></i> &raquo;
-                </a>
-                <a class="btn btn-outline-danger btn-sm" href="/admin/service/delete/{{ detail.id }}" role="button">
-                    <i class="bi bi-trash3"></i> &raquo;
-                </a>
-            </div>
-            <div class="card-footer">
-            <a class="btn btn-outline-primary btn-sm" href="/admin/comment/service/create/{{ detail.id }}">create comment</a>
-            </div>
+<div class="mt-2">
+    <div class="card">
+        <div class="card-header">
+            <a class="btn btn-outline-primary btn-sm me-2" href="/admin/service/update/{{ i.id }}" role="button">
+                <i class="bi bi-pencil"></i> &raquo;
+            </a>
+            <a class="btn btn-outline-danger btn-sm" href="/admin/service/delete/{{ i.id }}" role="button">
+                <i class="bi bi-trash3"></i> &raquo;
+            </a>
+        </div>
+        <div class="card-footer">
+        <a class="btn btn-outline-primary btn-sm" href="/admin/comment/service/create/{{ i.id }}">create comment</a>
         </div>
     </div>
+</div>
 
-    {% include "admin/comment/cmt_service.html" %}
+{% include "admin/comment/cmt_service.html" %}
 
 {% endblock %}
 
@@ -86,7 +82,7 @@
 {% block calendar_js %}
 
 <script>
-    const detail = {{ detail.id }};
+    const detail = {{ i.id }};
 </script>
 
 <script src="/static/evo-calendar/js/evo-calendar.js"></script>

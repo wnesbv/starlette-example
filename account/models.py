@@ -33,48 +33,61 @@ class User(Base):
 
     # ...
     user_item: Mapped[list["Item"]] = relationship(
-        back_populates="item_user"
+        back_populates="item_user",
+        cascade="all, delete-orphan"
     )
+    # ...
+    user_rent: Mapped[list["Rent"]] = relationship(
+        back_populates="rent_user",
+        cascade="all, delete-orphan"
+    )
+    user_service: Mapped[list["Service"]] = relationship(
+        back_populates="service_user",
+        cascade="all, delete-orphan"
+    )
+    # ...
     user_cmt: Mapped[list["Comment"]] = relationship(
-        back_populates="cmt_user"
+        back_populates="cmt_user",
+        cascade="all, delete-orphan"
     )
     # ...
     user_group: Mapped[list["GroupChat"]] = relationship(
-        back_populates="group_admin"
+        back_populates="group_admin",
+        cascade="all, delete-orphan"
     )
     user_chat: Mapped[list["MessageChat"]] = relationship(
-        back_populates="chat_user"
+        back_populates="chat_user",
+        cascade="all, delete-orphan"
     )
     one_chat: Mapped[list["OneChat"]] = relationship(
-        back_populates="chat_one"
+        back_populates="chat_one",
+        cascade="all, delete-orphan"
     )
     user_participant: Mapped[list["PersonParticipant"]] = relationship(
-        back_populates="participant_user"
+        back_populates="participant_user",
+        cascade="all, delete-orphan"
     )
-
     # ...
     user_rrf: Mapped[list["ReserveRentFor"]] = relationship(
-        back_populates="rrf_user"
+        back_populates="rrf_user",
+        cascade="all, delete-orphan"
     )
     user_rsf: Mapped[list["ReserveServicerFor"]] = relationship(
-        back_populates="rsf_user"
-    )
-    # ...
-    user_service: Mapped[list["Service"]] = relationship(
-        back_populates="service_user"
-    )
-    user_rent: Mapped[list["Rent"]] = relationship(
-        back_populates="rent_user"
+        back_populates="rsf_user",
+        cascade="all, delete-orphan"
     )
     # ...
     user_sch_r: Mapped[list["ScheduleRent"]] = relationship(
         back_populates="sch_r_user",
+        cascade="all, delete-orphan"
     )
     user_sch_s: Mapped[list["ScheduleService"]] = relationship(
-        back_populates="sch_s_user"
+        back_populates="sch_s_user",
+        cascade="all, delete-orphan"
     )
     user_dump_s: Mapped[list["DumpService"]] = relationship(
-        back_populates="dump_s_user"
+        back_populates="dump_s_user",
+        cascade="all, delete-orphan"
     )
     # ...
 

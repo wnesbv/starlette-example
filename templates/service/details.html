@@ -9,7 +9,10 @@
 {% block content %}
 
 <h1 class="lead my-3">service detail..</h1>
-<div class="card p-3">
+
+<div class="row">
+
+    <div class="col-md-5 card">
 
     <ul class="card-header list-group list-group-horizontal">
         <li class="list-group-item pt-3">
@@ -42,28 +45,19 @@
         {% include "created_modified.html" %}
     </ul>
 
+    </div>
+
+
+    {% if i.file %}
+    <figure class="col-md-7 card">
+    <img class="shadow-sm my-3" src="{{ i.file }}" alt="">
+    <figcaption class="card-footer"></figcaption>
+    </figure>
+    {% endif %}
 </div>
 
-<div class="card p-3 mt-2">
-    {% if i.file %}
-    <figure class="col-xxl-5 col-sm-10 ms-3">
-    <img class="w-100 shadow-sm mb-5" src="/static/upload/{{ i.file.path }}" alt="">
-    <figcaption>
-        <a class="btn btn-outline-primary btn-sm mb-2" href="/item/service/file-update/{{ i.id }}" role="button">
-        image <i class="bi bi-pencil"></i> &raquo;
-        </a>
-    </figcaption>
-    </figure>
 
-    {% else %}
-    <div class="w-100 my-3">
-        <a class="btn btn-outline-primary btn-sm mb-2" href="/item/service/file-update/{{ i.id }}" role="button">
-            image <i class="bi bi-pencil"></i> &raquo;
-        </a>
-    </div>
-    {% endif %}
-
-
+<div class="card my-2">
     <h2 class="container lead">schedule</h2>
     <ul class="card-body list-group list-group-flush">
         <li class="list-group-item">
@@ -71,11 +65,9 @@
             {{ sch_json | safe }}
         </li>
     </ul>
-
 </div>
 
 <div id="calendar" class="card mt-2"></div>
-
 
 {% if request.user.is_authenticated %}
     <div class="card mt-2">

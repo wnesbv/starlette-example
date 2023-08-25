@@ -3,21 +3,23 @@
 
 {% block content %}
 
-<div class="card">
+<div class="card mt-2">
     <div class="card-header">
         <h3 class="lead">admin user update</h3>
     </div>
 
     <form method="POST" enctype="multipart/form-data">
+
     <div class="card-body">
+
         <div class="mb-3">
-            <sup>name</sup>
-            <input
-                type="text"
-                class="form-control"
-                name="name"
-                value="{{ i.name }}"
-            />
+        <sup>name</sup>
+        <input
+            type="text"
+            name="name"
+            value="{{ i.name }}"
+            class="form-control"
+        />
         </div>
         <div class="mb-3">
             <sup>email</sup>
@@ -32,8 +34,12 @@
         <div class="mb-3">
             <a href="/admin/user/update-password/{{ i.id }}"><sup>password</sup></a>
         </div>
+        
     </div>
-    <div class="card-footer mb-3">
+
+    <div class="card-footer">
+
+    <div class="mb-3">
         <input
             type="file"
             name="file"
@@ -79,9 +85,13 @@
         <label for="is_admin">is_admin</label>
     </div>
 
+    </div>
+
+    <div class="card-footer">
     <button type="submit" class="btn btn-outline-primary btn-sm">
         submit
     </button>
+    </div>
 
     </form>
 

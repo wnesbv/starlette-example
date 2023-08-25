@@ -4,52 +4,74 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">admin new service</h1>
-    <form class="card p-3" method="POST" enctype="multipart/form-data">
-        <div class="card-header mb-3">
-            <select
-                name="service_belongs"
-                class="form-control shadow">
-                <option value="">item select</option>
+<h1 class="lead my-2">admin new service</h1>
 
-                {% for obj in obj_item %}
-                    <option value="{{ obj.id }}">
-                        {{ obj.id }}
-                    </option>
-                {% endfor %}
+<form class="card" method="POST" enctype="multipart/form-data">
 
-            </select>
-        </div>
-        <div class="m-2">
-            <sup class="float-start">title</sup>
+    <div class="card-header mb-3">
+        <select
+            required
+            name="service_owner"
+            class="form-control shadow-sm">
+            <option value="">user select</option>
+
+            {% for i in owner_all %}
+                <option value="{{ i.id }}">
+                    id: {{ i.id }} email: {{ i.email }}
+                </option>
+            {% endfor %}
+
+        </select>
+    </div>
+
+    <div class="card-header mb-3">
+        <select
+            required
+            name="service_belongs"
+            class="form-control shadow-sm">
+            <option value="">item select</option>
+
+            {% for i in obj_item %}
+                <option value="{{ i.id }}">
+                    {{ i.id }}
+                </option>
+            {% endfor %}
+
+        </select>
+    </div>
+
+    <div class="card-body">
+        <div class="mb-3">
+            <sup>title</sup>
             <input
                 type="text"
                 required
                 name="title"
-                value="{{ title }}"
                 placeholder="service 01"
-                class="form-control my-2"
-            />
-        </div>
-        <div class="m-2">
-        <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ description }}</textarea>
-            <div id="help" class="form-text">help text</div>
-        </div>
-        <div class="m-2">
-            <input
-                type="file"
-                required
-                name="file"
-                value="{{ file }}"
                 class="form-control"
             />
         </div>
+
         <div class="m-2">
-        <button type="submit" class="btn btn-outline-primary btn-sm">
-            submit
-        </button>
+        <textarea class="form-control" name="description" maxlength="333" spellcheck></textarea>
+            <div id="help" class="form-text">help text</div>
         </div>
-    </form>
+
+    </div>
+
+    <div class="card-footer">
+        <input
+            type="file"
+            name="file"
+            class="form-control"
+        />
+    </div>
+    <div class="card-footer">
+    <button type="submit" class="btn btn-outline-primary btn-sm">
+        submit
+    </button>
+    </div>
+</form>
 
 {% endblock %}
 

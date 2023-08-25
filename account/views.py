@@ -194,7 +194,43 @@ async def user_update(request):
     await engine.dispose()
 
 
+@requires("authenticated", redirect="user_login")
+# ...
+async def user_delete(request):
+    # ..
+    id = request.path_params["id"]
+    template = "/auth/delete.html"
+
+    async with async_session() as session:
+        if request.method == "GET":
+            # ..
+            if request.user.user_id == id:
+                return templates.TemplateResponse(
+                    template, {"request": request}
+                )
+            return PlainTextResponse("You are banned - this is not your account..!")
+
+        # ...
+        if request.method == "POST":
+            # ..
+            await img.id_fle_delete(request)
+            # ..
+            query = delete(User).where(User.id == id)
+            # ..
+            await session.execute(query)
+            await session.commit()
+            # ..
+            response = RedirectResponse(
+                "/account/list",
+                status_code=302,
+            )
+            return response
+    await engine.dispose()
+
+
+
 async def user_login(request):
+    # ..
     template = "/auth/login.html"
 
     async with async_session() as session:
@@ -345,38 +381,4 @@ async def user_detail(request):
             if i:
                 return templates.TemplateResponse(template, context)
         return RedirectResponse("/account/list", status_code=302)
-    await engine.dispose()
-
-
-@requires("authenticated", redirect="user_login")
-# ...
-async def user_delete(request):
-    # ..
-    id = request.path_params["id"]
-    template = "/auth/delete.html"
-
-    async with async_session() as session:
-        if request.method == "GET":
-            # ..
-            if request.user.user_id == id:
-                return templates.TemplateResponse(
-                    template, {"request": request}
-                )
-            return PlainTextResponse("You are banned - this is not your account..!")
-
-        # ...
-        if request.method == "POST":
-            # ..
-            await img.id_fle_delete(request)
-            # ..
-            query = delete(User).where(User.id == id)
-            # ..
-            await session.execute(query)
-            await session.commit()
-            # ..
-            response = RedirectResponse(
-                "/account/list",
-                status_code=302,
-            )
-            return response
     await engine.dispose()

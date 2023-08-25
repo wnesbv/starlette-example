@@ -1,13 +1,15 @@
 
 from datetime import datetime, timedelta
-import os
+import os, shutil
 from pathlib import Path, PurePosixPath
 
 from PIL import Image
+
 from starlette.exceptions import HTTPException
+from config.settings import BASE_DIR
 
 
-async def img_creat(file, email, mdl, id_fle, basewidth):
+async def img_creat(file, mdl, email, id_fle, basewidth):
     # ..
     name = datetime.now().strftime("%d-%m-%y-%H-%M")
     save_path = f"./static/upload/{mdl}/{email}/{id_fle}"
@@ -36,20 +38,6 @@ async def img_creat(file, email, mdl, id_fle, basewidth):
         img_resize.save(file_path)
 
     return file_path.replace(".", "", 1)
-
-
-async def id_fle_delete(request):
-    # ..
-    directory = [
-        (BASE_DIR / f"static/upload/user/{request.user.email}"),
-        (BASE_DIR / f"static/upload/item/{request.user.email}"),
-        (BASE_DIR / f"static/upload/rent/{request.user.email}"),
-        (BASE_DIR / f"static/upload/service/{request.user.email}"),
-    ]
-    for i in directory:
-        if Path(i).exists():
-            shutil.rmtree(i)
-
 
 
 async def sl_img_creat(
@@ -88,3 +76,25 @@ async def sl_img_creat(
         img_resize.save(file_path)
 
     return file_path.replace(".", "", 1)
+
+
+async def id_fle_delete_user(email):
+    # ..
+    directory = [
+        (BASE_DIR / f"static/upload/user/{email}"),
+        (BASE_DIR / f"static/upload/item/{email}"),
+        (BASE_DIR / f"static/upload/rent/{email}"),
+        (BASE_DIR / f"static/upload/service/{email}"),
+    ]
+    for i in directory:
+        if Path(i).exists():
+            shutil.rmtree(i)
+
+async def id_fle_delete_tm(mdl, email, id_fle):
+    # ..
+    directory = (
+        BASE_DIR
+        / f"static/upload/{mdl}/{email}/{id_fle}"
+    )
+    if Path(directory).exists():
+        shutil.rmtree(directory)

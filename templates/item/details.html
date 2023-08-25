@@ -1,6 +1,6 @@
 
 {% extends "base.html" %}
-{% block title %} item {{ i.title }} detail.. {% endblock %}
+{% block title %} item {{ i.title }} {% endblock %}
 
 {% block content %}
 
@@ -84,6 +84,7 @@
     <a class="btn btn-outline-primary btn-sm float-end" href="/comment/item/create/{{ i.id }}">create comment</a>
 </div>
 </div>
+
 <div class="card">
 {% include "comment/cmt_item.html" %}
 </div>
