@@ -2,8 +2,6 @@
 from pathlib import Path
 from datetime import datetime
 
-import random
-
 from sqlalchemy import update as sqlalchemy_update, delete
 from sqlalchemy.future import select
 
@@ -13,10 +11,10 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 
 from db_config.storage_config import engine, async_session
 
+from admin import img
 from mail.send import send_mail
 
-from options_select import file_img
-from options_select.opt_slc import item_comment, in_item_user, id_fle_delete
+from options_select.opt_slc import in_user, item_comment, in_item_user, id_fle_delete
 
 from .models import Item, Service, Rent
 
@@ -26,7 +24,6 @@ templates = Jinja2Templates(directory="templates")
 
 async def item_create(request):
     # ..
-    mdl = "item"
     basewidth = 800
     template = "/item/create.html"
 
@@ -71,15 +68,18 @@ async def item_create(request):
                     status_code=302,
                 )
             # ..
-            id_fle = random.randint(100, 999)
+            email = await in_user(session, item_owner)
             new = Item()
             new.title = title
             new.description = description
-            new.id_fle = id_fle
-            new.file = await file_img.img_creat(request, file, mdl, id_fle, basewidth)
             new.item_owner = item_owner
             new.created_at = datetime.now()
             # ..
+            session.add(new)
+            await session.flush()
+            new.file = await img.item_img_creat(
+                file, email.email, new.id, basewidth
+            )
             session.add(new)
             await session.commit()
             # ..
@@ -97,7 +97,6 @@ async def item_create(request):
 # ...
 async def item_update(request):
     # ..
-    mdl = "item"
     basewidth = 800
     id = request.path_params["id"]
     template = "/item/update.html"
@@ -130,7 +129,7 @@ async def item_update(request):
                     sqlalchemy_update(Item)
                     .where(Item.id == id)
                     .values(
-                        title=title, description=description, file=i.file
+                        title=title, description=description, file=i.file, modified_at=datetime.now(),
                     )
                     .execution_options(synchronize_session="fetch")
                 )
@@ -163,16 +162,14 @@ async def item_update(request):
                     status_code=302,
                 )
             # ..
-            if i.id_fle is not None:
-                id_fle = i.id_fle
-            id_fle = random.randint(100, 999)
+            email = await in_user(session, i.item_owner)
             file_query = (
                 sqlalchemy_update(Item)
                 .where(Item.id == id)
                 .values(
                     title=title,
                     description=description,
-                    file=await file_img.img_creat(request, file, mdl, id_fle, basewidth),
+                    file=await img.item_img_creat(file, email.email, id, basewidth),
                     modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
@@ -194,7 +191,6 @@ async def item_update(request):
 # ...
 async def item_delete(request):
     # ..
-    mdl = "item"
     id = request.path_params["id"]
     template = "/item/delete.html"
 
@@ -215,13 +211,10 @@ async def item_delete(request):
         if request.method == "POST":
             # ..
             i = await in_item_user(request, session, id)
-            await id_fle_delete(request, mdl, i.id_fle)
+            email = await in_user(session, i.item_owner)
+            await img.del_tm(email.email, i.id)
             # ..
-            stmt = await session.execute(
-                select(Item).where(Item.id==id)
-            )
-            result = stmt.scalars().first()
-            await session.delete(result)
+            await session.delete(i)
             # ..
             await session.commit()
             # ..

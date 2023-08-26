@@ -20,7 +20,6 @@ from db_config.storage_config import engine, async_session
 
 from account.models import User
 from item.models import Item, Service, Rent
-from options_select import file_img
 from options_select.opt_slc import all_total
 
 from .opt_slc import in_admin, in_user
@@ -99,7 +98,6 @@ async def i_details(request):
 # ...
 async def i_create(request):
     # ..
-    mdl = "user"
     basewidth = 800
     template = "/admin/user/create.html"
 
@@ -112,6 +110,7 @@ async def i_create(request):
                 return templates.TemplateResponse(template, {"request": request})
         # ...
         if request.method == "POST":
+            # ..
             form = await request.form()
             # ..
             name = form["name"]
@@ -148,6 +147,7 @@ async def i_create(request):
                 new.email_verified = strtobool(email_verified)
                 new.is_active = strtobool(is_active)
                 new.is_admin = strtobool(is_admin)
+                new.created_at = datetime.now()
                 # ..
                 session.add(new)
                 await session.commit()
@@ -157,16 +157,16 @@ async def i_create(request):
                     status_code=302,
                 )
             # ..
-            id_fle = random.randint(100, 999)
             new = User()
             new.name = name
             new.email = email
             new.password = password
-            new.file = await img.img_creat(file, email, mdl, id_fle, basewidth)
+            new.file = await img.user_img_creat(file, email, basewidth)
             new.created_at = datetime.now()
             new.email_verified = strtobool(email_verified)
             new.is_active = strtobool(is_active)
             new.is_admin = strtobool(is_admin)
+            new.created_at = datetime.now()
             # ..
             session.add(new)
             await session.commit()
@@ -182,11 +182,10 @@ async def i_create(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def i_update(request):
-
+    # ..
+    basewidth = 800
     id = request.path_params["id"]
     template = "/admin/user/update.html"
-    mdl = "user"
-    basewidth = 800
 
     async with async_session() as session:
         # ..
@@ -226,9 +225,9 @@ async def i_update(request):
                         email=email,
                         file=i.file,
                         email_verified=strtobool(email_verified),
-                        modified_at=datetime.now(),
                         is_active=strtobool(is_active),
                         is_admin=strtobool(is_admin),
+                        modified_at=datetime.now(),
                     )
                     .execution_options(synchronize_session="fetch")
                 )
@@ -255,21 +254,18 @@ async def i_update(request):
                     f"/admin/user/details/{ id }",
                     status_code=302,
                 )
-
-            if i.id_fle is not None:
-                id_fle = i.id_fle
-            id_fle = random.randint(100, 999)
+            # ..
             file_query = (
                 sqlalchemy_update(User)
                 .where(User.id == id)
                 .values(
                     name=name,
                     email=email,
-                    file=await img.img_creat(file, i.email, mdl,  id_fle, basewidth),
+                    file=await img.user_img_creat(file, email, basewidth),
                     email_verified=strtobool(email_verified),
-                    modified_at=datetime.now(),
                     is_active=strtobool(is_active),
                     is_admin=strtobool(is_admin),
+                    modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
             )
@@ -310,7 +306,7 @@ async def i_delete(request):
         if request.method == "POST":
             # ..
             i = await in_user(session, id)
-            await img.id_fle_delete_user(i.email)
+            await img.del_user(i.email)
             # ..
             await session.delete(i)
             # ..

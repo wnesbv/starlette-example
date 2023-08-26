@@ -2,8 +2,6 @@
 from pathlib import Path
 from datetime import datetime, date
 
-import random
-
 from sqlalchemy import select, update as sqlalchemy_update, delete, func, true
 
 from starlette.authentication import requires
@@ -122,7 +120,6 @@ async def i_details(request):
 # ...
 async def i_create(request):
     # ..
-    mdl = "item"
     basewidth = 800
     template = "/admin/item/create.html"
 
@@ -164,16 +161,19 @@ async def i_create(request):
                     status_code=302,
                 )
             # ..
-            id_fle = random.randint(100, 999)
             email = await in_user(session, item_owner)
             new = Item()
             new.title = title
             new.description = description
-            new.id_fle = id_fle
-            new.file = await img.img_creat(file, mdl, email.email, id_fle, basewidth)
             new.item_owner = item_owner
             new.created_at = datetime.now()
             # ..
+            session.add(new)
+            await session.flush()
+            print(" new id..", new.id)
+            new.file = await img.item_img_creat(
+                file, email.email, new.id, basewidth
+            )
             session.add(new)
             await session.commit()
             # ..
@@ -188,7 +188,6 @@ async def i_create(request):
 # ...
 async def i_update(request):
     # ..
-    mdl = "item"
     basewidth = 800
     id = request.path_params["id"]
     template = "/admin/item/update.html"
@@ -224,7 +223,7 @@ async def i_update(request):
                     sqlalchemy_update(Item)
                     .where(Item.id == id)
                     .values(
-                        title=title, description=description, file=i.file
+                        title=title, description=description, file=i.file, modified_at=datetime.now(),
                     )
                     .execution_options(synchronize_session="fetch")
                 )
@@ -253,17 +252,14 @@ async def i_update(request):
                     status_code=302,
                 )
             # ..
-            if i.id_fle is not None:
-                id_fle = i.id_fle
-            id_fle = random.randint(100, 999)
-            email = await in_user(session, i.service_owner)
+            email = await in_user(session, i.item_owner)
             file_query = (
                 sqlalchemy_update(Item)
                 .where(Item.id == id)
                 .values(
                     title=title,
                     description=description,
-                    file=await img.img_creat(file, mdl, email.email, id_fle, basewidth),
+                    file=await img.item_img_creat(file, email.email, id, basewidth),
                     modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
@@ -283,7 +279,6 @@ async def i_update(request):
 # ...
 async def i_delete(request):
     # ..
-    mdl = "item"
     id = request.path_params["id"]
     template = "/admin/item/delete.html"
 
@@ -310,9 +305,7 @@ async def i_delete(request):
             # ..
             i = await in_item(session, id)
             email = await in_user(session, i.item_owner)
-            await img.id_fle_delete_tm(
-                mdl, email.email, i.id_fle
-            )
+            await img.del_tm(email.email, i.id)
             # ..
             await session.delete(i)
             # ..

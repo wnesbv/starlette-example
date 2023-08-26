@@ -6,10 +6,12 @@ import random, shutil
 from sqlalchemy import func, and_, or_, not_
 from sqlalchemy.future import select
 
+from account.models import User
 from comment.models import Comment
 from participant.models import PersonParticipant
 from channel.models import GroupChat, MessageChat
 from item.models import Item, Rent, Service, ScheduleRent, ScheduleService, DumpService
+
 from make_an_appointment.models import ReserveRentFor, ReserveServicerFor
 
 from config.settings import BASE_DIR
@@ -18,6 +20,19 @@ from config.settings import BASE_DIR
 async def all_total(session, model):
     stmt = await session.execute(select(func.count(model.id)))
     result = stmt.scalars().all()
+    return result
+
+
+async def in_user(
+    session, id
+):
+    stmt = await session.execute(
+        select(User)
+        .where(
+            User.id == id,
+        )
+    )
+    result = stmt.scalars().first()
     return result
 
 

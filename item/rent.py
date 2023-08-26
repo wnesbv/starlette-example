@@ -2,7 +2,7 @@
 from pathlib import Path
 from datetime import datetime
 
-import json, random
+import json
 
 from sqlalchemy import update as sqlalchemy_update, delete
 from sqlalchemy.future import select
@@ -13,11 +13,13 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 
 from db_config.storage_config import engine, async_session
 
+from admin import img
 from mail.send import send_mail
 
 from options_select import file_img
 from options_select.opt_slc import (
     user_tm,
+    in_user,
     rent_comment,
     in_rent_user,
     id_fle_delete,
@@ -32,9 +34,8 @@ templates = Jinja2Templates(directory="templates")
 # ...
 async def rent_create(request):
     # ..
-    template = "/rent/create.html"
-    mdl = "rent"
     basewidth = 800
+    template = "/rent/create.html"
 
     async with async_session() as session:
         if request.method == "GET":
@@ -57,6 +58,7 @@ async def rent_create(request):
             description = form["description"]
             file = form["file"]
             rent_belongs = form["rent_belongs"]
+            rent_owner = request.user.user_id
             # ..
             if file.filename == "":
                 # ..
@@ -79,17 +81,20 @@ async def rent_create(request):
                     status_code=302,
                 )
             # ..
-            id_fle = random.randint(100, 999)
+            email = await in_user(session, rent_owner)
+            # ..
             new = Rent()
             new.title = title
             new.description = description
-            new.file = await file_img.img_creat(request, file, mdl,  id_fle, basewidth)
-            new.rent_owner = request.user.user_id
-            # ..
+            new.rent_owner = rent_owner
             new.rent_belongs = int(rent_belongs)
-            # ..
             new.created_at = datetime.now()
             # ..
+            session.add(new)
+            await session.flush()
+            new.file = await img.rent_img_creat(
+                file, email.email, rent_belongs, new.id, basewidth
+            )
             session.add(new)
             await session.commit()
             # ..
@@ -107,7 +112,6 @@ async def rent_create(request):
 # ...
 async def rent_update(request):
     # ..
-    mdl = "rent"
     basewidth = 800
     id = request.path_params["id"]
     template = "/rent/update.html"
@@ -139,7 +143,9 @@ async def rent_update(request):
                 query = (
                     sqlalchemy_update(Rent)
                     .where(Rent.id == id)
-                    .values(title=title, description=description, file=i.file)
+                    .values(
+                        title=title, description=description, file=i.file, modified_at=datetime.now()
+                    )
                     .execution_options(synchronize_session="fetch")
                 )
                 await session.execute(query)
@@ -171,16 +177,15 @@ async def rent_update(request):
                     status_code=302,
                 )
             # ..
-            if i.id_fle is not None:
-                id_fle = i.id_fle
-            id_fle = random.randint(100, 999)
+            email = await in_user(session, i.rent_owner)
             file_query = (
                 sqlalchemy_update(Rent)
                 .where(Rent.id == id)
                 .values(
                     title=title,
                     description=description,
-                    file=await file_img.img_creat(request, file, mdl, id_fle, basewidth),
+                    file=await img.rent_img_creat(file, email.email, i.rent_belongs, i.id, basewidth),
+                    modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
             )
@@ -204,7 +209,6 @@ async def rent_update(request):
 # ...
 async def rent_delete(request):
     # ..
-    mdl = "rent"
     id = request.path_params["id"]
     template = "/rent/delete.html"
 
@@ -223,11 +227,13 @@ async def rent_delete(request):
         if request.method == "POST":
             # ..
             i = await in_rent_user(request, session, id)
-            await id_fle_delete(request, mdl, i.id_fle)
+            email = await in_user(session, i.rent_owner)
+            await img.del_rent(
+                email.email, i.rent_belongs, id
+            )
             # ..
-            query = delete(Rent).where(Rent.id == id)
+            await session.delete(i)
             # ..
-            await session.execute(query)
             await session.commit()
             # ..
             response = RedirectResponse(

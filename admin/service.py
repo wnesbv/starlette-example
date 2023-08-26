@@ -2,7 +2,7 @@
 from pathlib import Path
 from datetime import datetime, date
 
-import json, random
+import json
 
 from sqlalchemy import select, update as sqlalchemy_update, delete, func, and_
 
@@ -123,7 +123,6 @@ async def i_details(request):
 
 async def i_create(request):
     # ..
-    mdl = "service"
     basewidth = 800
     template = "/admin/service/create.html"
 
@@ -160,7 +159,7 @@ async def i_create(request):
                 new.title = title
                 new.description = description
                 new.file = file
-                new.service_owner = service_owner
+                new.service_owner = int(service_owner)
                 new.service_belongs = int(service_belongs)
                 # ..
                 session.add(new)
@@ -171,17 +170,19 @@ async def i_create(request):
                     status_code=302,
                 )
             # ..
-            id_fle = random.randint(100, 999)
             email = await in_user(session, service_owner)
             new = Service()
             new.title = title
             new.description = description
-            new.id_fle = id_fle
-            new.file = await img.img_creat(file, mdl, email.email, id_fle, basewidth)
-            new.service_owner = service_owner
+            new.service_owner = int(service_owner)
             new.service_belongs = int(service_belongs)
             new.created_at = datetime.now()
             # ..
+            session.add(new)
+            await session.flush()
+            new.file = await img.service_img_creat(
+                file, email.email, service_belongs, new.id, basewidth
+            )
             session.add(new)
             await session.commit()
             # ..
@@ -196,7 +197,6 @@ async def i_create(request):
 # ...
 async def i_update(request):
     # ..
-    mdl = "service"
     basewidth = 800
     id = request.path_params["id"]
     template = "/admin/service/update.html"
@@ -230,7 +230,7 @@ async def i_update(request):
                     sqlalchemy_update(Service)
                     .where(Service.id == id)
                     .values(
-                        title=title, description=description, file=i.file
+                        title=title, description=description, file=i.file, modified_at=datetime.now(),
                     )
                     .execution_options(synchronize_session="fetch")
                 )
@@ -259,9 +259,6 @@ async def i_update(request):
                     status_code=302,
                 )
             # ..
-            if i.id_fle is not None:
-                id_fle = i.id_fle
-            id_fle = random.randint(100, 999)
             email = await in_user(session, i.service_owner)
             file_query = (
                 sqlalchemy_update(Service)
@@ -269,7 +266,9 @@ async def i_update(request):
                 .values(
                     title=title,
                     description=description,
-                    file=await img.img_creat(file, mdl, email.email, id_fle, basewidth),
+                    file=await img.service_img_creat(
+                        file, email, i.service_belongs, i.id, basewidth
+                    ),
                     modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
@@ -289,7 +288,6 @@ async def i_update(request):
 # ...
 async def i_delete(request):
     # ..
-    mdl = "service"
     id = request.path_params["id"]
     template = "/admin/service/delete.html"
 
@@ -314,8 +312,8 @@ async def i_delete(request):
             # ..
             i = await in_service(session, id)
             email = await in_user(session, i.service_owner)
-            await img.id_fle_delete_tm(
-                mdl, email.email, i.id_fle
+            await img.del_service(
+                email.email, i.service_belongs, id
             )
             # ..
             await session.delete(i)

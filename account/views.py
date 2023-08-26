@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from pathlib import Path, PurePosixPath
 
-import os, jwt,  random, shutil
+import os, jwt
 
 from sqlalchemy import update as sqlalchemy_update, delete
 
@@ -17,16 +17,16 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 from starlette.status import HTTP_400_BAD_REQUEST
 from starlette.authentication import requires
 
-from config.settings import BASE_DIR
 from db_config.settings import settings
 from db_config.storage_config import engine, async_session
 
-from account.models import User
+from options_select.opt_slc import in_user
 
+from admin import img
+from account.models import User
 from mail.verify import verify_mail
 
 from .token import mail_verify
-from . import img
 
 key = settings.SECRET_KEY
 algorithm = settings.JWT_ALGORITHM
@@ -96,7 +96,6 @@ async def user_register(request):
 # ...
 async def user_update(request):
     # ..
-    mdl = "user"
     basewidth = 256
     id = request.path_params["id"]
     template = "/auth/update.html"
@@ -169,15 +168,13 @@ async def user_update(request):
                     status_code=302,
                 )
             # ..
-            if i.id_fle is not None:
-                id_fle = i.id_fle
-            id_fle = random.randint(100, 999)
+            email = request.user.email
             file_query = (
                 sqlalchemy_update(User)
                 .where(User.id == id)
                 .values(
                     name=name,
-                    file=await img.img_creat(request, file, mdl, id_fle, basewidth),
+                    file=await img.user_img_creat(file, email, basewidth),
                     modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
@@ -213,11 +210,11 @@ async def user_delete(request):
         # ...
         if request.method == "POST":
             # ..
-            await img.id_fle_delete(request)
+            i = await in_user(session, id)
+            await img.del_user(i.email)
             # ..
-            query = delete(User).where(User.id == id)
+            await session.delete(i)
             # ..
-            await session.execute(query)
             await session.commit()
             # ..
             response = RedirectResponse(

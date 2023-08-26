@@ -1,7 +1,7 @@
 
 from pathlib import Path
 from datetime import datetime
-import json, random
+import json
 
 from sqlalchemy import update as sqlalchemy_update, delete, and_
 from sqlalchemy.future import select
@@ -11,6 +11,7 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 
 from db_config.storage_config import engine, async_session
 
+from admin import img
 from mail.send import send_mail
 
 from make_an_appointment.models import ReserveServicerFor
@@ -20,6 +21,7 @@ from .models import Service, ScheduleService
 from options_select import file_img
 from options_select.opt_slc import (
     user_tm,
+    in_user,
     service_comment,
     in_service_user,
     id_fle_delete,
@@ -33,7 +35,6 @@ templates = Jinja2Templates(directory="templates")
 # ...
 async def service_create(request):
     # ..
-    mdl = "service"
     basewidth = 800
     template = "/service/create.html"
 
@@ -59,6 +60,7 @@ async def service_create(request):
             description = form["description"]
             file = form["file"]
             service_belongs = form["service_belongs"]
+            service_owner = request.user.user_id
             # ..
             if file.filename == "":
 
@@ -81,17 +83,19 @@ async def service_create(request):
                     status_code=302,
                 )
             # ..
-            id_fle = random.randint(100, 999)
+            email = await in_user(session, service_owner)
             new = Service()
             new.title = title
             new.description = description
-            new.file = await file_img.img_creat(request, file, mdl,  id_fle, basewidth)
             new.service_owner = request.user.user_id
-            # ..
             new.service_belongs = int(service_belongs)
-            # ..
             new.created_at = datetime.now()
             # ..
+            session.add(new)
+            await session.flush()
+            new.file = await img.service_img_creat(
+                file, email.email, service_belongs, new.id, basewidth
+            )
             session.add(new)
             await session.commit()
             # ..
@@ -109,7 +113,6 @@ async def service_create(request):
 # ...
 async def service_update(request):
     # ..
-    mdl = "service"
     basewidth = 800
     id = request.path_params["id"]
     template = "/service/update.html"
@@ -176,14 +179,17 @@ async def service_update(request):
                     status_code=302,
                 )
             # ..
-            id_fle = i.id_fle
+            email = await in_user(session, i.item_owner)
             file_query = (
                 sqlalchemy_update(Service)
                 .where(Service.id == id)
                 .values(
                     title=title,
                     description=description,
-                    file=await file_img.img_creat(request, file, mdl, id_fle, basewidth),
+                    file=await img.service_img_creat(
+                        file, email, i.service_belongs, i.id, basewidth
+                    ),
+                    modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
             )
@@ -207,7 +213,6 @@ async def service_update(request):
 # ...
 async def service_delete(request):
     # ..
-    mdl = "rent"
     id = request.path_params["id"]
     template = "/service/delete.html"
 
@@ -229,10 +234,13 @@ async def service_delete(request):
         if request.method == "POST":
             # ..
             i = await in_service_user(request, session, id)
-            await id_fle_delete(request, mdl, i.id_fle)
+            email = await in_user(session, i.service_owner)
+            await img.del_service(
+                email.email, i.service_belongs, id
+            )
             # ..
-            query = delete(Service).where(Service.id == id)
-            await session.execute(query)
+            await session.delete(i)
+            # ..
             await session.commit()
             # ..
             response = RedirectResponse(

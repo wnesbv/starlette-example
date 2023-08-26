@@ -18,10 +18,7 @@ class Item(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String, unique=True, index=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
-    # ...
-    id_fle: Mapped[str] = mapped_column(String, unique=True, nullable=True)
     file: Mapped[str] = mapped_column(String, nullable=True)
-    # ...
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
@@ -62,10 +59,7 @@ class Rent(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String(30), unique=True, index=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
-    # ...
-    id_fle: Mapped[str] = mapped_column(String, unique=True, nullable=True)
     file: Mapped[str] = mapped_column(String, nullable=True)
-    # ...
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
@@ -104,10 +98,7 @@ class Service(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String(30), unique=True, index=True)
     description: Mapped[str] = mapped_column(Text(200), nullable=True)
-    # ...
-    id_fle: Mapped[str] = mapped_column(String, unique=True, nullable=True)
     file: Mapped[str] = mapped_column(String, nullable=True)
-    # ...
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 

@@ -78,23 +78,100 @@ async def sl_img_creat(
     return file_path.replace(".", "", 1)
 
 
-async def id_fle_delete_user(email):
+# ..
+
+
+async def item_img(name, save_path, file, basewidth):
+    # ..
+    ext = PurePosixPath(file.filename).suffix
+    file_path = f"{save_path}/{name}{ext}"
+    # ..
+    if ext not in (".png", ".jpg", ".jpeg"):
+        raise HTTPException(
+            status_code=400,
+            detail="Format files: png, jpg, jpeg ..!",
+        )
+    if Path(file_path).exists():
+        raise HTTPException(status_code=400, detail="Error..! File exists..!")
+    os.makedirs(save_path, exist_ok=True)
+
+    with open(file_path, "wb") as fle:
+        fle.write(file.file.read())
+
+        img = Image.open(file_path)
+        # ..
+        wpercent = basewidth / float(img.size[0])
+        hsize = int((float(img.size[1]) * float(wpercent)))
+        # ..
+        img_resize = img.resize((basewidth, hsize), Image.Resampling.LANCZOS)
+        img_resize.save(file_path)
+
+    return file_path.replace(".", "", 1)
+
+
+async def user_img_creat(file, email, basewidth):
+    name = datetime.now().strftime("%d-%m-%y-%H-%M")
+    save_path = f"./static/upload/user/{email}"
+    obj = await item_img(name, save_path, file, basewidth)
+    return obj
+
+async def item_img_creat(file, email, id, basewidth):
+    name = datetime.now().strftime("%d-%m-%y-%H-%M")
+    save_path = f"./static/upload/{email}/item/{id}_tm"
+    obj = await item_img(name, save_path, file, basewidth)
+    return obj
+
+
+async def rent_img_creat(file, email, tm_id, id, basewidth):
+    name = datetime.now().strftime("%d-%m-%y-%H-%M")
+    save_path = f"./static/upload/{email}/item/{tm_id}_tm/rent/{id}"
+    obj = await item_img(name, save_path, file, basewidth)
+    return obj
+
+
+async def service_img_creat(file, email, tm_id, id, basewidth):
+    name = datetime.now().strftime("%d-%m-%y-%H-%M")
+    save_path = f"./static/upload/{email}/item/{tm_id}_tm/service/{id}"
+    obj = await item_img(name, save_path, file, basewidth)
+    return obj
+
+
+async def del_user(email):
     # ..
     directory = [
         (BASE_DIR / f"static/upload/user/{email}"),
-        (BASE_DIR / f"static/upload/item/{email}"),
-        (BASE_DIR / f"static/upload/rent/{email}"),
-        (BASE_DIR / f"static/upload/service/{email}"),
+        (BASE_DIR / f"static/upload/{email}"),
     ]
     for i in directory:
         if Path(i).exists():
             shutil.rmtree(i)
 
-async def id_fle_delete_tm(mdl, email, id_fle):
+
+async def del_tm(email, id):
     # ..
     directory = (
         BASE_DIR
-        / f"static/upload/{mdl}/{email}/{id_fle}"
+        / f"static/upload/{email}/item/{id}_tm"
+    )
+    if Path(directory).exists():
+        shutil.rmtree(directory)
+
+
+async def del_rent(email, tm_id, id):
+    # ..
+    directory = (
+        BASE_DIR
+        / f"static/upload/{email}/item/{tm_id}_tm/rent/{id}"
+    )
+    if Path(directory).exists():
+        shutil.rmtree(directory)
+
+
+async def del_service(email, tm_id, id):
+    # ..
+    directory = (
+        BASE_DIR
+        / f"static/upload/{email}/item/{tm_id}_tm/service/{id}"
     )
     if Path(directory).exists():
         shutil.rmtree(directory)
