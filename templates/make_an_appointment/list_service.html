@@ -4,50 +4,49 @@
 
 {% block content %}
 
-<h1 class="lead my-4">list reserve service..</h1>
+<h1 class="lead my-3">list reserve service..</h1>
 
-<div class="flex_cont">
-
+<div class="flex_start">
 {% if obj_list %}
-{% for obj in obj_list %}
-<div class="col-xxl-5 col-sm-10">
-    <div class="card p-3 me-2 mb-3">
+{% for i in obj_list %}
+<div class="card mt-2 me-1">
 
     <ul class="card-header list-group list-group-horizontal">
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">id:</sup>
-            <span class="me-3">{{ obj.id }}</span>
+            <span class="me-3">{{ i.id }}</span>
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">owner reserve:</sup>
-            <span>{{ obj.rsf_owner }}</span>
+            <span>{{ i.rsf_owner }}</span>
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">reserve service:</sup>
-            {{ obj.rsf_service_id }}
+            {{ i.rsf_service_id }}
         </li>
     </ul>
 
     <ul class="card-header list-group list-group-horizontal">
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">rsv time:</sup>
-            <time>{{ obj.reserve_time }}</time>
+            <time>{{ i.reserve_time }}</time>
         </li>
     </ul>
 
     <ul class="card-body list-group list-group-flush">
         <li class="list-group-item">
             <sup class="float-start">description:</sup>
-                <p>{{ obj.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+                <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
         </li>
+        {% include "created_modified.html" %}
     </ul>
 
     <div class="card-footer">
-        <a class="page-link" href="/reserve/detail-service/{{ obj.id }}">
-            detail
+         <a class="btn btn-outline-primary btn-sm" href="/reserve/detail-service/{{ i.id }}">
+            view details &raquo;
         </a>
     </div>
-    </div>
+
 </div>
 {% endfor %}
 {% endif %}

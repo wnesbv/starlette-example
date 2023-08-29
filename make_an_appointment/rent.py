@@ -1,5 +1,8 @@
+
 from datetime import date, datetime, timedelta
+
 import json, datetime as dtm
+
 from sqlalchemy import insert, update as sqlalchemy_update, delete
 from sqlalchemy.future import select
 
@@ -98,7 +101,7 @@ async def reserve_choice_item(request):
     async with async_session() as session:
         if request.method == "GET":
             if token:
-                obj_list = await period_item(time_start, time_end, rsv_period, session)
+                obj_list = await period_item(time_start, time_end, session)
                 not_list = await not_period_item(session)
 
                 context = {
@@ -218,11 +221,11 @@ async def reserve_detail_rent(request):
 
     async with async_session() as session:
         # ..
-        obj = await in_rrf(request, session, id)
-        if obj:
+        i = await in_rrf(request, session, id)
+        if i:
             context = {
                 "request": request,
-                "obj": obj,
+                "i": i,
             }
             return templates.TemplateResponse(template, context)
         return PlainTextResponse("This is not your account..!")

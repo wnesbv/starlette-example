@@ -1,4 +1,3 @@
-
 from pathlib import Path
 from datetime import datetime
 
@@ -14,12 +13,75 @@ from db_config.storage_config import engine, async_session
 from admin import img
 from mail.send import send_mail
 
-from options_select.opt_slc import in_user, item_comment, in_item_user, id_fle_delete
+from options_select.opt_slc import in_user, item_comment, in_item_user
+from options_select.csv_import import import_csv
+from options_select.csv_export import export_csv
 
 from .models import Item, Service, Rent
-
+from config.settings import BASE_DIR
 
 templates = Jinja2Templates(directory="templates")
+
+
+@requires("authenticated", redirect="user_login")
+async def item_export_csv(request):
+    async with async_session() as session:
+        # ..
+        if request.method == "GET":
+            # ..
+            stmt = await session.execute(
+                select(Item).where(Item.item_owner == request.user.user_id)
+            )
+            result = stmt.scalars().all()
+            # ..
+            await export_csv(request, result)
+            # ..
+            user = request.user.email
+            directory = (
+                BASE_DIR
+                / f"static/csv/{user}/export_csv.csv"
+            )
+            if Path(directory).exists():
+                return RedirectResponse(
+                    f"/static/csv/{user}/export_csv.csv"
+                )
+
+            # ..
+    await engine.dispose()
+
+
+@requires("authenticated", redirect="user_login")
+async def item_import_csv(request):
+    # ..
+    template = "/item/item_import_csv.html"
+
+    async with async_session() as session:
+        # ..
+        if request.method == "GET":
+            response = templates.TemplateResponse(
+                template,
+                {
+                    "request": request,
+                },
+            )
+            if not request.user.is_authenticated:
+                response = RedirectResponse(
+                    "/account/login",
+                    status_code=302,
+                )
+            return response
+        # ...
+        if request.method == "POST":
+            # ..
+            await import_csv(request, Item, session)
+            await session.commit()
+            # ..
+            return RedirectResponse(
+                "/item/list",
+                status_code=302,
+            )
+
+    await engine.dispose()
 
 
 async def item_create(request):
@@ -54,8 +116,8 @@ async def item_create(request):
             if file.filename == "":
                 new = Item()
                 new.title = title
-                new.item_owner = item_owner
                 new.description = description
+                new.item_owner = item_owner
                 new.created_at = datetime.now()
                 # ..
                 session.add(new)
@@ -77,9 +139,7 @@ async def item_create(request):
             # ..
             session.add(new)
             await session.flush()
-            new.file = await img.item_img_creat(
-                file, email.email, new.id, basewidth
-            )
+            new.file = await img.item_img_creat(file, email.email, new.id, basewidth)
             session.add(new)
             await session.commit()
             # ..
@@ -129,7 +189,10 @@ async def item_update(request):
                     sqlalchemy_update(Item)
                     .where(Item.id == id)
                     .values(
-                        title=title, description=description, file=i.file, modified_at=datetime.now(),
+                        title=title,
+                        description=description,
+                        file=i.file,
+                        modified_at=datetime.now(),
                     )
                     .execution_options(synchronize_session="fetch")
                 )
@@ -227,7 +290,6 @@ async def item_delete(request):
 
 
 async def item_list(request):
-
     template = "/item/list.html"
 
     async with async_session() as session:
@@ -244,7 +306,6 @@ async def item_list(request):
 
 
 async def item_details(request):
-
     id = request.path_params["id"]
     template = "/item/details.html"
 

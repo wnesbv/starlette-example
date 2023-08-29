@@ -30,18 +30,15 @@ from options_select.opt_slc import (
 from .models import DumpService
 
 
-root_directory = BASE_DIR / "static/upload"
-
-
 templates = Jinja2Templates(directory="templates")
 
 
 @requires("authenticated", redirect="user_login")
 # ...
 async def export_csv(request):
-
+    # ..
     id = request.path_params["id"]
-
+    # ..
     file_time = datetime.now()
     directory = (
         BASE_DIR
@@ -122,7 +119,7 @@ async def export_csv(request):
 async def dump_csv(request):
     # ..
     id = request.path_params["id"]
-    template = "/item/schedule/dump_csv.html"
+    template = "/schedule/dump_csv.html"
 
     async with async_session() as session:
 
@@ -145,9 +142,9 @@ async def dump_csv(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def delete_user_csv(request):
-
+    # ..
     id = request.path_params["id"]
-    template = "/item/schedule/delete_user_csv.html"
+    template = "/schedule/delete_user_csv.html"
 
     async with async_session() as session:
 

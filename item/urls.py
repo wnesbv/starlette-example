@@ -39,6 +39,13 @@ routes = [
     # ..
     Route("/search/", item.search, methods=["GET", "POST"]),
     # ..
+    Route("/item-import-csv", item.item_import_csv, methods=["GET", "POST"]),
+    Route(
+        "/item-export-csv",
+        item.item_export_csv,
+        methods=["GET"],
+    ),
+    # ..
     Route("/list", item.item_list),
     Route("/details/{id:int}", item.item_details),
 

@@ -25,6 +25,7 @@ templates = Jinja2Templates(directory="templates")
 @requires("authenticated", redirect="user_login")
 # ...
 async def create_reserve_service(request):
+    # ..
     id = request.path_params["id"]
     service = request.path_params["service"]
     template = "/make_an_appointment/create_reserve_time.html"
@@ -92,6 +93,7 @@ async def create_reserve_service(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def reserve_list_service(request):
+    # ..
     template = "make_an_appointment/list_service.html"
     async with async_session() as session:
         # ..
@@ -116,17 +118,17 @@ async def reserve_list_service(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def reserve_detail_service(request):
-
+    # ..
     id = request.path_params["id"]
     template = "make_an_appointment/details_service.html"
 
     async with async_session() as session:
         # ..
-        obj = await in_rsf(request, session, id)
-        if obj:
+        i = await in_rsf(request, session, id)
+        if i:
             context = {
                 "request": request,
-                "obj": obj,
+                "i": i,
             }
             return templates.TemplateResponse(template, context)
         return PlainTextResponse("This is not your account..!")
@@ -136,7 +138,7 @@ async def reserve_detail_service(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def reserve_update_service(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/make_an_appointment/update_service.html"
 
@@ -181,7 +183,7 @@ async def reserve_update_service(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def delete_rsf(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/make_an_appointment/delete.html"
 
