@@ -1,3 +1,0 @@
-id,name,title,description,type_on,number_on,there_is,created_at,sch_s_owner,sch_s_service_id
-3,name 03 ,service 01 ScheduleService 03,description.. id-1 service 01 ScheduleService 01,event,2023-08-16,2023-08-16 09:30:00,2023-08-16 09:29:34.873775,1,1
-1,name 01,service 01 ScheduleService 01,description.. id-1 service 01 ScheduleService 01,event,2023-08-16,2023-08-16 09:29:34.873775,2023-08-16 09:29:34.873775,1,1
