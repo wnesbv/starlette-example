@@ -72,6 +72,19 @@ async def get_token_reserve(request):
     return token_loads
 
 
+async def period_reserve(time_start, time_end):
+    reserve_period = [
+        time_start + timedelta(days=x)
+        for x in range(0, (time_end - time_start).days + 1)
+    ]
+    print(" reserve_period..", reserve_period)
+    rsv_period = [i.strftime(settings.DATE) for i in reserve_period]
+    # ..
+    rsv_period = str(rsv_period).replace("'", "").replace("[", "").replace("]", "")
+    print(" rsv_period..", rsv_period)
+    return rsv_period
+
+
 # ..ITEM
 @requires("authenticated", redirect="user_login")
 # ...
@@ -83,18 +96,11 @@ async def reserve_choice_item(request):
     # ..
     time_start = datetime.strptime(start, settings.DATE)
     time_end = datetime.strptime(end, settings.DATE)
-    reserve_period = [
-        time_start + timedelta(days=x)
-        for x in range(0, (time_end - time_start).days + 1)
-    ]
-    print(" reserve_period..", reserve_period)
     # ..
-    rsv_period = []
-    for period in reserve_period:
-        rsv_period.append(period.strftime(settings.DATE))
-    # ..
-    rsv_period = str(rsv_period).replace("'", "").replace("[", "").replace("]", "")
-    print(" rsv_period..", rsv_period)
+    # rsv_period = []
+    # for period in reserve_period:
+    #     rsv_period.append(period.strftime(settings.DATE))
+    rsv_period = await period_reserve(time_start, time_end)
     # ..
     template = "make_an_appointment/choice_item.html"
 
@@ -129,15 +135,8 @@ async def reserve_choice_rent(request):
     # ..
     time_start = datetime.strptime(start, settings.DATE)
     time_end = datetime.strptime(end, settings.DATE)
-    reserve_period = [
-        time_start + timedelta(days=x)
-        for x in range(0, (time_end - time_start).days + 1)
-    ]
     # ..
-    rsv_period = []
-    for period in reserve_period:
-        rsv_period.append(period.strftime(settings.DATE))
-    rsv_period = str(rsv_period)
+    rsv_period = await period_reserve(time_start, time_end)
     # ..
     id = request.path_params["id"]
     template = "make_an_appointment/choice_rent.html"
@@ -152,10 +151,7 @@ async def reserve_choice_rent(request):
                     "request": request,
                     "time_start": time_start,
                     "time_end": time_end,
-                    "reserve_period": str(rsv_period)
-                    .replace("'", "")
-                    .replace("[", "")
-                    .replace("]", ""),
+                    "reserve_period": rsv_period,
                     "obj_list": obj_list,
                     "not_list": not_list,
                 }
@@ -262,18 +258,10 @@ async def reserve_update_rent(request):
             time_end = datetime.strptime(end, settings.DATE)
             time_start = datetime.strptime(start, settings.DATE)
             # ..
-            if start >= end or start < date.today().strftime(settings.DATE_POINT):
+            if start >= end or start < date.today().strftime(settings.DATE):
                 return PlainTextResponse("please enter proper dates")
             # ..
-            generated = [
-                time_start + timedelta(days=x)
-                for x in range(0, (time_end - time_start).days + 1)
-            ]
-            reserve_period = detail.reserve_period
-            reserve_period = []
-            for period in generated:
-                reserve_period.append(period.strftime(settings.DATE))
-            reserve_period = str(reserve_period)
+            rsv_period = await period_reserve(time_start, time_end)
             # ..
             query = (
                 sqlalchemy_update(ReserveRentFor)
@@ -282,7 +270,6 @@ async def reserve_update_rent(request):
                     time_end=time_end,
                     time_start=time_start,
                     description=description,
-                    reserve_period=reserve_period,
                     modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")

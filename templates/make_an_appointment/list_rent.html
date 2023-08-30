@@ -10,48 +10,45 @@ list reserve rent.. user: {{ request.user.user_id }}
 
 <div class="flex_start">
     {% if obj_list %}
-    {% for obj in obj_list %}
+    {% for i in obj_list %}
     <div class="card mt-2 me-1">
 
     <ul class="card-header list-group list-group-horizontal">
         <li class="list-group-item pt-3">
             <sup class="float-start">id:</sup>
-            <span class="me-3">{{ obj.id }}</span>
+            <span class="me-3">{{ i.id }}</span>
         </li>
         <li class="list-group-item pt-3">
             <sup class="float-start">owner reserve:</sup>
-            <span>{{ obj.rrf_owner }}</span>
+            <span>{{ i.rrf_owner }}</span>
         </li>
         <li class="list-group-item pt-3">
             <sup class="float-start">reserve item:</sup>
-            <span>{{ obj.rrf_item_id }}</span>
+            <span>{{ i.rrf_item_id }}</span>
         </li>
     </ul>
 
     <ul class="card-header list-group list-group-horizontal">
         <li class="list-group-item pt-3">
             <sup class="float-start">start:</sup>
-            <time>{{ obj.time_start.strftime("%d-%m-%YT %H:%M") }}</time>
+            <time>{{ i.time_start.strftime("%d-%m-%YT %H:%M") }}</time>
         </li>
         <li class="list-group-item pt-3">
             <sup class="float-start">end:</sup>
-            <time>{{ obj.time_end.strftime("%d-%m-%Y %H:%M") }}</time>
+            <time>{{ i.time_end.strftime("%d-%m-%Y %H:%M") }}</time>
         </li>
     </ul>
 
     <ul class="card-body list-group list-group-flush">
         <li class="list-group-item">
             <sup class="float-start">description:</sup>
-            <p>{{ obj.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+            <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
         </li>
-        <li class="list-group-item">
-            <sup class="float-start">period:</sup>
-            <p>{{ obj.reserve_period }}</p>
-        </li>
+        {% include "created_modified.html" %}
     </ul>
 
     <div class="card-footer">
-        <a class="m-2" href="/reserve/detail-rent/{{ obj.id }}">
+        <a class="btn btn-outline-primary btn-sm" href="/reserve/detail-rent/{{ i.id }}">
             detail
         </a>
     </div>

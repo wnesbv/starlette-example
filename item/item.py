@@ -37,15 +37,9 @@ async def item_export_csv(request):
             await export_csv(request, result)
             # ..
             user = request.user.email
-            directory = (
-                BASE_DIR
-                / f"static/csv/{user}/export_csv.csv"
-            )
+            directory = BASE_DIR / f"static/csv/{user}/export_csv.csv"
             if Path(directory).exists():
-                return RedirectResponse(
-                    f"/static/csv/{user}/export_csv.csv"
-                )
-
+                return RedirectResponse(f"/static/csv/{user}/export_csv.csv")
             # ..
     await engine.dispose()
 

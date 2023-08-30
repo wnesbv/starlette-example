@@ -4,34 +4,33 @@
 
 {% block content %}
 
-<h1 class="lead my-5">update reserve rent</h1>
+<h1 class="lead my-3">update reserve rent</h1>
 
-<form class="row" method="POST">
-    <div class="list-group col-sm mb-3">
-        <span class="list-group-item">
-            <sup class="float-start">start</sup>
-            <input
-                class="mt-2"
-                type="date"
-                name="time_start"
-                value="{{ detail.time_start }}"
-            />
-        </span>
-    </div>
-    <div class="list-group col-sm mb-3">
-        <span class="list-group-item">
-            <sup class="float-start">end</sup>
-            <input
-                class="mt-2"
-                type="date"
-                name="time_end"
-                value="{{ detail.time_end }}"
-            />
-        </span>
+<form class="card" method="POST">
+    <div class="card-body row m-2">
+
+    <div class="col-sm">
+        <sup class="float-start">start</sup>
+        <input
+            class="mt-3"
+            type="date"
+            name="time_start"
+            value="{{ detail.time_start }}"
+        />
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">description</label>
+    <div class="col-sm">
+        <sup class="float-start">end</sup>
+        <input
+            class="mt-3"
+            type="date"
+            name="time_end"
+            value="{{ detail.time_end }}"
+        />
+    </div>
+
+    <div class="mt-3">
+        <sup>description</sup>
         <textarea
             class="form-control"
             name="description"
@@ -40,7 +39,10 @@
         >{{ detail.description }}</textarea>
     </div>
 
-    <button type="submit" class="btn btn-outline-primary btn-sm">submit</button>
+    <div class="card-footer m-2">
+        <button type="submit" class="btn btn-outline-primary btn-sm">submit</button>
+    </div>
+
 </form>
 
 {% endblock %}
