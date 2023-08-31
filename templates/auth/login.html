@@ -4,49 +4,47 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">login...</h1>
+<h1 class="lead my-3">login user...</h1>
 
-    <div class="card">
-        <div class="card-header">
-            <h3 class="lead">login user</h3>
-        </div>
+<form class="card" method="POST">
+    <div class="card-body">
 
-        <div class="card-body border-bottom py-3">
+    <div class="mb-3">
+        <sup>email</sup>
+        <input
+            type="email"
+            required
+            placeholder="email"
+            name="email"
+            class="form-control"
+        />
+    </div>
 
-        <form method="POST">
-            <div class="mb-3">
-                <label>email</label>
-                <input
-                    type="email"
-                    required
-                    placeholder="email"
-                    name="email"
-                    value="{{ email }}"
-                    class="form-control"
-                />
-            </div>
-            <div class="mb-3">
-                <label>password</label>
-                <input
-                    type="password"
-                    required
-                    placeholder="password"
-                    value="{{ password }}"
-                    name="password"
-                    class="form-control"
-                />
-            </div>
-            <button type="submit" class="btn btn-outline-primary btn-sm">
-                submit
-            </button>
-        </form>
-
-        </div>
-
-        <div class="d-flex">
-        <a class="page-link" href="/account/reset-password/">reset password</a>
-        </div>
+    <div class="mb-3">
+        <sup>password</sup>
+        <input
+            type="password"
+            required
+            placeholder="password"
+            name="password"
+            class="form-control"
+        />
+    </div>
 
     </div>
+
+    <div class="card-footer">
+    <button type="submit" class="btn btn-outline-primary btn-sm">
+        submit
+    </button>
+    </div>
+
+</form>
+
+<div class="card mt-3">
+<div class="card-footer">
+<a class="btn btn-outline-primary btn-sm" href="/account/reset-password/">reset password</a>
+</div>
+</div>
 
 {% endblock %}

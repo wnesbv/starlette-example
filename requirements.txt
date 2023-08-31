@@ -18,4 +18,4 @@ asyncpg
 whitenoise
 json2html
 aiocsv
-channel-box
+pydantic

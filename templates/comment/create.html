@@ -4,12 +4,12 @@
 
 {% block content %}
 
-<h1 class="lead my-4">new comment</h1>
+<h1 class="lead my-3">new comment</h1>
 
 {% if request.user.is_authenticated %}
 
 <form class="card" method="POST">
-    <div class="card-body mb-2">
+    <div class="card-body">
         <sup>opinion</sup>
         <textarea
             required
@@ -17,7 +17,7 @@
             class="form-control"
             name="opinion"
             rows="3"
-            >{{ opinion }}</textarea>
+            ></textarea>
     </div>
     <div class="card-footer">
         <button type="submit" class="btn btn-outline-primary btn-sm">

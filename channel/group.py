@@ -105,7 +105,7 @@ async def group_create(request):
             await session.commit()
             # ..
             query = insert(MessageChat).values(
-                owner_chat=admin_group,
+                owner_msg=admin_group,
                 id_group=new.id,
                 message=f"New message admin group-{admin_group}..!",
             )

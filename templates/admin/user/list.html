@@ -16,34 +16,36 @@
     <div class="card mt-2 me-1">
 
         <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">id:</sup>
                 <span class="me-3">{{ i.id }}</span>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">name:</sup>
                 <span>{{ i.name }}</span>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">email:</sup>
                 <span>{{ i.email }}</span>
             </li>
         </ul>
 
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
+        <ul class="card-body list-group list-group-horizontal">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">email verified:</sup>
                 <span>{{ i.email_verified }}</span>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">active:</sup>
                 <span>{{ i.is_active }}</span>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">admin:</sup>
                 <span>{{ i.is_admin }}</span>
             </li>
-            <li class="list-group-item">
+        </ul>
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">last_login_date:</sup>
                 <span>{{ i.last_login_date }}</span>
             </li>

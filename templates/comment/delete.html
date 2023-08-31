@@ -1,13 +1,24 @@
 
 {% extends "base.html" %}
-{% block title %} delete item {% endblock %}
+{% block title %} delete comment {% endblock %}
 
 {% block content %}
 
-    <h1 class="lead mt-4">delete...</h1>
+<h1 class="lead mt-3">comment delete...</h1>
 
-    <div class="card">
+<div class="card">
+    <div class="card-header">
+        <h3 class="lead">delete comment</h3>
     </div>
+
+    <div class="card-footer">
+    <form method="POST">
+        <button class="btn btn-outline-danger btn-sm" type="submit">
+            delete
+        </button>
+    </form>
+    </div>
+</div>
 
 
 {% endblock %}

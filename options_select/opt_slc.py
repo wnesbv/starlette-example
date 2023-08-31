@@ -273,7 +273,7 @@ async def in_group_chat(request, session, id):
 async def in_chat(request, session, id):
     stmt = await session.execute(
         select(MessageChat).where(
-            and_(MessageChat.id == id, MessageChat.owner_chat == request.user.user_id)
+            and_(MessageChat.id == id, MessageChat.owner_msg == request.user.user_id)
         )
     )
     result = stmt.scalars().first()

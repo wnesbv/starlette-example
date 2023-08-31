@@ -4,44 +4,42 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">new group</h1>
+<h1 class="lead my-3">new group</h1>
 
-    <div class="card">
-        <div class="card-header">
-            <h3 class="lead">new group</h3>
+<form class="card" method="POST" enctype="multipart/form-data">
+    <div class="card-body">
+
+        <div class="mb-2">
+            <sup>title</sup>
+            <input
+                required
+                type="text"
+                class="form-control"
+                name="title"
+                placeholder="group title"
+            />
         </div>
 
-        <div class="card-body border-bottom py-3">
-
-            <form method="POST" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <input
-                        required
-                        type="text"
-                        class="form-control"
-                        name="title"
-                        value="{{ title }}"
-                        placeholder="group title"
-                    />
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">description</label>
-                    <input
-                        required
-                        type="text"
-                        class="form-control"
-                        name="description"
-                        value="{{ description }}"
-                        placeholder="group description"
-                    />
-                </div>
-
-                <button type="submit" class="btn btn-outline-primary btn-sm">
-                    submit
-                </button>
-            </form>
+        <div class="mb-2">
+            <sup>description</sup>
+            <input
+                required
+                type="text"
+                class="form-control"
+                name="description"
+                placeholder="group description"
+            />
         </div>
+
     </div>
+
+    <div class="card-footer">
+        <button type="submit" class="btn btn-outline-primary btn-sm">
+            submit
+        </button>
+    </div>
+
+</form>
+
 
 {% endblock %}

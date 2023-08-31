@@ -4,22 +4,20 @@
 
 {% block content %}
 
-    <h1 class="lead my-5">update message</h1>
+<h1 class="lead my-3">update message</h1>
 
-    <div class="row mb-3">
+<form class="card" method="POST" enctype="multipart/form-data">
 
-    <form method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-
-        <textarea class="shadow-sm form-control" id="message" name="message" maxlength="333" spellcheck>{{ detail.message }}</textarea>
-
-        </div>
-
-        <button type="submit" class="btn btn-outline-primary btn-sm mt-3">
-            submit
-        </button>
-    </form>
-
+    <div class="card-body">
+    <textarea class="shadow-sm form-control" id="message" name="message" maxlength="333" spellcheck>{{ detail.message }}</textarea>
     </div>
+
+    <div class="card-footer">
+    <button type="submit" class="btn btn-outline-primary btn-sm mt-3">
+        submit
+    </button>
+    </div>
+    
+</form>
 
 {% endblock %}

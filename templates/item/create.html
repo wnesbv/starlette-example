@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<h1 class="lead my-2">new item</h1>
+<h1 class="lead my-3">new item</h1>
 <form class="card" method="POST" enctype="multipart/form-data">
     <div class="card-body">
 
@@ -24,29 +24,31 @@
         <textarea class="form-control" name="description" maxlength="333" spellcheck></textarea>
         <div id="help" class="form-text">up to 200 characters</div>
         </div>
-
-        <div class="card-footer">
-            <div class="mb-2">
-                <input
-                    type="file"
-                    name="file"
-                    class="form-control"
-                />
-                <div id="help" class="form-text">image ~ 800px ~ 1mb</div>
-            </div>
-            <div class="m-2 ">
-                <button type="submit" class="btn btn-outline-primary btn-sm">
-                    submit
-                </button>
-            </div>
-        </div>
-
     </div>
+
+    <div class="card-footer">
+        <div class="mb-2">
+            <input
+                type="file"
+                name="file"
+                class="form-control"
+            />
+            <div id="help" class="form-text">image ~ 800px ~ 1mb</div>
+        </div>
+        <div class="m-2">
+            <button type="submit" class="btn btn-outline-primary btn-sm">
+                submit
+            </button>
+        </div>
+    </div>
+
 </form>
 
-<div class="card-footer">
-<a class="btn btn-outline-primary btn-sm m-2" href="/item/item-export-csv">item export csv</a>
-<a class="btn btn-outline-primary btn-sm m-2" href="/item/item-import-csv">item import csv</a>
+<div class="card">
+    <div class="card-footer">
+    <a class="btn btn-outline-primary btn-sm m-2" href="/item/item-export-csv">item export csv</a>
+    <a class="btn btn-outline-primary btn-sm m-2" href="/item/item-import-csv">item import csv</a>
+    </div>
 </div>
 
 {% endblock %}

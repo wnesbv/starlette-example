@@ -17,11 +17,11 @@
     <div class="card mt-2 me-1">
 
         <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">id:</sup>
                 <span>{{ i.id }}</span>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">owner:</sup>
                 <span>{{ i.item_owner }}</span>
             </li>
@@ -34,6 +34,7 @@
                 <p>{{ i.title }}</p>
             </li>
             <li class="list-group-item">
+                <sup class="float-start">description:</sup>
                 <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
             </li>
             {% include "created_modified.html" %}

@@ -4,26 +4,26 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">reserve time...</h1>
+    <h1 class="lead my-3">reserve time...</h1>
     <div class="card p-3">
         <h2 class="lead">service</h2>
         <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item">
-                <sup class="float-start">service id:</sup>
+            <li class="list-group-item pt-3">
+                <sup class="float-start">id:</sup>
                 <span>{{ srv.id }}</span>
             </li>
-            <li class="list-group-item">
-                <sup class="float-start">owner service:</sup>
+            <li class="list-group-item pt-3">
+                <sup class="float-start">owner:</sup>
                 <span>{{ srv.service_owner }}</span>
             </li>
         </ul>
         <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">service title:</sup>
+            <li class="list-group-item pt-3">
+                <sup class="float-start">title:</sup>
                 <p class="mt-2">{{ srv.title }}</p>
             </li>
-            <li class="list-group-item">
-                <sup class="float-start">service description:</sup>
+            <li class="list-group-item pt-3">
+                <sup class="float-start">description:</sup>
                 <p class="mt-2">{{ srv.description }}</p>
             </li>
         </ul>
