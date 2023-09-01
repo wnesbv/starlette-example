@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 
-class ListItem(BaseModel):
+class DBItem(BaseModel):
     id: int
     title: str
     description: str
@@ -14,3 +14,7 @@ class ListItem(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class ListItem(BaseModel):
+    each_item: list[DBItem]

@@ -13,7 +13,7 @@ from starlette.responses import (
 
 from db_config.storage_config import engine, async_session
 from item.models import Item, Rent, Service, ScheduleRent, ScheduleService
-from api_starlette.schemas import ListItem
+from api_starlette.schemas import DBItem, ListItem
 
 
 templates = Jinja2Templates(directory="templates")
@@ -29,30 +29,54 @@ async def item_list(request):
         # ..
         if request.method == "GET":
             stmt = await session.execute(select(Item))
-            obj_list = stmt.scalars().all()
+            result = stmt.scalars().all()
             # ..
-            start = time.time()
-            print(" start 1..")
-            obj = parse_obj_as(
-                list[ListItem],
-                [
-                    {
-                        "id": i.id,
-                        "title": i.title,
-                        "description": i.description,
-                        "file": i.file,
-                        "created_at": i.created_at,
-                        "modified_at": i.modified_at,
-                        "item_owner": i.item_owner,
-                    }
-                    for i in obj_list
-                ],
-            )
-            to_return = json.dumps(obj, default=str)
-            end = time.time()
-            print(" end 1..", end - start)
-            return Response(to_return)
+            obj = [
+                {
+                    "id": i.id,
+                    "title": i.title,
+                    "description": i.description,
+                    "file": i.file,
+                    "created_at": i.created_at,
+                    "modified_at": i.modified_at,
+                    "item_owner": i.item_owner,
+                }
+                for i in result
+            ]
+            obj_list = ListItem(each_item=obj)
+            return JSONResponse(str(obj_list.model_dump()))
     await engine.dispose()
+
+
+# async def item_list(request):
+#     async with async_session() as session:
+#         # ..
+#         if request.method == "GET":
+#             stmt = await session.execute(select(Item))
+#             obj_list = stmt.scalars().all()
+#             # ..
+#             start = time.time()
+#             print(" start 1..")
+#             obj = parse_obj_as(
+#                 list[ListItem],
+#                 [
+#                     {
+#                         "id": i.id,
+#                         "title": i.title,
+#                         "description": i.description,
+#                         "file": i.file,
+#                         "created_at": i.created_at,
+#                         "modified_at": i.modified_at,
+#                         "item_owner": i.item_owner,
+#                     }
+#                     for i in obj_list
+#                 ],
+#             )
+#             to_return = json.dumps(obj, default=str)
+#             end = time.time()
+#             print(" end 1..", end - start)
+#             return Response(to_return)
+#     await engine.dispose()
 
 
 # async def item_list(
