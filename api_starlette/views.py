@@ -1,4 +1,6 @@
-import json
+import json, time
+
+from pydantic import parse_obj_as
 
 from sqlalchemy.future import select
 from starlette.templating import Jinja2Templates
@@ -12,7 +14,7 @@ from starlette.responses import (
 from db_config.storage_config import engine, async_session
 from item.models import Item, Rent, Service, ScheduleRent, ScheduleService
 from api_starlette.schemas import ListItem
-from pydantic import parse_obj_as
+
 
 templates = Jinja2Templates(directory="templates")
 
@@ -29,6 +31,8 @@ async def item_list(request):
             stmt = await session.execute(select(Item))
             obj_list = stmt.scalars().all()
             # ..
+            start = time.time()
+            print(" start 1..")
             obj = parse_obj_as(
                 list[ListItem],
                 [
@@ -44,9 +48,10 @@ async def item_list(request):
                     for i in obj_list
                 ],
             )
-            return Response(
-                json.dumps(obj, default=str),
-            )
+            to_return = json.dumps(obj, default=str)
+            end = time.time()
+            print(" end 1..", end - start)
+            return Response(to_return)
     await engine.dispose()
 
 
@@ -68,14 +73,11 @@ async def item_list(request):
 #                 "modified_at": i.modified_at,
 #                 "item_owner": i.item_owner,
 #             }
-#             for to in obj_list
+#             for i in obj_list
 #         ]
 #         #return JSONResponse(obj)
-
-#         return Response(
-#             json.dumps(obj, default=str),
-#         )
-
+#         to_return = json.dumps(obj, default=str)
+#         return Response(to_return)
 #     await engine.dispose()
 
 
@@ -84,19 +86,39 @@ async def item_details(request):
     async with async_session() as session:
         # ..
         stmt = await session.execute(select(Item).where(Item.id == id))
-        obj_list = stmt.scalars()
+        i = stmt.scalars().first()
         # ..
-        obj = [
-            {
-                "id": to.id,
-                "title": to.title,
-                "description": to.description,
-                "file": to.file,
-            }
-            for to in obj_list
-        ]
-        return JSONResponse(obj)
+        obj = ListItem(
+            id=i.id,
+            title=i.title,
+            description=i.description,
+            file=i.file,
+            created_at=i.created_at,
+            modified_at=i.modified_at,
+            item_owner=i.item_owner,
+        )
+        return JSONResponse(str(ListItem.model_dump(obj)))
     await engine.dispose()
+
+
+# async def item_details(request):
+#     id = request.path_params["id"]
+#     async with async_session() as session:
+#         # ..
+#         stmt = await session.execute(select(Item).where(Item.id == id))
+#         i = stmt.scalars().first()
+#         # ..
+#         obj = {
+#             "id": i.id,
+#             "title": i.title,
+#             "description": i.description,
+#             "file": i.file,
+#             "created_at": i.created_at,
+#             "modified_at": i.modified_at,
+#             "item_owner": i.item_owner,
+#         }
+#         return JSONResponse(str(ListItem(**obj)))
+#     await engine.dispose()
 
 
 async def schedule_rent_list(request):
