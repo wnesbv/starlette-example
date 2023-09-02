@@ -37,6 +37,9 @@
         <a class="btn btn-outline-primary btn-sm me-2" href="/admin/slider/update/{{ i.id }}" role="button">
             <i class="bi bi-pencil"></i>slider &raquo;
         </a>
+        <a class="btn btn-outline-primary btn-sm me-2" href="/admin/slider/file-update/{{ i.id }}" role="button">
+            <i class="bi bi-pencil"></i>file &raquo;
+        </a>
         <a class="btn btn-outline-danger btn-sm" href="/admin/slider/delete/{{ i.id }}" role="button">
             <i class="bi bi-trash3"></i>slider &raquo;
         </a>
@@ -51,9 +54,6 @@
     <img class="shadow-sm my-3" src="{{ i.file }}" alt="">
     {% if request.user.is_authenticated %}
         <figcaption class="card-footer">
-        <a class="btn btn-outline-primary btn-sm me-2" href="/admin/slider/file-update/{{ i.id }}" role="button">
-            <i class="bi bi-pencil"></i>file &raquo;
-        </a>
         <a class="btn btn-outline-danger btn-sm" href="/admin/slider/file-delete/{{ i.id }}" role="button">
             <i class="bi bi-trash3"></i>file &raquo;
         </a>

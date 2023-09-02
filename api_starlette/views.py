@@ -1,3 +1,6 @@
+from pathlib import Path
+from datetime import datetime
+
 import json, time
 
 from pydantic import parse_obj_as
@@ -7,16 +10,196 @@ from starlette.templating import Jinja2Templates
 from starlette.responses import (
     Response,
     JSONResponse,
-    # RedirectResponse,
-    # PlainTextResponse,
+    RedirectResponse,
+    PlainTextResponse,
 )
+from starlette.authentication import requires
+from sqlalchemy import update as sqlalchemy_update, delete
+
+from admin import img
 
 from db_config.storage_config import engine, async_session
 from item.models import Item, Rent, Service, ScheduleRent, ScheduleService
-from api_starlette.schemas import DBItem, ListItem
+from options_select.opt_slc import in_user, item_comment, in_item_user
+
+from .schemas import FormCreate, FormUpdate, ListItem, DBItem
 
 
 templates = Jinja2Templates(directory="templates")
+
+
+@requires("authenticated", redirect="user_login")
+# ...
+async def item_create(request):
+    # ..
+    basewidth = 800
+    template = "/item/create.html"
+
+    async with async_session() as session:
+        if request.method == "GET":
+            response = templates.TemplateResponse(
+                template,
+                {
+                    "request": request,
+                },
+            )
+            if not request.user.is_authenticated:
+                response = RedirectResponse(
+                    "/account/login",
+                    status_code=302,
+                )
+            return response
+        # ...
+        if request.method == "POST":
+            # ..
+            form = await request.form()
+            # ..
+            title = form["title"]
+            description = form["description"]
+            file = form["file"]
+            created_at = datetime.now()
+            item_owner = request.user.user_id
+            # ..
+            if file.filename == "":
+                # ..
+                obj = FormCreate(
+                    title=title,
+                    description=description,
+                    created_at=created_at,
+                    item_owner=item_owner,
+                )
+                new = Item(
+                    **obj.dict(),
+                )
+                print(str(FormCreate.model_dump(obj)))
+                # ..
+                session.add(new)
+                await session.commit()
+                # ..
+                return RedirectResponse(
+                    f"/item/details/{ new.id }",
+                    status_code=302,
+                )
+            # ..
+            email = await in_user(session, item_owner)
+            obj = FormCreate(
+                title=title,
+                description=description,
+                created_at=created_at,
+                item_owner=item_owner,
+            )
+            new = Item(**obj.dict())
+            # ..
+            session.add(new)
+            await session.flush()
+            new.file = await img.item_img_creat(file, email.email, new.id, basewidth)
+            session.add(new)
+            await session.commit()
+            # ..
+            return RedirectResponse(
+                f"/item/details/{ new.id }",
+                status_code=302,
+            )
+    await engine.dispose()
+
+
+@requires("authenticated", redirect="user_login")
+# ...
+async def item_update(request):
+    # ..
+    basewidth = 800
+    id = request.path_params["id"]
+    template = "/item/update.html"
+
+    async with async_session() as session:
+        # ..
+        i = await in_item_user(request, session, id)
+        # ..
+        context = {
+            "request": request,
+            "i": i,
+        }
+        # ...
+        if request.method == "GET":
+            if i:
+                return templates.TemplateResponse(template, context)
+            return PlainTextResponse("You are banned - this is not your account..!")
+        # ...
+        if request.method == "POST":
+            # ..
+            form = await request.form()
+            # ..
+            title = form["title"]
+            description = form["description"]
+            file = form["file"]
+            modified_at = datetime.now()
+            del_obj = form.get("del_bool")
+            # ..
+            if file.filename == "":
+                obj = FormUpdate(
+                    title=title,
+                    description=description,
+                    modified_at=modified_at,
+                )
+                print(str(FormUpdate.model_dump(obj)))
+                query = (
+                    sqlalchemy_update(Item)
+                    .where(Item.id == id)
+                    .values( obj.__dict__)
+                    .execution_options(synchronize_session="fetch")
+                )
+                await session.execute(query)
+                await session.commit()
+
+                if del_obj:
+                    if Path(f".{i.file}").exists():
+                        Path.unlink(f".{i.file}")
+
+                    fle_not = (
+                        sqlalchemy_update(Item)
+                        .where(Item.id == id)
+                        .values(file=None, modified_at=datetime.now())
+                        .execution_options(synchronize_session="fetch")
+                    )
+                    await session.execute(fle_not)
+                    await session.commit()
+                    # ..
+                    return RedirectResponse(
+                        f"/item/details/{id}",
+                        status_code=302,
+                    )
+                return RedirectResponse(
+                    f"/item/details/{id}",
+                    status_code=302,
+                )
+            # ..
+            email = await in_user(session, i.item_owner)
+            obj = FormUpdate(
+                title=title,
+                description=description,
+                modified_at=modified_at,
+            )
+            file_query = (
+                sqlalchemy_update(Item)
+                .where(Item.id == id)
+                .values(
+                    obj.__dict__,
+                )
+                .values(
+                    file=await img.item_img_creat(file, email.email, id, basewidth),
+                )
+                .execution_options(synchronize_session="fetch")
+            )
+            # ..
+            await session.execute(file_query)
+            await session.commit()
+            # ..
+            print(str(FormUpdate.model_dump(obj)))
+            return RedirectResponse(
+                f"/item/details/{id}",
+                status_code=302,
+            )
+    await engine.dispose()
 
 
 async def all_list(request):
@@ -106,7 +289,9 @@ async def item_list(request):
 
 
 async def item_details(request):
+    # ..
     id = request.path_params["id"]
+    # ..
     async with async_session() as session:
         # ..
         stmt = await session.execute(select(Item).where(Item.id == id))

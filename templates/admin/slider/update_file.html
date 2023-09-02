@@ -26,6 +26,11 @@
     <img class="shadow-sm my-3" src="{{ i.file }}" alt="">
     <figcaption>
         <span class="m-2"><sub>{{ i.file }}</sub></span>
+        <div class="bg-light m-2">
+            <a class="btn btn-outline-danger btn-sm" href="/admin/slider/file-delete/{{ i.id }}" role="button">
+                <i class="bi bi-trash3"></i>file &raquo;
+            </a>
+        </div>
     </figcaption>
     </figure>
     {% endif %}
@@ -40,16 +45,12 @@
             name="file"
             class="form-control mb-2"
         />
+    </div>
+    <div class="card-footer">
         <button type="submit" class="btn btn-outline-primary btn-sm l mb-2">
             submit
         </button>
     </div>
 </form>
-
-<div class="bg-light m-2">
-    <a class="btn btn-outline-danger btn-sm" href="/admin/slider/file-delete/{{ i.id }}" role="button">
-        <i class="bi bi-trash3"></i>file &raquo;
-    </a>
-</div>
 
 {% endblock %}
