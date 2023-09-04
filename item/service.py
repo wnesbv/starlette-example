@@ -13,17 +13,18 @@ from db_config.storage_config import engine, async_session
 
 from admin import img
 from mail.send import send_mail
+from account.models import User
 
 from make_an_appointment.models import ReserveServicerFor
 
-from .models import Service, ScheduleService
+from .models import Item, Service, ScheduleService
 
 from options_select import file_img
 from options_select.opt_slc import (
-    user_tm,
-    in_user,
+    owner_request,
+    for_id,
     service_comment,
-    in_service_user,
+    and_owner_request,
     id_fle_delete,
 )
 
@@ -42,7 +43,7 @@ async def service_create(request):
         # ...
         if request.method == "GET":
             # ..
-            obj_item = await user_tm(request, session)
+            obj_item = await owner_request(request, session, Item)
             # ..
             return templates.TemplateResponse(
                 template,
@@ -60,14 +61,14 @@ async def service_create(request):
             description = form["description"]
             file = form["file"]
             service_belongs = form["service_belongs"]
-            service_owner = request.user.user_id
+            owner = request.user.user_id
             # ..
             if file.filename == "":
 
                 new = Service()
                 new.title = title
                 new.description = description
-                new.service_owner = request.user.user_id
+                new.owner = request.user.user_id
                 # ..
                 new.service_belongs = int(service_belongs)
                 # ..
@@ -83,11 +84,11 @@ async def service_create(request):
                     status_code=302,
                 )
             # ..
-            email = await in_user(session, service_owner)
+            email = await for_id(session, User, owner)
             new = Service()
             new.title = title
             new.description = description
-            new.service_owner = request.user.user_id
+            new.owner = request.user.user_id
             new.service_belongs = int(service_belongs)
             new.created_at = datetime.now()
             # ..
@@ -119,7 +120,7 @@ async def service_update(request):
 
     async with async_session() as session:
         # ..
-        i = await in_service_user(request, session, id)
+        i = await and_owner_request(request, session, Service, id)
         context = {
             "request": request,
             "i": i,
@@ -179,7 +180,7 @@ async def service_update(request):
                     status_code=302,
                 )
             # ..
-            email = await in_user(session, i.item_owner)
+            email = await for_id(session, User, i.owner)
             file_query = (
                 sqlalchemy_update(Service)
                 .where(Service.id == id)
@@ -220,7 +221,7 @@ async def service_delete(request):
 
         if request.method == "GET":
             # ..
-            i = await in_service_user(request, session, id)
+            i = await and_owner_request(request, session, Service, id)
             if i:
                 return templates.TemplateResponse(
                     template,
@@ -233,14 +234,14 @@ async def service_delete(request):
         # ...
         if request.method == "POST":
             # ..
-            i = await in_service_user(request, session, id)
-            email = await in_user(session, i.service_owner)
+            i = await and_owner_request(request, session, Service, id)
+            email = await for_id(session, User, i.owner)
+            # ..
             await img.del_service(
                 email.email, i.service_belongs, id
             )
             # ..
             await session.delete(i)
-            # ..
             await session.commit()
             # ..
             response = RedirectResponse(
@@ -279,11 +280,7 @@ async def service_details(request):
         # ..
         cmt_list = await service_comment(session, id)
         # ..
-        stmt = await session.execute(
-            select(Service)
-            .where(Service.id == id)
-        )
-        i = stmt.scalars().first()
+        i = await for_id(session, Service, id)
         #..
         rsv = await session.execute(
             select(ScheduleService.id)

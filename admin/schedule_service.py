@@ -74,7 +74,7 @@ async def user_list(
             # ..
             stmt = await session.execute(
                 select(ScheduleService)
-                .where(ScheduleService.sch_s_owner == id)
+                .where(ScheduleService.owner == id)
             )
             obj_list = stmt.scalars().all()
             # ..

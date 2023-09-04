@@ -20,9 +20,9 @@ from db_config.storage_config import engine, async_session
 
 from account.models import User
 from item.models import Item, Service, Rent
-from options_select.opt_slc import all_total
+from options_select.opt_slc import all_total, for_id
 
-from .opt_slc import in_admin, in_user
+from .opt_slc import in_admin
 from . import img
 
 
@@ -30,7 +30,7 @@ templates = Jinja2Templates(directory="templates")
 
 
 @requires("authenticated", redirect="user_login")
-# ...
+# ..
 async def i_list(request):
     template = "/admin/user/list.html"
 
@@ -55,7 +55,7 @@ async def i_list(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def i_details(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/admin/user/details.html"
 
@@ -64,22 +64,22 @@ async def i_details(request):
         admin = await in_admin(request, session)
         # ..
         if admin:
-            i = await in_user(session, id)
+            i = await for_id(session, User, id)
             # ..
             opt_item = await session.execute(
                 select(Item)
-                .where(Item.item_owner == id)
+                .where(Item.owner == id)
             )
             all_item = opt_item.scalars().all()
             opt_service = await session.execute(
                 select(Service)
-                .where(Service.service_owner == id)
+                .where(Service.owner == id)
             )
             all_service = opt_service.scalars().unique()
             # ..
             opt_rent = await session.execute(
                 select(Rent)
-                .where(Rent.rent_owner == id)
+                .where(Rent.owner == id)
             )
             all_rent = opt_rent.scalars().unique()
             # ...
@@ -190,7 +190,7 @@ async def i_update(request):
     async with async_session() as session:
         # ..
         admin = await in_admin(request, session)
-        i = await in_user(session, id)
+        i = await for_id(session, User, id)
         # ..
         context = {
             "request": request,
@@ -283,7 +283,7 @@ async def i_update(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def i_delete(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/admin/user/delete.html"
 
@@ -291,7 +291,7 @@ async def i_delete(request):
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            i = await in_user(session, id)
+            i = await for_id(session, User, id)
             # ..
             if admin:
                 return templates.TemplateResponse(
@@ -305,11 +305,10 @@ async def i_delete(request):
         # ...
         if request.method == "POST":
             # ..
-            i = await in_user(session, id)
+            i = await for_id(session, User, id)
             await img.del_user(i.email)
             # ..
             await session.delete(i)
-            # ..
             await session.commit()
             # ..
             response = RedirectResponse(
@@ -324,7 +323,7 @@ async def i_delete(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def i_update_password(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/admin/user/update_password.html"
 

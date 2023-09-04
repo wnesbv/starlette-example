@@ -21,7 +21,7 @@ class PersonParticipant(Base):
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     #..
-    participant: Mapped[int] = mapped_column(
+    owner: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE")
     )
     group_participant: Mapped[int] = mapped_column(

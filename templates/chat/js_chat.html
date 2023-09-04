@@ -22,14 +22,14 @@ ws.onmessage = function (event) {
 
     let { file } = data;
     let { message } = data;
-    let { owner_msg } = data;
+    let { owner } = data;
 
     if (typeof message === "number") {
         num.innerHTML +=
             " * " +
             data.message +
             " : " +
-            data.owner_msg +
+            data.owner +
             "<time>" +
             data.created_at +
             "</time>" +
@@ -43,14 +43,14 @@ ws.onmessage = function (event) {
                 data.file +
                 " width='64'/></figure>" +
                 '<span class="mx-2">' +
-                data.owner_msg +
+                data.owner +
                 "</span></div>";
         } else {
             msg.innerHTML +=
                 '<div class="shadow w-75 list-group-item float-end my-1">' +
                 data.message +
                 '<span class="mx-2">' +
-                data.owner_msg +
+                data.owner +
                 "</span></div>";
         }
     }

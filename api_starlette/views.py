@@ -17,10 +17,11 @@ from starlette.authentication import requires
 from sqlalchemy import update as sqlalchemy_update, delete
 
 from admin import img
+from account.models import User
 
 from db_config.storage_config import engine, async_session
 from item.models import Item, Rent, Service, ScheduleRent, ScheduleService
-from options_select.opt_slc import in_user, item_comment, in_item_user
+from options_select.opt_slc import for_id, item_comment, and_owner_request
 
 from .schemas import FormCreate, FormUpdate, ListItem, DBItem
 
@@ -58,7 +59,7 @@ async def item_create(request):
             description = form["description"]
             file = form["file"]
             created_at = datetime.now()
-            item_owner = request.user.user_id
+            owner = request.user.user_id
             # ..
             if file.filename == "":
                 # ..
@@ -66,7 +67,7 @@ async def item_create(request):
                     title=title,
                     description=description,
                     created_at=created_at,
-                    item_owner=item_owner,
+                    owner=owner,
                 )
                 new = Item(
                     **obj.dict(),
@@ -81,12 +82,12 @@ async def item_create(request):
                     status_code=302,
                 )
             # ..
-            email = await in_user(session, item_owner)
+            email = await for_id(session, User, owner)
             obj = FormCreate(
                 title=title,
                 description=description,
                 created_at=created_at,
-                item_owner=item_owner,
+                owner=owner,
             )
             new = Item(**obj.dict())
             # ..
@@ -113,7 +114,7 @@ async def item_update(request):
 
     async with async_session() as session:
         # ..
-        i = await in_item_user(request, session, id)
+        i = await and_owner_request(request, session, Item, id)
         # ..
         context = {
             "request": request,
@@ -173,7 +174,7 @@ async def item_update(request):
                     status_code=302,
                 )
             # ..
-            email = await in_user(session, i.item_owner)
+            email = await for_id(session, User, i.owner)
             obj = FormUpdate(
                 title=title,
                 description=description,
@@ -222,7 +223,7 @@ async def item_list(request):
                     "file": i.file,
                     "created_at": i.created_at,
                     "modified_at": i.modified_at,
-                    "item_owner": i.item_owner,
+                    "owner": i.owner,
                 }
                 for i in result
             ]
@@ -250,7 +251,7 @@ async def item_list(request):
 #                         "file": i.file,
 #                         "created_at": i.created_at,
 #                         "modified_at": i.modified_at,
-#                         "item_owner": i.item_owner,
+#                         "owner": i.owner,
 #                     }
 #                     for i in obj_list
 #                 ],
@@ -278,7 +279,7 @@ async def item_list(request):
 #                 "file": i.file,
 #                 "created_at": i.created_at,
 #                 "modified_at": i.modified_at,
-#                 "item_owner": i.item_owner,
+#                 "owner": i.owner,
 #             }
 #             for i in obj_list
 #         ]
@@ -294,8 +295,7 @@ async def item_details(request):
     # ..
     async with async_session() as session:
         # ..
-        stmt = await session.execute(select(Item).where(Item.id == id))
-        i = stmt.scalars().first()
+        i = await for_id(session, Item, id)
         # ..
         obj = ListItem(
             id=i.id,
@@ -304,7 +304,7 @@ async def item_details(request):
             file=i.file,
             created_at=i.created_at,
             modified_at=i.modified_at,
-            item_owner=i.item_owner,
+            owner=i.owner,
         )
         return JSONResponse(str(ListItem.model_dump(obj)))
     await engine.dispose()
@@ -324,7 +324,7 @@ async def item_details(request):
 #             "file": i.file,
 #             "created_at": i.created_at,
 #             "modified_at": i.modified_at,
-#             "item_owner": i.item_owner,
+#             "owner": i.owner,
 #         }
 #         return JSONResponse(str(ListItem(**obj)))
 #     await engine.dispose()

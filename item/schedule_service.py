@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 import json
@@ -17,11 +16,11 @@ from db_config.storage_config import engine, async_session
 from mail.send import send_mail
 
 from options_select.opt_slc import (
-    user_sv,
+    owner_request,
     all_total,
     schedule_sv,
     schedule_sv_user,
-    in_schedule_service,
+    and_owner_request,
     details_schedule_service,
 )
 
@@ -34,7 +33,7 @@ templates = Jinja2Templates(directory="templates")
 @requires("authenticated", redirect="user_login")
 # ...
 async def list_service(request):
-
+    # ..
     template = "/schedule/list_service.html"
     async with async_session() as session:
         # ..
@@ -72,16 +71,15 @@ async def list_service_id(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def details_service(request):
-
+    # ..
     id = request.path_params["id"]
     service = request.path_params["service"]
     template = "/schedule/details_service.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
             # ..
-            i = await in_schedule_service(request, session, id)
+            i = await and_owner_request(request, session, ScheduleService, id)
             if i:
                 # ..
                 obj_list = await details_schedule_service(request, session, service)
@@ -99,11 +97,10 @@ async def details_service(request):
                     for i in obj_list
                 ]
                 sch_json = json.dumps(obj, default=str)
-                #..
+                # ..
                 table_attributes = "style='width:100%', class='table table-bordered'"
                 sch_json = json2html.convert(
-                    json=sch_json,
-                    table_attributes=table_attributes
+                    json=sch_json, table_attributes=table_attributes
                 )
                 # ..
                 context = {
@@ -118,14 +115,13 @@ async def details_service(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def create_service(request):
-
+    # ..
     template = "/schedule/create_service.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
             # ..
-            obj_service = await user_sv(request, session)
+            obj_service = await owner_request(request, session, Service)
             objects = list(MyEnum)
             # ..
             return templates.TemplateResponse(
@@ -150,7 +146,7 @@ async def create_service(request):
             type_on = form["type_on"]
             sch_s_service_id = form["sch_s_service_id"]
             # ..
-            sch_s_owner = request.user.user_id
+            owner = request.user.user_id
             # ..
             number_on = datetime.strptime(str_date, settings.DATE)
             there_is = datetime.strptime(str_there_is, settings.DATE_T)
@@ -162,16 +158,14 @@ async def create_service(request):
             new.type_on = type_on
             new.number_on = number_on
             new.there_is = there_is
-            new.sch_s_owner = sch_s_owner
+            new.owner = owner
             new.sch_s_service_id = int(sch_s_service_id)
             new.created_at = datetime.now()
             # ..
             session.add(new)
             await session.commit()
             # ..
-            await send_mail(
-                f"A new object has been created - {new}: {name}"
-            )
+            await send_mail(f"A new object has been created - {new}: {name}")
             # ..
             response = RedirectResponse(
                 f"/item/schedule-service/details/{ new.sch_s_service_id }/{ new.id }",
@@ -184,13 +178,13 @@ async def create_service(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def update_service(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/schedule/update_service.html"
 
     async with async_session() as session:
         # ..
-        detail = await in_schedule_service(request, session, id)
+        detail = await and_owner_request(request, session, ScheduleService, id)
         context = {
             "request": request,
             "detail": detail,
@@ -248,15 +242,14 @@ async def update_service(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def schedule_delete(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/schedule/delete.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
             # ..
-            detail = await in_schedule_service(request, session, id)
+            detail = await and_owner_request(request, session, ScheduleService, id)
             if detail:
                 return templates.TemplateResponse(
                     template,
@@ -265,16 +258,11 @@ async def schedule_delete(request):
                         "detail": detail,
                     },
                 )
-            return PlainTextResponse(
-                "You are banned - this is not your account..!"
-            )
+            return PlainTextResponse("You are banned - this is not your account..!")
         # ...
         if request.method == "POST":
             # ..
-            query = (
-                delete(ScheduleService)
-                .where(ScheduleService.id == id)
-            )
+            query = delete(ScheduleService).where(ScheduleService.id == id)
             await session.execute(query)
             await session.commit()
             # ..

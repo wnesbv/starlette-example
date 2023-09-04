@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 from sqlalchemy import delete
@@ -10,7 +9,7 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 
 from db_config.storage_config import engine, async_session
 
-from options_select.opt_slc import in_person_participant, person_participant
+from options_select.opt_slc import for_id, in_person_participant, person_participant
 
 from .models import PersonParticipant
 
@@ -20,20 +19,22 @@ templates = Jinja2Templates(directory="templates")
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def participant_create(
-    request
-):
+async def participant_create(request):
+    # ..
     id = request.path_params["id"]
     template = "/participant/create.html"
 
     async with async_session() as session:
         # ...
         if request.method == "GET":
-            #..
+            # ..
             double = await in_person_participant(request, session, id)
             if not double:
                 return templates.TemplateResponse(
-                    template, {"request": request,}
+                    template,
+                    {
+                        "request": request,
+                    },
                 )
             return RedirectResponse(
                 f"/chat/group/{id}",
@@ -41,15 +42,15 @@ async def participant_create(
             )
         # ...
         if request.method == "POST":
-            #..
+            # ..
             form = await request.form()
-            #..
+            # ..
             group_participant = id
-            participant = request.user.user_id
+            owner = request.user.user_id
             explanations_person = form["explanations_person"]
-            #..
+            # ..
             new = PersonParticipant()
-            new.participant = participant
+            new.owner = owner
             new.group_participant = group_participant
             new.explanations_person = explanations_person
             new.created_at = datetime.now()
@@ -67,20 +68,16 @@ async def participant_create(
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def participant_list(
-    request
-):
-
+async def participant_list(request):
     id = request.path_params["id"]
     template = "/participant/list.html"
 
     async with async_session() as session:
-        #..
+        # ..
         obj_admin = person_participant(request, session, id)
         if obj_admin:
             stmt = await session.execute(
-                select(PersonParticipant)
-                .where(
+                select(PersonParticipant).where(
                     PersonParticipant.group_participant == id
                 )
             )
@@ -89,31 +86,23 @@ async def participant_list(
                 "request": request,
                 "obj_list": obj_list,
             }
-            return templates.TemplateResponse(
-                template, context
-            )
-        return PlainTextResponse("Or, you don't have viewing rights. Or, there are no applications")
+            return templates.TemplateResponse(template, context)
+        return PlainTextResponse(
+            "Or, you don't have viewing rights. Or, there are no applications"
+        )
     await engine.dispose()
 
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def participant_add(
-    request
-):
+async def participant_add(request):
     id = request.path_params["id"]
 
     async with async_session() as session:
-        #..
+        # ..
         obj_admin = person_participant(request, session, id)
         if obj_admin:
-            stmt = await session.execute(
-                select(PersonParticipant)
-                .where(
-                    PersonParticipant.id == id,
-                )
-            )
-            detail = stmt.scalars().first()
+            detail = await for_id(session, PersonParticipant, id)
             # ..
             detail.permission = True
             await session.commit()
@@ -128,23 +117,16 @@ async def participant_add(
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def participant_delete(
-    request
-):
+async def participant_delete(request):
     # ..
     id = request.path_params["id"]
 
     async with async_session() as session:
-        #..
+        # ..
         obj_admin = person_participant(request, session, id)
         if obj_admin:
             # ..
-            query = (
-                delete(PersonParticipant)
-                .where(
-                    PersonParticipant.id == id
-                )
-            )
+            query = delete(PersonParticipant).where(PersonParticipant.id == id)
             await session.execute(query)
             await session.commit()
             # ..

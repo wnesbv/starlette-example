@@ -1,10 +1,11 @@
 
 {% extends "base.html" %}
-{% block title %} update reserve rent {{ detail.id }} {% endblock%}
+{% block title %} update reserve rent {{ i.id }} {% endblock%}
 
 {% block content %}
 
-<h1 class="lead my-3">update reserve rent</h1>
+<h1 class="lead my-3">update reserve rent..</h1>
+<sup>{{ rsv_period }}</sup>
 
 <form class="card" method="POST">
     <div class="card-body row m-2">
@@ -15,7 +16,7 @@
             class="mt-3"
             type="date"
             name="time_start"
-            value="{{ detail.time_start }}"
+            value="{{ i.time_start }}"
         />
     </div>
 
@@ -25,7 +26,7 @@
             class="mt-3"
             type="date"
             name="time_end"
-            value="{{ detail.time_end }}"
+            value="{{ i.time_end }}"
         />
     </div>
 
@@ -36,7 +37,7 @@
             name="description"
             maxlength="333"
             spellcheck
-        >{{ detail.description }}</textarea>
+        >{{ i.description }}</textarea>
     </div>
 
     <div class="card-footer m-2">

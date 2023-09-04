@@ -8,7 +8,7 @@ class FormCreate(BaseModel):
     title: str
     description: str | None = None
     created_at: datetime
-    item_owner: int
+    owner: int
 
 
 class FormUpdate(BaseModel):
@@ -24,7 +24,7 @@ class DBItem(BaseModel):
     file: str | None = None
     created_at: datetime
     modified_at: datetime | None = None
-    item_owner: int
+    owner: int
 
     class Config:
         from_attributes = True

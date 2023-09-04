@@ -23,38 +23,47 @@ async def all_total(session, model):
     return result
 
 
-async def in_user(
-    session, id
+async def for_id(
+    session, model, id
 ):
     stmt = await session.execute(
-        select(User)
-        .where(
-            User.id == id,
+        select(model)
+        .where(model.id == id)
+    )
+    result = stmt.scalars().first()
+    return result
+
+
+async def and_owner_request(request, session, model, id):
+    stmt = await session.execute(
+        select(model).where(
+            and_(
+                model.id == id,
+                model.owner == request.user.user_id,
+            )
         )
     )
     result = stmt.scalars().first()
     return result
 
 
-async def user_tm(request, session):
+async def owner_request(request, session, model):
     stmt = await session.execute(
-        select(Item).where(Item.item_owner == request.user.user_id)
+        select(model).where(model.owner == request.user.user_id)
     )
     result = stmt.scalars().all()
     return result
 
 
-async def user_rt(request, session):
+# ..
+async def in_person_participant(request, session, id):
     stmt = await session.execute(
-        select(Rent).where(Rent.rent_owner == request.user.user_id)
-    )
-    result = stmt.scalars().all()
-    return result
-
-
-async def user_sv(request, session):
-    stmt = await session.execute(
-        select(Service).where(Service.service_owner == request.user.user_id)
+        select(PersonParticipant).where(
+            and_(
+                PersonParticipant.id == id,
+                PersonParticipant.owner == request.user.user_id,
+            )
+        )
     )
     result = stmt.scalars().all()
     return result
@@ -64,7 +73,7 @@ async def user_sv(request, session):
 async def schedule_rent_user(request, session):
     stmt = await session.execute(
         select(ScheduleRent)
-        .where(ScheduleRent.sch_r_owner == request.user.user_id)
+        .where(ScheduleRent.owner == request.user.user_id)
         .order_by(ScheduleRent.id.desc())
     )
     result = stmt.scalars().all()
@@ -75,7 +84,7 @@ async def schedule_sv_user(request, session):
     stmt = await session.execute(
         select(Service)
         .join(ScheduleService.sch_s_service)
-        .where(ScheduleService.sch_s_owner == request.user.user_id)
+        .where(ScheduleService.owner == request.user.user_id)
         .order_by(ScheduleService.id.desc())
     )
     result = stmt.scalars().unique()
@@ -88,7 +97,7 @@ async def schedule_sv(request, session, id):
         .where(
             and_(
                 ScheduleService.sch_s_service_id == id,
-                ScheduleService.sch_s_owner == request.user.user_id,
+                ScheduleService.owner == request.user.user_id,
             )
         )
         .order_by(ScheduleService.id.desc())
@@ -100,7 +109,7 @@ async def schedule_sv(request, session, id):
 async def details_schedule_rent(request, session):
     stmt = await session.execute(
         select(ScheduleRent)
-        .where(ScheduleRent.sch_r_owner == request.user.user_id)
+        .where(ScheduleRent.owner == request.user.user_id)
         .order_by(ScheduleRent.id.desc())
     )
     result = stmt.scalars().all()
@@ -111,7 +120,7 @@ async def details_schedule_service(request, session, service):
     stmt = await session.execute(
         select(ScheduleService)
         .where(ScheduleService.sch_s_service_id == service)
-        .where(ScheduleService.sch_s_owner == request.user.user_id)
+        .where(ScheduleService.owner == request.user.user_id)
         .order_by(ScheduleService.id.desc())
     )
     result = stmt.scalars().all()
@@ -124,7 +133,7 @@ async def dump_schedule_service(request, session, id):
         .where(
             and_(
                 DumpService.dump_s_service_id == id,
-                DumpService.dump_s_owner == request.user.user_id,
+                DumpService.owner == request.user.user_id,
             )
         )
         .order_by(DumpService.id.desc())
@@ -139,7 +148,7 @@ async def sch_sv_user(request, session, id):
         select(ScheduleService).where(
             and_(
                 ScheduleService.sch_s_service_id == id,
-                ScheduleService.sch_s_owner == request.user.user_id,
+                ScheduleService.owner == request.user.user_id,
             )
         )
     )
@@ -153,7 +162,7 @@ async def sch_sv_id(request, session, id):
         .where(
             and_(
                 ScheduleService.sch_s_service_id == id,
-                ScheduleService.sch_s_owner == request.user.user_id,
+                ScheduleService.owner == request.user.user_id,
             )
         )
         .order_by(ScheduleService.id.desc())
@@ -163,132 +172,9 @@ async def sch_sv_id(request, session, id):
 
 
 # ..
-async def in_rrf(request, session, id):
-    stmt = await session.execute(
-        select(ReserveRentFor).where(
-            and_(
-                ReserveRentFor.id == id,
-                ReserveRentFor.rrf_owner == request.user.user_id,
-            )
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
-async def in_rsf(request, session, id):
-    stmt = await session.execute(
-        select(ReserveServicerFor).where(
-            and_(
-                ReserveServicerFor.id == id,
-                ReserveServicerFor.rsf_owner == request.user.user_id,
-            )
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
-async def in_item_user(request, session, id):
-    stmt = await session.execute(
-        select(Item).where(and_(Item.id == id, Item.item_owner == request.user.user_id))
-    )
-    result = stmt.scalars().first()
-    return result
-
-
-async def in_rent_user(request, session, id):
-    stmt = await session.execute(
-        select(Rent).where(and_(Rent.id == id, Rent.rent_owner == request.user.user_id))
-    )
-    result = stmt.scalars().first()
-    return result
-
-
-async def in_service_user(request, session, id):
-    stmt = await session.execute(
-        select(Service).where(
-            and_(Service.id == id, Service.service_owner == request.user.user_id)
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
-async def in_schedule_rent(request, session, id):
-    stmt = await session.execute(
-        select(ScheduleRent).where(
-            and_(
-                ScheduleRent.id == id,
-                ScheduleRent.sch_r_owner == request.user.user_id,
-            )
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
-async def in_schedule_service(request, session, id):
-    stmt = await session.execute(
-        select(ScheduleService).where(
-            and_(
-                ScheduleService.id == id,
-                ScheduleService.sch_s_owner == request.user.user_id,
-            )
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
-async def in_dump(request, session, id):
-    stmt = await session.execute(
-        select(DumpService).where(
-            and_(DumpService.id == id, DumpService.dump_s_owner == request.user.user_id)
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
 async def in_comment(request, session, id):
     stmt = await session.execute(
-        select(Comment).where(Comment.cmt_user_id == request.user.user_id)
-    )
-    result = stmt.scalars().all()
-    return result
-
-
-# ..
-async def in_group_chat(request, session, id):
-    stmt = await session.execute(
-        select(GroupChat).where(
-            and_(GroupChat.id == id, GroupChat.admin_group == request.user.user_id)
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
-async def in_chat(request, session, id):
-    stmt = await session.execute(
-        select(MessageChat).where(
-            and_(MessageChat.id == id, MessageChat.owner_msg == request.user.user_id)
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
-# ..
-async def in_person_participant(request, session, id):
-    stmt = await session.execute(
-        select(PersonParticipant).where(
-            and_(
-                PersonParticipant.id == id,
-                PersonParticipant.participant == request.user.user_id,
-            )
-        )
+        select(Comment).where(Comment.owner == request.user.user_id)
     )
     result = stmt.scalars().all()
     return result
@@ -301,7 +187,7 @@ async def person_participant(request, session, id):
         .where(
             and_(
                 PersonParticipant.group_participant == id,
-                GroupChat.admin_group == request.user.user_id,
+                GroupChat.owner == request.user.user_id,
             )
         )
     )

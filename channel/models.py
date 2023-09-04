@@ -22,7 +22,7 @@ class GroupChat(Base):
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # ...
-    admin_group: Mapped[int] = mapped_column(
+    owner: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
@@ -52,7 +52,7 @@ class MessageChat(Base):
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # ...
-    owner_msg: Mapped[int] = mapped_column(
+    owner: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     id_group: Mapped[int] = mapped_column(
@@ -82,7 +82,7 @@ class OneChat(Base):
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # ...
-    owner_msg: Mapped[int] = mapped_column(
+    owner: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     # ...

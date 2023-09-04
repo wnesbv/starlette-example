@@ -22,7 +22,7 @@ class ReserveRentFor(Base):
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # ...
-    rrf_owner: Mapped[int] = mapped_column(
+    owner: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=True
     )
     rrf_item_id: Mapped[int] = mapped_column(
@@ -60,7 +60,7 @@ class ReserveServicerFor(Base):
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # ...
-    rsf_owner: Mapped[int] = mapped_column(
+    owner: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE")
     )
     rsf_service_id: Mapped[int] = mapped_column(

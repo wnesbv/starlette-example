@@ -20,7 +20,7 @@ from starlette.authentication import requires
 from db_config.settings import settings
 from db_config.storage_config import engine, async_session
 
-from options_select.opt_slc import in_user
+from options_select.opt_slc import for_id
 
 from admin import img
 from account.models import User
@@ -102,12 +102,7 @@ async def user_update(request):
 
     async with async_session() as session:
         # ..
-        stmt = await session.execute(
-            select(User).where(
-                User.id == id,
-            )
-        )
-        i = stmt.scalars().first()
+        i = await for_id(session, User, id)
         # ..
         context = {
             "request": request,
@@ -210,11 +205,10 @@ async def user_delete(request):
         # ...
         if request.method == "POST":
             # ..
-            i = await in_user(session, id)
+            i = await for_id(session, User, id)
             await img.del_user(i.email)
             # ..
             await session.delete(i)
-            # ..
             await session.commit()
             # ..
             response = RedirectResponse(
@@ -362,12 +356,7 @@ async def user_detail(request):
 
     async with async_session() as session:
         # ..
-        stmt = await session.execute(
-            select(User).where(
-                User.id == id,
-            )
-        )
-        i = stmt.scalars().first()
+        i = await for_id(session, User, id)
         # ..
         context = {
             "request": request,

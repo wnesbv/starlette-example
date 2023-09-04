@@ -1,5 +1,3 @@
-
-
 from datetime import datetime
 
 from sqlalchemy import update as sqlalchemy_update, delete
@@ -13,7 +11,7 @@ from db_config.storage_config import engine, async_session
 
 from mail.send import send_mail
 
-from options_select.opt_slc import in_rsf
+from options_select.opt_slc import for_id, and_owner_request
 
 from item.models import Service, ScheduleService
 from .models import ReserveServicerFor
@@ -29,22 +27,14 @@ async def create_reserve_service(request):
     id = request.path_params["id"]
     service = request.path_params["service"]
     template = "/make_an_appointment/create_reserve_time.html"
+
     async with async_session() as session:
         # ..
-        stmt = await session.execute(
-            select(ScheduleService)
-            .where(
-                ScheduleService.id == id
-            )
-        )
-        sch = stmt.scalars().first()
+        sch = await for_id(session, ScheduleService, id)
         # ..
         if request.method == "GET":
             # ..
-            stmt = await session.execute(
-                select(Service)
-                .where(Service.id == service)
-            )
+            stmt = await session.execute(select(Service).where(Service.id == service))
             srv = stmt.scalars().first()
             # ..
             there_is = sch.there_is
@@ -65,13 +55,13 @@ async def create_reserve_service(request):
             # ..
             description = form["description"]
             # ..
-            rsf_owner = request.user.user_id
+            owner = request.user.user_id
             reserve_time = sch.there_is
             rsf_service_id = service
             rsf_sch_s_id = id
             # ..
             new = ReserveServicerFor()
-            new.rsf_owner = rsf_owner
+            new.owner = owner
             new.rsf_sch_s_id = rsf_sch_s_id
             new.rsf_service_id = rsf_service_id
             new.description = description
@@ -98,9 +88,8 @@ async def reserve_list_service(request):
     async with async_session() as session:
         # ..
         stmt = await session.execute(
-            select(ReserveServicerFor)
-            .where(
-                ReserveServicerFor.rsf_owner == request.user.user_id
+            select(ReserveServicerFor).where(
+                ReserveServicerFor.owner == request.user.user_id
             )
         )
         # ..
@@ -124,7 +113,9 @@ async def reserve_detail_service(request):
 
     async with async_session() as session:
         # ..
-        i = await in_rsf(request, session, id)
+        i = await and_owner_request(
+            request, session, ReserveServicerFor, id
+        )
         if i:
             context = {
                 "request": request,
@@ -144,14 +135,16 @@ async def reserve_update_service(request):
 
     async with async_session() as session:
         # ..
-        detail = await in_rsf(request, session, id)
+        i = await and_owner_request(
+            request, session, ReserveServicerFor, id
+        )
         context = {
             "request": request,
-            "detail": detail,
+            "i": i,
         }
         # ...
         if request.method == "GET":
-            if detail:
+            if i:
                 return templates.TemplateResponse(template, context)
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
@@ -173,7 +166,7 @@ async def reserve_update_service(request):
             await session.commit()
 
             response = RedirectResponse(
-                f"/reserve/detail-service/{ detail.id }",
+                f"/reserve/detail-service/{ i.id }",
                 status_code=302,
             )
             return response
@@ -188,16 +181,17 @@ async def delete_rsf(request):
     template = "/make_an_appointment/delete.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
             # ..
-            detail = await in_rsf(request, session, id)
-            if detail:
+            i = await and_owner_request(
+                request, session, ReserveServicerFor, id
+            )
+            if i:
                 return templates.TemplateResponse(
                     template,
                     {
                         "request": request,
-                        "detail": detail,
+                        "i": i,
                     },
                 )
             return PlainTextResponse("You are banned - this is not your account..!")

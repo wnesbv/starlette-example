@@ -1,4 +1,3 @@
-
 from pathlib import Path
 from datetime import datetime
 
@@ -15,16 +14,17 @@ from db_config.storage_config import engine, async_session
 
 from admin import img
 from mail.send import send_mail
+from account.models import User
 
 from options_select import file_img
 from options_select.opt_slc import (
-    user_tm,
-    in_user,
+    owner_request,
+    for_id,
     rent_comment,
-    in_rent_user,
+    and_owner_request,
     id_fle_delete,
 )
-from .models import Rent, ScheduleRent
+from .models import Item, Rent, ScheduleRent
 
 
 templates = Jinja2Templates(directory="templates")
@@ -40,7 +40,7 @@ async def rent_create(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            obj_item = await user_tm(request, session)
+            obj_item = await owner_request(request, session, Item)
             # ..
             return templates.TemplateResponse(
                 template,
@@ -58,14 +58,14 @@ async def rent_create(request):
             description = form["description"]
             file = form["file"]
             rent_belongs = form["rent_belongs"]
-            rent_owner = request.user.user_id
+            owner = request.user.user_id
             # ..
             if file.filename == "":
                 # ..
                 new = Rent()
                 new.title = title
                 new.description = description
-                new.rent_owner = request.user.user_id
+                new.owner = request.user.user_id
                 # ..
                 new.rent_belongs = int(rent_belongs)
                 # ..
@@ -81,12 +81,12 @@ async def rent_create(request):
                     status_code=302,
                 )
             # ..
-            email = await in_user(session, rent_owner)
+            email = await for_id(session, User, owner)
             # ..
             new = Rent()
             new.title = title
             new.description = description
-            new.rent_owner = rent_owner
+            new.owner = owner
             new.rent_belongs = int(rent_belongs)
             new.created_at = datetime.now()
             # ..
@@ -118,7 +118,7 @@ async def rent_update(request):
 
     async with async_session() as session:
         # ..
-        i = await in_rent_user(request, session, id)
+        i = await and_owner_request(request, session, Rent, id)
         # ..
         context = {
             "request": request,
@@ -144,7 +144,10 @@ async def rent_update(request):
                     sqlalchemy_update(Rent)
                     .where(Rent.id == id)
                     .values(
-                        title=title, description=description, file=i.file, modified_at=datetime.now()
+                        title=title,
+                        description=description,
+                        file=i.file,
+                        modified_at=datetime.now(),
                     )
                     .execution_options(synchronize_session="fetch")
                 )
@@ -177,14 +180,16 @@ async def rent_update(request):
                     status_code=302,
                 )
             # ..
-            email = await in_user(session, i.rent_owner)
+            email = await for_id(session, User, i.owner)
             file_query = (
                 sqlalchemy_update(Rent)
                 .where(Rent.id == id)
                 .values(
                     title=title,
                     description=description,
-                    file=await img.rent_img_creat(file, email.email, i.rent_belongs, i.id, basewidth),
+                    file=await img.rent_img_creat(
+                        file, email.email, i.rent_belongs, i.id, basewidth
+                    ),
                     modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
@@ -193,9 +198,7 @@ async def rent_update(request):
             await session.execute(file_query)
             await session.commit()
             # ..
-            await send_mail(
-                f"changes were made at the facility - {i}: {i.title}"
-            )
+            await send_mail(f"changes were made at the facility - {i}: {i.title}")
             # ..
             return RedirectResponse(
                 f"/item/rent/details/{id}",
@@ -215,7 +218,7 @@ async def rent_delete(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            i = await in_rent_user(request, session, id)
+            i = await and_owner_request(request, session, Rent, id)
             # ..
             if i:
                 return templates.TemplateResponse(
@@ -226,14 +229,12 @@ async def rent_delete(request):
         # ...
         if request.method == "POST":
             # ..
-            i = await in_rent_user(request, session, id)
-            email = await in_user(session, i.rent_owner)
-            await img.del_rent(
-                email.email, i.rent_belongs, id
-            )
+            i = await and_owner_request(request, session, Rent, id)
+            email = await for_id(session, User, i.owner)
+            # ..
+            await img.del_rent(email.email, i.rent_belongs, id)
             # ..
             await session.delete(i)
-            # ..
             await session.commit()
             # ..
             response = RedirectResponse(
@@ -270,8 +271,7 @@ async def rent_details(request):
         # ..
         cmt_list = await rent_comment(session, id)
         # ..
-        stmt = await session.execute(select(Rent).where(Rent.id == id))
-        i = stmt.scalars().first()
+        i = await for_id(session, Rent, id)
         # ..
         stmt = await session.execute(
             select(ScheduleRent)

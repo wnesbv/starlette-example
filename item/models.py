@@ -23,7 +23,7 @@ class Item(Base):
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # ...
-    item_owner: Mapped[int] = mapped_column(
+    owner: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
@@ -53,6 +53,7 @@ class Item(Base):
         return str(self.id)
 
 
+
 class Rent(Base):
     __tablename__ = "rent_tm"
 
@@ -64,7 +65,7 @@ class Rent(Base):
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # ...
-    rent_owner: Mapped[int] = mapped_column(
+    owner: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     rent_belongs: Mapped[int] = mapped_column(
@@ -83,6 +84,7 @@ class Rent(Base):
     )
     rent_sch_r: Mapped[list["ScheduleRent"]] = relationship(
         back_populates="sch_r_rent",
+        cascade="all, delete-orphan"
     )
     rent_rrf: Mapped[list["ReserveRentFor"]] = relationship(
         back_populates="rrf_rent",
@@ -103,7 +105,7 @@ class Service(Base):
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # ...
-    service_owner: Mapped[int] = mapped_column(
+    owner: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     service_belongs: Mapped[int] = mapped_column(
@@ -122,12 +124,15 @@ class Service(Base):
     )
     service_sch_s: Mapped[list["ScheduleService"]] = relationship(
         back_populates="sch_s_service",
+        cascade="all, delete-orphan"
     )
     service_rsf: Mapped[list["ReserveServicerFor"]] = relationship(
         back_populates="rsf_service",
+        cascade="all, delete-orphan"
     )
     service_dump_s: Mapped[list["DumpService"]] = relationship(
         back_populates="dump_s_service",
+        cascade="all, delete-orphan"
     )
 
     def __str__(self):
@@ -148,7 +153,7 @@ class ScheduleRent(Base):
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # ...
-    sch_r_owner: Mapped[int] = mapped_column(
+    owner: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     sch_r_rent_id: Mapped[int] = mapped_column(
@@ -191,7 +196,7 @@ class ScheduleService(Base):
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # ...
-    sch_s_owner: Mapped[int] = mapped_column(
+    owner: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     sch_s_service_id: Mapped[int] = mapped_column(
@@ -220,7 +225,7 @@ class DumpService(Base):
     title: Mapped[datetime] = mapped_column(DateTime, unique=True, index=True)
 
     # ...
-    dump_s_owner: Mapped[int] = mapped_column(
+    owner: Mapped[int] = mapped_column(
         ForeignKey(
             "users.id",
             ondelete="CASCADE"

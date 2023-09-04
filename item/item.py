@@ -12,8 +12,9 @@ from db_config.storage_config import engine, async_session
 
 from admin import img
 from mail.send import send_mail
+from account.models import User
 
-from options_select.opt_slc import in_user, item_comment, in_item_user
+from options_select.opt_slc import for_id, item_comment, and_owner_request
 from options_select.csv_import import import_csv
 from options_select.csv_export import export_csv
 
@@ -30,7 +31,7 @@ async def item_export_csv(request):
         if request.method == "GET":
             # ..
             stmt = await session.execute(
-                select(Item).where(Item.item_owner == request.user.user_id)
+                select(Item).where(Item.owner == request.user.user_id)
             )
             result = stmt.scalars().all()
             # ..
@@ -105,13 +106,13 @@ async def item_create(request):
             title = form["title"]
             description = form["description"]
             file = form["file"]
-            item_owner = request.user.user_id
+            owner = request.user.user_id
             # ..
             if file.filename == "":
                 new = Item()
                 new.title = title
                 new.description = description
-                new.item_owner = item_owner
+                new.owner = owner
                 new.created_at = datetime.now()
                 # ..
                 session.add(new)
@@ -124,11 +125,11 @@ async def item_create(request):
                     status_code=302,
                 )
             # ..
-            email = await in_user(session, item_owner)
+            email = await for_id(session, User, owner)
             new = Item()
             new.title = title
             new.description = description
-            new.item_owner = item_owner
+            new.owner = owner
             new.created_at = datetime.now()
             # ..
             session.add(new)
@@ -157,7 +158,7 @@ async def item_update(request):
 
     async with async_session() as session:
         # ..
-        i = await in_item_user(request, session, id)
+        i = await and_owner_request(request, session, Item, id)
         # ..
         context = {
             "request": request,
@@ -219,7 +220,7 @@ async def item_update(request):
                     status_code=302,
                 )
             # ..
-            email = await in_user(session, i.item_owner)
+            email = await for_id(session, User, i.owner)
             file_query = (
                 sqlalchemy_update(Item)
                 .where(Item.id == id)
@@ -254,7 +255,7 @@ async def item_delete(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            i = await in_item_user(request, session, id)
+            i = await and_owner_request(request, session, Item, id)
             if i:
                 return templates.TemplateResponse(
                     template,
@@ -267,12 +268,12 @@ async def item_delete(request):
         # ...
         if request.method == "POST":
             # ..
-            i = await in_item_user(request, session, id)
-            email = await in_user(session, i.item_owner)
+            i = await and_owner_request(request, session, Item, id)
+            email = await for_id(session, User, i.owner)
+            # ..
             await img.del_tm(email.email, i.id)
             # ..
             await session.delete(i)
-            # ..
             await session.commit()
             # ..
             response = RedirectResponse(
@@ -300,6 +301,7 @@ async def item_list(request):
 
 
 async def item_details(request):
+    # ..
     id = request.path_params["id"]
     template = "/item/details.html"
 
@@ -307,8 +309,7 @@ async def item_details(request):
         # ..
         cmt_list = await item_comment(session, id)
         # ...
-        stmt = await session.execute(select(Item).where(Item.id == id))
-        i = stmt.scalars().first()
+        i = await for_id(session, Item, id)
         # ..
         if i:
             stmt = await session.execute(select(Rent).where(Rent.rent_belongs == id))

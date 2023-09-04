@@ -11,7 +11,7 @@ from db_config.storage_config import engine, async_session
 
 from mail.send import send_mail
 
-from options_select.opt_slc import in_comment
+from options_select.opt_slc import in_comment, and_owner_request
 from .models import Comment
 
 
@@ -21,10 +21,10 @@ templates = Jinja2Templates(directory="templates")
 @requires("authenticated", redirect="user_login")
 # ...
 async def cmt_item_create(request):
-
+    # ..
     id = request.path_params["id"]
     cmt_item_id = request.path_params["id"]
-    cmt_user_id = request.user.user_id
+    owner = request.user.user_id
     template = "/comment/create.html"
 
     async with async_session() as session:
@@ -49,7 +49,7 @@ async def cmt_item_create(request):
             # ..
             new = Comment()
             new.opinion = opinion
-            new.cmt_user_id = cmt_user_id
+            new.owner = owner
             new.cmt_item_id = cmt_item_id
             new.created_at = datetime.now()
             # ..
@@ -57,7 +57,7 @@ async def cmt_item_create(request):
             await session.commit()
             # ..
             await send_mail(
-                f"A new object has been created - {cmt_user_id} - {cmt_item_id}: {opinion}"
+                f"A new object has been created - {owner} - {cmt_item_id}: {opinion}"
             )
             # ..
             response = RedirectResponse(
@@ -71,9 +71,10 @@ async def cmt_item_create(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def cmt_rent_create(request):
+    # ..
     id = request.path_params["id"]
     cmt_rent_id = request.path_params["id"]
-    cmt_user_id = request.user.user_id
+    owner = request.user.user_id
     template = "/comment/create.html"
 
     async with async_session() as session:
@@ -98,7 +99,7 @@ async def cmt_rent_create(request):
             # ..
             new = Comment()
             new.opinion = opinion
-            new.cmt_user_id = cmt_user_id
+            new.owner = owner
             new.cmt_rent_id = cmt_rent_id
             new.created_at = datetime.now()
             # ..
@@ -106,7 +107,7 @@ async def cmt_rent_create(request):
             await session.commit()
             # ..
             await send_mail(
-                f"A new object has been created - {cmt_user_id} - {cmt_rent_id}: {opinion}"
+                f"A new object has been created - {owner} - {cmt_rent_id}: {opinion}"
             )
             # ..
             response = RedirectResponse(
@@ -120,9 +121,10 @@ async def cmt_rent_create(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def cmt_service_create(request):
+    # ..
     id = request.path_params["id"]
     cmt_service_id = request.path_params["id"]
-    cmt_user_id = request.user.user_id
+    owner = request.user.user_id
     template = "/comment/create.html"
 
     async with async_session() as session:
@@ -147,7 +149,7 @@ async def cmt_service_create(request):
             # ..
             new = Comment()
             new.opinion = opinion
-            new.cmt_user_id = cmt_user_id
+            new.owner = owner
             new.cmt_service_id = cmt_service_id
             new.created_at = datetime.now()
             # ..
@@ -155,7 +157,7 @@ async def cmt_service_create(request):
             await session.commit()
             # ..
             await send_mail(
-                f"A new object has been created - {cmt_user_id} - {cmt_service_id}: {opinion}"
+                f"A new object has been created - {owner} - {cmt_service_id}: {opinion}"
             )
             # ..
             response = RedirectResponse(
@@ -169,17 +171,13 @@ async def cmt_service_create(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def cmt_item_update(request):
+    # ..
     id = request.path_params["id"]
     template = "/comment/update.html"
 
     async with async_session() as session:
         # ..
-        stmt = await session.execute(
-            select(Comment).where(
-                and_(Comment.id == id, Comment.cmt_user_id == request.user.user_id)
-            )
-        )
-        detail = stmt.scalars().first()
+        detail = await and_owner_request(request, session, Comment, id)
         # ..
         context = {
             "request": request,
@@ -210,7 +208,7 @@ async def cmt_item_update(request):
             await send_mail(f"changes were made at the facility - {detail}: {opinion}")
             # ..
             response = RedirectResponse(
-                f"/item/details/{ detail.id }",
+                f"/item/details/{ detail.cmt_item_id }",
                 status_code=302,
             )
             return response
@@ -220,17 +218,13 @@ async def cmt_item_update(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def cmt_rent_update(request):
+    # ..
     id = request.path_params["id"]
     template = "/comment/update.html"
 
     async with async_session() as session:
         # ..
-        stmt = await session.execute(
-            select(Comment).where(
-                and_(Comment.id == id, Comment.cmt_user_id == request.user.user_id)
-            )
-        )
-        detail = stmt.scalars().first()
+        detail = await and_owner_request(request, session, Comment, id)
         # ..
         context = {
             "request": request,
@@ -261,7 +255,7 @@ async def cmt_rent_update(request):
             await send_mail(f"changes were made at the facility - {detail}: {opinion}")
             # ..
             response = RedirectResponse(
-                f"/item/rent/details/{ detail.id }",
+                f"/item/rent/details/{ detail.cmt_rent_id }",
                 status_code=302,
             )
             return response
@@ -271,17 +265,13 @@ async def cmt_rent_update(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def cmt_service_update(request):
+    # ..
     id = request.path_params["id"]
     template = "/comment/update.html"
 
     async with async_session() as session:
         # ..
-        stmt = await session.execute(
-            select(Comment).where(
-                and_(Comment.id == id, Comment.cmt_user_id == request.user.user_id)
-            )
-        )
-        detail = stmt.scalars().first()
+        detail = await and_owner_request(request, session, Comment, id)
         # ..
         context = {
             "request": request,
@@ -312,7 +302,7 @@ async def cmt_service_update(request):
             await send_mail(f"changes were made at the facility - {detail}: {opinion}")
             # ..
             response = RedirectResponse(
-                f"/item/service/details/{ detail.id }",
+                f"/item/service/details/{ detail.cmt_service_id }",
                 status_code=302,
             )
             return response
@@ -322,18 +312,14 @@ async def cmt_service_update(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def cmt_delete(request):
+    # ..
     id = request.path_params["id"]
     template = "/comment/delete.html"
 
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            result = await session.execute(
-                select(Comment).where(
-                    and_(Comment.id == id, Comment.cmt_user_id == request.user.user_id)
-                )
-            )
-            detail = result.scalars().first()
+            detail = await and_owner_request(request, session, Comment, id)
             # ..
             if detail:
                 return templates.TemplateResponse(

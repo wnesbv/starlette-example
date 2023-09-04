@@ -17,8 +17,8 @@
                 <span class="me-3">{{ i.id }}</span>
             </li>
             <li class="list-group-item">
-                <sup class="float-start">sch_s_owner:</sup>
-                <span class="me-3">{{ i.sch_s_owner }}</span>
+                <sup class="float-start">owner:</sup>
+                <span class="me-3">{{ i.owner }}</span>
             </li>
             <li class="list-group-item">
                 <sup class="float-start">sch_s_service_id:</sup>
@@ -51,7 +51,7 @@
         </ul>
 
         <div class="card-footer">
-        <a class="btn btn-outline-primary btn-sm" href="/admin/schedule-service/details/{{ i.sch_s_owner }}/{{ i.sch_s_service_id }}" role="button">view details &raquo;</a>
+        <a class="btn btn-outline-primary btn-sm" href="/admin/schedule-service/details/{{ i.owner }}/{{ i.sch_s_service_id }}" role="button">view details &raquo;</a>
         </div>
 
     </div>

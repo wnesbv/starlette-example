@@ -86,7 +86,7 @@ async def import_csv(request):
                                     new["there_is"], settings.DATETIME_FORMAT
                                 ),
                                 "created_at": datetime.now(),
-                                "sch_s_owner": request.user.user_id,
+                                "owner": request.user.user_id,
                                 "sch_s_service_id": id,
                             }
                         )

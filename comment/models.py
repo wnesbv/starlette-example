@@ -20,7 +20,7 @@ class Comment(Base):
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # ...
-    cmt_user_id: Mapped[int] = mapped_column(
+    owner: Mapped[int] = mapped_column(
         ForeignKey(
             "users.id",
             ondelete="CASCADE"

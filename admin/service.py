@@ -17,10 +17,9 @@ from item.models import Service, ScheduleService
 
 from make_an_appointment.models import ReserveServicerFor
 
-from options_select.opt_slc import all_total
+from options_select.opt_slc import all_total, for_id
 
 from .opt_slc import (
-    in_user,
     in_admin,
     all_user,
     all_item,
@@ -151,7 +150,7 @@ async def i_create(request):
             title = form["title"]
             description = form["description"]
             file = form["file"]
-            service_owner = form["service_owner"]
+            owner = form["owner"]
             service_belongs = form["service_belongs"]
             # ..
             if file.filename == "":
@@ -159,7 +158,7 @@ async def i_create(request):
                 new.title = title
                 new.description = description
                 new.file = file
-                new.service_owner = int(service_owner)
+                new.owner = int(owner)
                 new.service_belongs = int(service_belongs)
                 # ..
                 session.add(new)
@@ -170,11 +169,11 @@ async def i_create(request):
                     status_code=302,
                 )
             # ..
-            email = await in_user(session, service_owner)
+            email = await for_id(session, User, owner)
             new = Service()
             new.title = title
             new.description = description
-            new.service_owner = int(service_owner)
+            new.owner = int(owner)
             new.service_belongs = int(service_belongs)
             new.created_at = datetime.now()
             # ..
@@ -259,7 +258,7 @@ async def i_update(request):
                     status_code=302,
                 )
             # ..
-            email = await in_user(session, i.service_owner)
+            email = await for_id(session, User, i.owner)
             file_query = (
                 sqlalchemy_update(Service)
                 .where(Service.id == id)
@@ -311,13 +310,13 @@ async def i_delete(request):
         if request.method == "POST":
             # ..
             i = await in_service(session, id)
-            email = await in_user(session, i.service_owner)
+            email = await for_id(session, User, i.owner)
+            # ..
             await img.del_service(
                 email.email, i.service_belongs, id
             )
             # ..
             await session.delete(i)
-            # ..
             await session.commit()
             # ..
             response = RedirectResponse(

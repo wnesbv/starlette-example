@@ -23,7 +23,7 @@ async def export_csv(request, result):
                 "file",
                 "created_at",
                 "modified_at",
-                "item_owner",
+                "owner",
             ]
         )
         for i in result:
@@ -35,6 +35,6 @@ async def export_csv(request, result):
                     i.file,
                     i.created_at,
                     i.modified_at,
-                    i.item_owner,
+                    i.owner,
                 ]
             )

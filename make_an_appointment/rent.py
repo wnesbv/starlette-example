@@ -1,4 +1,3 @@
-
 from datetime import date, datetime, timedelta
 
 import json, datetime as dtm
@@ -16,7 +15,7 @@ from db_config.settings import settings
 from db_config.storage_config import engine, async_session
 
 from options_select.opt_slc import (
-    in_rrf,
+    and_owner_request,
     period_item,
     period_rent,
     not_period_item,
@@ -167,7 +166,7 @@ async def reserve_choice_rent(request):
             query = insert(ReserveRentFor).values(
                 time_start=time_start,
                 time_end=time_end,
-                rrf_owner=request.user.user_id,
+                owner=request.user.user_id,
                 rrf_item_id=id,
                 rrf_rent_id=rrf_rent_id,
                 created_at=datetime.now(),
@@ -193,7 +192,7 @@ async def reserve_list_rent(request):
         # ..
         stmt = await session.execute(
             select(ReserveRentFor).where(
-                ReserveRentFor.rrf_owner == request.user.user_id
+                ReserveRentFor.owner == request.user.user_id
             )
         )
         # ..
@@ -217,14 +216,16 @@ async def reserve_detail_rent(request):
 
     async with async_session() as session:
         # ..
-        i = await in_rrf(request, session, id)
+        i = await and_owner_request(
+            request, session, ReserveRentFor, id
+        )
         if i:
             context = {
                 "request": request,
                 "i": i,
             }
             return templates.TemplateResponse(template, context)
-        return PlainTextResponse("This is not your account..!")
+        return PlainTextResponse("there is no position of your account..!")
     await engine.dispose()
 
 
@@ -237,14 +238,16 @@ async def reserve_update_rent(request):
 
     async with async_session() as session:
         # ..
-        detail = await in_rrf(request, session, id)
-        context = {
-            "request": request,
-            "detail": detail,
-        }
+        i = await and_owner_request(
+            request, session, ReserveRentFor, id
+        )
+        # ..
+        rsv_period = await period_reserve(i.time_start, i.time_end)
+        # ..
+        context = {"request": request, "i": i, "rsv_period": rsv_period}
         # ...
         if request.method == "GET":
-            if detail:
+            if i:
                 return templates.TemplateResponse(template, context)
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
@@ -261,8 +264,6 @@ async def reserve_update_rent(request):
             if start >= end or start < date.today().strftime(settings.DATE):
                 return PlainTextResponse("please enter proper dates")
             # ..
-            rsv_period = await period_reserve(time_start, time_end)
-            # ..
             query = (
                 sqlalchemy_update(ReserveRentFor)
                 .where(ReserveRentFor.id == id)
@@ -278,7 +279,7 @@ async def reserve_update_rent(request):
             await session.commit()
 
             response = RedirectResponse(
-                f"/reserve/detail-rent/{ detail.id }",
+                f"/reserve/detail-rent/{ i.id }",
                 status_code=302,
             )
             return response
@@ -296,13 +297,15 @@ async def delete(request):
         # ...
         if request.method == "GET":
             # ..
-            detail = await in_rrf(request, session, id)
-            if detail:
+            i = await and_owner_request(
+                request, session, ReserveRentFor, id
+            )
+            if i:
                 return templates.TemplateResponse(
                     template,
                     {
                         "request": request,
-                        "detail": detail,
+                        "i": i,
                     },
                 )
             return PlainTextResponse("You are banned - this is not your account..!")

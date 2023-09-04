@@ -7,7 +7,7 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 
 from db_config.storage_config import engine, async_session
 
-from options_select.opt_slc import in_group_chat
+from options_select.opt_slc import for_id, and_owner_request
 
 from .models import MessageChat, GroupChat
 
@@ -16,7 +16,7 @@ templates = Jinja2Templates(directory="templates")
 
 
 async def group_list(request):
-
+    # ..
     template = "/group/list.html"
 
     async with async_session() as session:
@@ -39,7 +39,7 @@ async def group_list(request):
 @requires("authenticated", redirect="user_login")
 # ..
 async def group_details(request):
-
+    # ..
     if request.method == "GET":
         # ..
         id = request.path_params["id"]
@@ -48,11 +48,7 @@ async def group_details(request):
 
         async with async_session() as session:
             # ..
-            stmt = await session.execute(
-                select(GroupChat)
-                .where(GroupChat.id == id)
-            )
-            i = stmt.scalars().first()
+            i = await for_id(session, GroupChat, id)
             # ..
             stmt_chat = await session.execute(
                 select(MessageChat)
@@ -67,7 +63,6 @@ async def group_details(request):
                 "id_group": id_group,
                 "group_chat": group_chat,
             }
-
             return templates.TemplateResponse(template, context)
         await engine.dispose()
 
@@ -75,7 +70,7 @@ async def group_details(request):
 @requires("authenticated", redirect="user_login")
 # ..
 async def group_create(request):
-
+    # ..
     template = "/group/create.html"
 
     async with async_session() as session:
@@ -94,20 +89,20 @@ async def group_create(request):
             # ..
             title = form["title"]
             description = form["description"]
-            admin_group = request.user.user_id
+            owner = request.user.user_id
             # ..
             new = GroupChat()
             new.title = title
-            new.admin_group = admin_group
+            new.owner = owner
             new.description = description
 
             session.add(new)
             await session.commit()
             # ..
             query = insert(MessageChat).values(
-                owner_msg=admin_group,
+                owner=owner,
                 id_group=new.id,
-                message=f"New message admin group-{admin_group}..!",
+                message=f"New message admin group-{owner}..!",
             )
             await session.execute(query)
             await session.commit()
@@ -123,13 +118,13 @@ async def group_create(request):
 @requires("authenticated", redirect="user_login")
 # ..
 async def group_update(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/group/update.html"
 
     async with async_session() as session:
         # ..
-        detail = await in_group_chat(request, session, id)
+        detail = await and_owner_request(request, session, GroupChat, id)
         context = {
             "request": request,
             "detail": detail,
@@ -167,7 +162,7 @@ async def group_update(request):
 @requires("authenticated", redirect="user_login")
 # ..
 async def group_delete(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/group/delete.html"
 
@@ -175,7 +170,7 @@ async def group_delete(request):
         # ...
         if request.method == "GET":
             #..
-            detail = await in_group_chat(request, session, id)
+            detail = await and_owner_request(request, session, GroupChat, id)
             if detail:
                 return templates.TemplateResponse(
                     template,

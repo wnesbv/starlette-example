@@ -1,6 +1,6 @@
 
 {% extends "base.html" %}
-{% block title %} update reserve service {{ detail.id}} {% endblock%}
+{% block title %} update reserve service {{ i.id}} {% endblock%}
 
 {% block content %}
 
@@ -14,7 +14,7 @@
                 class="mt-2"
                 type="datetime-local"
                 name="reserve_time"
-                value="{{ detail.reserve_time }}"
+                value="{{ i.reserve_time }}"
             />
         </span>
     </div>
@@ -26,7 +26,7 @@
             name="description"
             maxlength="333"
             spellcheck
-        >{{ detail.description }}</textarea>
+        >{{ i.description }}</textarea>
     </div>
 
     <button type="submit" class="btn btn-outline-primary btn-sm">submit</button>

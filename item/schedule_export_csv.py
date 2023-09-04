@@ -21,7 +21,8 @@ from config.settings import BASE_DIR
 
 from db_config.storage_config import engine, async_session
 from options_select.opt_slc import (
-    in_dump,
+    for_id,
+    and_owner_request,
     sch_sv_user,
     schedule_sv,
     dump_schedule_service,
@@ -73,7 +74,7 @@ async def export_csv(request):
                             "number_on",
                             "there_is",
                             "created_at",
-                            "sch_s_owner",
+                            "owner",
                             "sch_s_service_id",
                         ]
                     )
@@ -88,7 +89,7 @@ async def export_csv(request):
                                 i.number_on,
                                 i.there_is,
                                 i.created_at,
-                                i.sch_s_owner,
+                                i.owner,
                                 i.sch_s_service_id,
                             ]
                         )
@@ -97,7 +98,7 @@ async def export_csv(request):
                     title = file_time
                     query = insert(DumpService).values(
                         title=title,
-                        dump_s_owner=request.user.user_id,
+                        owner=request.user.user_id,
                         dump_s_service_id=id,
                     )
                     await session.execute(query)
@@ -150,7 +151,7 @@ async def delete_user_csv(request):
 
         if request.method == "GET":
             #..
-            detail = await in_dump(request, session, id)
+            detail = await and_owner_request(request, session, DumpService, id)
             #..
             if detail:
                 context = {"request": request}
@@ -163,11 +164,7 @@ async def delete_user_csv(request):
         # ...
         if request.method == "POST":
             #..
-            stmt = await session.execute(
-                select(DumpService)
-                .where(DumpService.id == id)
-            )
-            result = stmt.scalars().first()
+            result = await for_id(session, DumpService, id)
             root_directory = (
                 BASE_DIR
                 / f"static/service/{result.title.strftime('%Y-%m-%d-%H-%M-%S')}.csv"

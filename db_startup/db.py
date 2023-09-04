@@ -47,87 +47,87 @@ async def on_app_startup() -> None:
                     GroupChat(
                         title="group one",
                         description="description group",
-                        admin_group=1,
+                        owner=1,
                         created_at=datetime.now()
                     ),
                     MessageChat(
                         message="message",
-                        owner_msg=1,
+                        owner=1,
                         id_group=1,
                         created_at=datetime.now()
                     ),
                     PersonParticipant(
                         explanations_person="one@example.com - explanations_person",
                         permission=0,
-                        participant=2,
+                        owner=2,
                         group_participant=1,
                         created_at=datetime.now()
                     ),
                     Item(
                         title="item 01 one",
                         description="description",
-                        item_owner=1,
+                        owner=1,
                         created_at=datetime.now()
                     ),
                     Item(
                         title="item 02 two",
                         description="description 02 two",
-                        item_owner=2,
+                        owner=2,
                         created_at=datetime.now()
                     ),
                     Rent(
                         title="rent 01 to it 1",
                         description="description.. rent 01",
-                        rent_owner=1,
+                        owner=1,
                         rent_belongs=1,
                         created_at=datetime.now()
                     ),
                     Rent(
                         title="rent 02 to it 1",
                         description="description.. rent 02",
-                        rent_owner=1,
+                        owner=1,
                         rent_belongs=1,
                         created_at=datetime.now()
                     ),
                     Rent(
                         title="rent 03 to it 2",
                         description="description.. rent 03",
-                        rent_owner=1,
+                        owner=1,
                         rent_belongs=2,
                         created_at=datetime.now()
                     ),
                     Service(
                         title="service 01",
                         description="description 01",
-                        service_owner=1,
+                        owner=1,
                         service_belongs=1,
                         created_at=datetime.now()
                     ),
                     Comment(
                         opinion="01 (one) item-opinion description",
                         user_on={"name": "one", "email": "one@example.com"},
-                        cmt_user_id=1,
+                        owner=1,
                         cmt_item_id=1,
                         created_at=datetime.now()
                     ),
                     Comment(
                         opinion="01 (one) service-opinion description",
                         user_on={"name": "one", "email": "one@example.com"},
-                        cmt_user_id=1,
+                        owner=1,
                         cmt_service_id=1,
                         created_at=datetime.now()
                     ),
                     Comment(
                         opinion="01 (one) rent-opinion description",
                         user_on={"name": "two", "email": "two@example.com"},
-                        cmt_user_id=2,
+                        owner=2,
                         cmt_rent_id=1,
                         created_at=datetime.now()
                     ),
                     ScheduleRent(
                         title="rent 01 ScheduleRent 01",
                         description="description.. rent 01 ScheduleRent 01",
-                        sch_r_owner=1,
+                        owner=1,
                         sch_r_rent_id=1,
                         created_at=datetime.now()
                     ),
@@ -138,7 +138,7 @@ async def on_app_startup() -> None:
                         type_on="event",
                         number_on=date.today(),
                         there_is=datetime.now(),
-                        sch_s_owner=1,
+                        owner=1,
                         sch_s_service_id=1,
                         created_at=datetime.now()
                     ),
@@ -149,14 +149,14 @@ async def on_app_startup() -> None:
                         type_on="birthday",
                         number_on=date.today(),
                         there_is=datetime.now() + timedelta(minutes=60),
-                        sch_s_owner=1,
+                        owner=1,
                         sch_s_service_id=1,
                         created_at=datetime.now()
                     ),
                     ReserveRentFor(
                         time_start=date.today(),
                         time_end=date.today() + timedelta(days=1),
-                        rrf_owner=1,
+                        owner=1,
                         rrf_item_id=1,
                         rrf_rent_id=1,
                         rrf_sch_r_id=1,
@@ -165,7 +165,7 @@ async def on_app_startup() -> None:
                     ReserveRentFor(
                         time_start=date.today() + timedelta(days=3),
                         time_end=date.today() + timedelta(days=4),
-                        rrf_owner=1,
+                        owner=1,
                         rrf_item_id=1,
                         rrf_rent_id=1,
                         rrf_sch_r_id=1,
@@ -173,14 +173,14 @@ async def on_app_startup() -> None:
                     ),
                     ReserveServicerFor(
                         reserve_time=datetime.now(),
-                        rsf_owner=1,
+                        owner=1,
                         rsf_service_id=1,
                         rsf_sch_s_id=1,
                         created_at=datetime.now()
                     ),
                     DumpService(
                         title=datetime.now(),
-                        dump_s_owner=1,
+                        owner=1,
                         dump_s_service_id=1,
                     ),
                     Slider(

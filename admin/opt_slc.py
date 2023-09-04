@@ -77,19 +77,6 @@ async def in_admin(
     return result
 
 
-async def in_user(
-    session, id
-):
-    stmt = await session.execute(
-        select(User)
-        .where(
-            User.id == id,
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
 async def in_item(
     session, id
 ):
@@ -159,7 +146,7 @@ async def details_schedule_service(request, session, user, service):
     stmt = await session.execute(
         select(ScheduleService)
         .where(ScheduleService.sch_s_service_id == service)
-        .where(ScheduleService.sch_s_owner == user)
+        .where(ScheduleService.owner == user)
         .order_by(ScheduleService.id.desc())
     )
     result = stmt.scalars().all()

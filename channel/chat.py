@@ -7,7 +7,7 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 
 from db_config.storage_config import engine, async_session
 
-from options_select.opt_slc import in_chat
+from options_select.opt_slc import and_owner_request
 
 from .models import MessageChat
 
@@ -18,13 +18,13 @@ templates = Jinja2Templates(directory="templates")
 @requires("authenticated", redirect="user_login")
 # ..
 async def chat_update(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/chat/update.html"
 
     async with async_session() as session:
         #..
-        detail = await in_chat(request, session, id)
+        detail = await and_owner_request(request, session, MessageChat, id)
         context = {
             "request": request,
             "detail": detail,
@@ -68,7 +68,7 @@ async def chat_delete(request):
     async with async_session() as session:
         # ..
         if request.method == "GET":
-            detail = await in_chat(request, session, id)
+            detail = await and_owner_request(request, session, MessageChat, id)
             if detail:
                 return templates.TemplateResponse(
                     template,

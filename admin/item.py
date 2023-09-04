@@ -13,9 +13,9 @@ from db_config.storage_config import engine, async_session
 from account.models import User
 from item.models import Item, Service, Rent
 
-from options_select.opt_slc import all_total
+from options_select.opt_slc import all_total, for_id
 
-from .opt_slc import in_admin, in_user, all_user, item_comment, in_item
+from .opt_slc import in_admin, all_user, item_comment, in_item
 from . import img
 
 
@@ -144,12 +144,12 @@ async def i_create(request):
             title = form["title"]
             description = form["description"]
             file = form["file"]
-            item_owner = form["item_owner"]
+            owner = form["owner"]
             # ..
             if file.filename == "":
                 new = Item()
                 new.title = title
-                new.item_owner = item_owner
+                new.owner = owner
                 new.description = description
                 new.created_at = datetime.now()
                 # ..
@@ -161,11 +161,11 @@ async def i_create(request):
                     status_code=302,
                 )
             # ..
-            email = await in_user(session, item_owner)
+            email = await for_id(session, User, owner)
             new = Item()
             new.title = title
             new.description = description
-            new.item_owner = item_owner
+            new.owner = owner
             new.created_at = datetime.now()
             # ..
             session.add(new)
@@ -252,7 +252,7 @@ async def i_update(request):
                     status_code=302,
                 )
             # ..
-            email = await in_user(session, i.item_owner)
+            email = await for_id(session, User, i.owner)
             file_query = (
                 sqlalchemy_update(Item)
                 .where(Item.id == id)
@@ -304,11 +304,10 @@ async def i_delete(request):
         if request.method == "POST":
             # ..
             i = await in_item(session, id)
-            email = await in_user(session, i.item_owner)
+            email = await for_id(session, User, i.owner)
             await img.del_tm(email.email, i.id)
             # ..
             await session.delete(i)
-            # ..
             await session.commit()
             # ..
             response = RedirectResponse(

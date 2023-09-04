@@ -34,7 +34,7 @@ async def cmt_item_create(request):
     # ..
     template = "/admin/comment/create.html"
     cmt_item_id = request.path_params["id"]
-    cmt_user_id = request.user.user_id
+    owner = request.user.user_id
 
     async with async_session() as session:
         # ..
@@ -60,7 +60,7 @@ async def cmt_item_create(request):
             new = Comment()
             new.user_on = obj
             new.opinion = opinion
-            new.cmt_user_id = cmt_user_id
+            new.owner = owner
             new.cmt_item_id = cmt_item_id
             new.created_at = datetime.now()
             # ..
@@ -68,7 +68,7 @@ async def cmt_item_create(request):
             await session.commit()
             # ..
             await send_mail(
-                f"A new object has been created - {cmt_user_id} - {cmt_item_id}: {opinion}"
+                f"A new object has been created - {owner} - {cmt_item_id}: {opinion}"
             )
             # ..
             response = RedirectResponse(
@@ -85,7 +85,7 @@ async def cmt_service_create(request):
     # ..
     template = "/admin/comment/create.html"
     cmt_service_id = request.path_params["id"]
-    cmt_user_id = request.user.user_id
+    owner = request.user.user_id
 
     async with async_session() as session:
         # ..
@@ -109,7 +109,7 @@ async def cmt_service_create(request):
             # ..
             new = Comment()
             new.opinion = opinion
-            new.cmt_user_id = cmt_user_id
+            new.owner = owner
             new.cmt_service_id = cmt_service_id
             new.created_at = datetime.now()
             # ..
@@ -117,7 +117,7 @@ async def cmt_service_create(request):
             await session.commit()
             # ..
             await send_mail(
-                f"A new object has been created - {cmt_user_id} - {cmt_service_id}: {opinion}"
+                f"A new object has been created - {owner} - {cmt_service_id}: {opinion}"
             )
             # ..
             response = RedirectResponse(
@@ -134,7 +134,7 @@ async def cmt_rent_create(request):
     # ..
     template = "/admin/comment/create.html"
     cmt_rent_id = request.path_params["id"]
-    cmt_user_id = request.user.user_id
+    owner = request.user.user_id
 
     async with async_session() as session:
         # ..
@@ -158,7 +158,7 @@ async def cmt_rent_create(request):
             # ..
             new = Comment()
             new.opinion = opinion
-            new.cmt_user_id = cmt_user_id
+            new.owner = owner
             new.cmt_rent_id = cmt_rent_id
             new.created_at = datetime.now()
             # ..
@@ -166,7 +166,7 @@ async def cmt_rent_create(request):
             await session.commit()
             # ..
             await send_mail(
-                f"A new object has been created - {cmt_user_id} - {cmt_rent_id}: {opinion}"
+                f"A new object has been created - {owner} - {cmt_rent_id}: {opinion}"
             )
             # ..
             response = RedirectResponse(

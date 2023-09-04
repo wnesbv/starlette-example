@@ -13,11 +13,10 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 from account.models import User
 
 from db_config.storage_config import engine, async_session
-from options_select.opt_slc import all_total
+from options_select.opt_slc import all_total, for_id
 
 from item.models import Rent, ScheduleRent
 from .opt_slc import (
-    in_user,
     in_admin,
     all_user,
     all_item,
@@ -134,14 +133,14 @@ async def i_create(request):
             title = form["title"]
             description = form["description"]
             file = form["file"]
-            rent_owner = form["rent_owner"]
+            owner = form["owner"]
             rent_belongs = form["rent_belongs"]
             # ..
             if file.filename == "":
                 new = Rent()
                 new.title = title
                 new.description = description
-                new.rent_owner = rent_owner
+                new.owner = owner
                 new.rent_belongs = int(rent_belongs)
                 # ..
                 session.add(new)
@@ -152,12 +151,12 @@ async def i_create(request):
                     status_code=302,
                 )
             # ..
-            email = await in_user(session, rent_owner)
+            email = await for_id(session, User, owner)
             # ..
             new = Rent()
             new.title = title
             new.description = description
-            new.rent_owner = int(rent_owner)
+            new.owner = int(owner)
             new.rent_belongs = int(rent_belongs)
             new.created_at = datetime.now()
             # ..
@@ -242,7 +241,7 @@ async def i_update(request):
                     status_code=302,
                 )
             # ..
-            email = await in_user(session, i.rent_owner)
+            email = await for_id(session, User, i.owner)
             file_query = (
                 sqlalchemy_update(Rent)
                 .where(Rent.id == id)
@@ -292,13 +291,13 @@ async def i_delete(request):
         if request.method == "POST":
             # ..
             i = await in_rent(session, id)
-            email = await in_user(session, i.rent_owner)
+            email = await for_id(session, User, i.owner)
+            # ..
             await img.del_rent(
                 email.email, i.rent_belongs, id
             )
             # ..
             await session.delete(i)
-            # ..
             await session.commit()
             # ..
             response = RedirectResponse(

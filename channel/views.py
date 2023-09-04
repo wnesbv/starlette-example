@@ -73,7 +73,7 @@ class ChannelOne(WebSocketEndpoint):
         print(" add is_who..!", self.is_who)
         payload = {
             "message": is_user,
-            "owner_msg": list(self.is_who.get(self.group_name)),
+            "owner": list(self.is_who.get(self.group_name)),
             "created_at": datetime.now().strftime("%H:%M:%S"),
         }
         await ChannelBox.group_send(self.group_name, payload, history=False)
@@ -92,14 +92,14 @@ class ChannelOne(WebSocketEndpoint):
         message = data.get("message")
         print(" message..", message)
         name = websocket.user.user_id
-        owner_msg = websocket.user.email
+        owner = websocket.user.email
         #now_time = datetime.now().strftime(settings.TIME_FORMAT)
 
         async with async_session() as session:
             # ..
             stmt = await session.execute(
                 select(PersonParticipant).where(
-                    PersonParticipant.participant == name,
+                    PersonParticipant.owner == name,
                     PersonParticipant.group_participant == self.group_name,
                 )
             )
@@ -110,7 +110,7 @@ class ChannelOne(WebSocketEndpoint):
                 .join(GroupChat)
                 .where(
                     MessageChat.id_group == self.group_name,
-                    GroupChat.admin_group == name,
+                    GroupChat.owner == name,
                 )
             )
             obj_admin = stmt_admin.scalars().first()
@@ -119,14 +119,14 @@ class ChannelOne(WebSocketEndpoint):
             if message:
                 if obj_true or obj_admin:
                     payload = {
-                        "owner_msg": owner_msg,
+                        "owner": owner,
                         "message": message,
                     }
 
                     await ChannelBox.group_send(self.group_name, payload, history=True)
                     # ..
                     new = MessageChat()
-                    new.owner_msg = owner_msg
+                    new.owner = owner
                     new.message = message
                     new.id_group = int(self.group_name)
                     new.created_at = datetime.now()
@@ -137,13 +137,13 @@ class ChannelOne(WebSocketEndpoint):
                 if obj_true or obj_admin:
                     payload = {
                         "file": file,
-                        "owner_msg": owner_msg,
+                        "owner": owner,
                     }
                     await ChannelBox.group_send(self.group_name, payload, history=True)
                     # ..
                     new = MessageChat()
                     new.file = update_file(self.group_name, file)
-                    new.owner_msg = owner_msg
+                    new.owner = owner
                     new.id_group = int(self.group_name)
                     new.created_at = datetime.now()
                     # ..
@@ -193,7 +193,7 @@ class ChannelTwo(WebSocketEndpoint):
         print(" add is_who..!", self.is_who)
         payload = {
             "message": is_user,
-            "owner_msg": list(self.is_who.get(self.group_name)),
+            "owner": list(self.is_who.get(self.group_name)),
             "created_at": datetime.now().strftime("%H:%M:%S"),
         }
         await ChannelBox.group_send(self.group_name, payload, history=False)
@@ -210,22 +210,22 @@ class ChannelTwo(WebSocketEndpoint):
 
         file = data.get("file")
         message = data.get("message")
-        owner_msg = websocket.user.email
+        owner = websocket.user.email
         print(" file..", file)
         print(" message..", message)
-        print(" owner_msg..", owner_msg)
+        print(" owner..", owner)
 
         async with async_session() as session:
             if message:
                 payload = {
                     "message": message,
-                    "owner_msg": owner_msg,
+                    "owner": owner,
                 }
                 await ChannelBox.group_send(self.group_name, payload, history=True)
                 # ..
                 new = OneChat()
                 new.message = message
-                new.owner_msg = owner_msg
+                new.owner = owner
                 new.created_at = datetime.now()
                 # ..
                 session.add(new)
@@ -233,13 +233,13 @@ class ChannelTwo(WebSocketEndpoint):
             if file:
                 payload = {
                     "file": file,
-                    "owner_msg": owner_msg,
+                    "owner": owner,
                 }
                 await ChannelBox.group_send(self.group_name, payload, history=True)
                 # ..
                 new = OneChat()
                 new.file = update_file(self.group_name, file)
-                new.owner_msg = owner_msg
+                new.owner = owner
                 new.created_at = datetime.now()
                 # ..
                 session.add(new)
