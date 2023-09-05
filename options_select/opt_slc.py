@@ -80,7 +80,7 @@ async def schedule_rent_user(request, session):
     return result
 
 
-async def schedule_sv_user(request, session):
+async def srv_sch_user(request, session):
     stmt = await session.execute(
         select(Service)
         .join(ScheduleService.sch_s_service)

@@ -19,7 +19,6 @@
     {% if obj_list %}
     {% for i in obj_list %}
     <div class="card mt-2 me-1">
-
         <ul class="card-header list-group list-group-horizontal">
             <li class="list-group-item pt-3">
                 <sup class="float-start">id:</sup>
@@ -40,11 +39,11 @@
                 <sup class="float-start">name:</sup>
                 <span>{{ i.name }}</span>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">title:</sup>
                 <p>{{ i.title }}</p>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">number on the schedule:</sup>
                 <span>{{ i.type_on.name }}</span>
             </li>
@@ -55,11 +54,11 @@
                 <sup class="float-start">number on the schedule:</sup>
                <span> {{ i.number_on }}</span>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">there_is:</sup>
                 <span>{{ i.there_is }}</span>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">description:</sup>
                 <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
             </li>
@@ -67,7 +66,7 @@
         </ul>
 
         <div class="card-footer">
-        <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/details/{{ i.sch_s_service_id }}/{{ i.id }}" role="button">
+        <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/details/{{ i.id }}" role="button">
             view details &raquo;
         </a>
         </div>

@@ -20,7 +20,7 @@ from options_select.opt_slc import (
     owner_request,
     all_total,
     schedule_sv,
-    schedule_sv_user,
+    srv_sch_user,
     and_owner_request,
     details_schedule_service,
 )
@@ -40,7 +40,7 @@ async def list_service(request):
     async with async_session() as session:
         # ..
         obj_count = await all_total(session, Service)
-        obj_list = await schedule_sv_user(request, session)
+        obj_list = await srv_sch_user(request, session)
         # ..
         context = {
             "request": request,

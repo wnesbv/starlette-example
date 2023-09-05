@@ -1,10 +1,10 @@
 
 {% extends "base.html" %}
-{% block title %} list id service schedule{% endblock %}
+{% block title %} list srv in user sch {% endblock %}
 
 {% block content %}
 
-<h1 class="lead my-3">list id service schedule..</h1>
+<h1 class="lead my-3">list service in user schedule..</h1>
 <div class="card">
     <div class="card-header">
     <h2 class="lead m-2">
@@ -19,6 +19,7 @@
 <div class="flex_start">
     {% for i in obj_list %}
     <div class="card mt-2 me-1">
+        <div class="card-header"><sup>service</sup></div>
 
         <ul class="card-header list-group list-group-horizontal">
             <li class="list-group-item pt-3">
@@ -52,9 +53,6 @@
         <div class="card-footer">
         <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/list/{{ i.id }}" role="button">
             view service schedule &raquo;
-        </a>
-        <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/details/{{ i.id }}" role="button">
-            view details &raquo;
         </a>
         </div>
         
