@@ -1,84 +1,97 @@
 
 {% extends "base.html" %}
-{% block title %} update schedule service {{ detail.name }}{% endblock %}
+{% block title %} update schedule service {{ i.name }}{% endblock %}
 
 {% block calendar_css %}
 {% endblock %}
 
 {% block content %}
 
-    <h1 class="lead my-3">update schedule service..</h1>
-    <form class="card p-3" method="POST">
-        <div class="row m-2">
-            <div class="list-group col-sm">
-                <sup class="float-start">date</sup>
-                <input
-                    type="date"
-                    name="number_on"
-                    value="{{ detail.number_on }}"
-                    class="form-control my-2"
-                />
-            </div>
-            <div class="list-group col-sm">
-                <sup class="float-start">there_is</sup>
-                <input
-                    required
-                    type="datetime-local"
-                    name="there_is"
-                    value="{{ detail.there_is }}"
-                    class="form-control my-2"
-                />
-                <p><sub>datetime: {{ detail.there_is }}</sub></p>
-            </div>
+<h1 class="lead my-3">update schedule service..</h1>
+
+<form class="card" method="POST">
+
+    <div class="card-body row">
+
+        <div class="col-sm mb-2">
+            <sup class="float-start">date</sup>
+            <input
+                type="date"
+                name="number_on"
+                value="{{ i.number_on }}"
+                class="form-control my-2"
+            />
         </div>
-        <div class="m-2">
-            <sup class="float-start">title</sup>
+
+        <div class="col-sm mb-2">
+            <sup class="float-start">there_is</sup>
+            <input
+                required
+                type="datetime-local"
+                name="there_is"
+                value="{{ i.there_is }}"
+                class="form-control mt-2"
+            />
+        </div>
+
+        <div class="mb-2">
+            <sup>title</sup>
             <input
                 type="text"
                 name="title"
-                value="{{ detail.title }}"
-                class="form-control my-2"
+                value="{{ i.title }}"
+                class="form-control mt-2"
             />
         </div>
-        <div class="row m-2">
+
+        <div class="row">
             <div class="col-sm">
-            <sup class="float-start">name</sup>
-            <input
-                type="text"
-                name="name"
-                value="{{ detail.name }}"
-                class="form-control my-2"
-            />
-            </div>
-            <div class="col-sm">
-            <sup class="float-start">type</sup>
-            <input
-                type="text"
-                name="type_on"
-                value="{{ detail.type_on.name }}"
-                class="form-control my-2"
-            />
-                <div class="form-text">
-                    event,holiday,birthday
-                </div>
+                <sup>name</sup>
+                <input
+                    type="text"
+                    name="name"
+                    value="{{ i.name }}"
+                    class="form-control"
+                />
             </div>
 
+            <div class="col-sm">
+                <sup>type_on</sup>
+                <select
+                    name="type_on"
+                    class="form-control shadow-sm">
+                    <option value="{{ i.type_on.name }}">
+                        {{ i.type_on.name }}
+                    </option>
+
+                    {% for i in objects %}
+                        <option value="{{ i.name }}">
+                            {{ i.name }}
+                        </option>
+                    {% endfor %}
+
+                </select>
+            </div>
         </div>
-        <div class="m-2">
-            <sup class="float-start">description</sup>
+
+        <div class="mb-2">
+            <sup>description</sup>
             <textarea
-                class="form-control my-2"
+                class="form-control"
                 name="description"
                 maxlength="333"
                 spellcheck
-            >{{ detail.description }}</textarea>
+            >{{ i.description }}</textarea>
         </div>
-        <div class="card-footer m-2">
-            <button type="submit" class="btn btn-outline-primary btn-sm">
-                submit
-            </button>
-        </div>
-    </form>
+
+    </div>
+
+    <div class="card-footer m-2">
+        <button type="submit" class="btn btn-outline-primary btn-sm">
+            submit
+        </button>
+    </div>
+</form>
 
 {% endblock %}
 

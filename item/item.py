@@ -14,7 +14,7 @@ from admin import img
 from mail.send import send_mail
 from account.models import User
 
-from options_select.opt_slc import for_id, item_comment, and_owner_request
+from options_select.opt_slc import for_id, item_comment, and_owner_request, owner_request
 from options_select.csv_import import import_csv
 from options_select.csv_export import export_csv
 
@@ -30,10 +30,7 @@ async def item_export_csv(request):
         # ..
         if request.method == "GET":
             # ..
-            stmt = await session.execute(
-                select(Item).where(Item.owner == request.user.user_id)
-            )
-            result = stmt.scalars().all()
+            result = await owner_request(request, session, Item)
             # ..
             await export_csv(request, result)
             # ..

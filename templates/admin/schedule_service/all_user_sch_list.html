@@ -1,126 +1,109 @@
 
 {% extends "admin/base.html" %}
-{% block title %} admin list schedule service {% endblock %}
+{% block title %} adm all user sch list {% endblock %}
 
 {% block content %}
 
-<h1 class="lead my-3">admin list schedule service..</h1>
+<h1 class="lead my-3">admin all user sch list..</h1>
 
-<div class="flex_start card">
-    {% if not_service_list %}
+{% if not_service_list %}
+<h2 class="lead m-2">not service list</h2>
+<div class="flex_start">
     {% for i in not_service_list %}
     <div class="card my-2 ms-2">
-        <h2 class="lead m-2">not service list</h2>
-
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">id:</sup>
-                <span>{{ i.id }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">title:</sup>
-                <span>{{ i.title }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">description:</sup>
-                <span>{{ i.description }}</span>
-            </li>
-            {% include "created_modified.html" %}
-        </ul>
-
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">id:</sup>
+            <span>{{ i.id }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">title:</sup>
+            <span>{{ i.title }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">description:</sup>
+            <span>{{ i.description | safe }}</span>
+        </li>
+        {% include "created_modified.html" %}
+    </ul>
     </div>
     {% endfor %}
-
-        {% else %}
-        <span class="mt-5">no information available</span>
-
-    {% endif %}
-
-    {% if not_sch_user_list %}
+</div>
+{% endif %}
+<hr>
+{% if not_sch_user_list %}
+<h2 class="lead m-2">not user ScheduleService list</h2>
+<div class="flex_start">
     {% for i in not_sch_user_list %}
     <div class="card my-2 ms-2">
-        <h2 class="lead m-2">not user ScheduleService list</h2>
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">id:</sup>
-                <span>{{ i.id }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">name:</sup>
-                <span>{{ i.name }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">email:</sup>
-                <span>{{ i.email }}</span>
-            </li>
-            {% include "created_modified.html" %}
-        </ul>
-
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">id:</sup>
+            <span>{{ i.id }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">name:</sup>
+            <span>{{ i.name }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">email:</sup>
+            <span>{{ i.email }}</span>
+        </li>
+        {% include "created_modified.html" %}
+    </ul>
     </div>
     {% endfor %}
-        {% else %}
-        <span class="mt-5">no information available</span>
-
-    {% endif %}
 </div>
+{% endif %}
 <hr>
+{% if service_list %}
+<h2 class="lead m-2">service list</h2>
 <div class="flex_start">
-
-    {% if service_list %}
     {% for i in service_list %}
-    <div class="card mt-2 me-1">
-
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">id:</sup>
-                <span>{{ i.id }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">title:</sup>
-                <span>{{ i.title }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">description:</sup>
-                <span>{{ i.description }}</span>
-            </li>
-            {% include "created_modified.html" %}
-        </ul>
-
+    <div class="card my-2 ms-2">
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">id:</sup>
+            <span>{{ i.id }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">title:</sup>
+            <span>{{ i.title }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">description:</sup>
+            <span>{{ i.description | safe }}</span>
+        </li>
+        {% include "created_modified.html" %}
+    </ul>
     </div>
     {% endfor %}
-
-        {% else %}
-        <span class="mt-5">no information available</span>
-
-    {% endif %}
-
-    {% if sch_user_list %}
-    {% for i in sch_user_list %}
-    <div class="card mt-2 me-1">
-
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">id:</sup>
-                <span>{{ i.id }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">name:</sup>
-                <span>{{ i.name }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">email:</sup>
-                <span>{{ i.email }}</span>
-            </li>
-            {% include "created_modified.html" %}
-        </ul>
-
-    </div>
-    {% endfor %}
-        {% else %}
-        <span class="mt-5">no information available</span>
-
-    {% endif %}
-
 </div>
+{% endif %}
+<hr>
+{% if sch_user_list %}
+<h2 class="lead m-2">user list</h2>
+<div class="flex_start">
+    {% for i in sch_user_list %}
+    <div class="card my-2 ms-2">
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">id:</sup>
+            <span>{{ i.id }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">name:</sup>
+            <span>{{ i.name }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">email:</sup>
+            <span>{{ i.email }}</span>
+        </li>
+        {% include "created_modified.html" %}
+    </ul>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
 {% endblock %}

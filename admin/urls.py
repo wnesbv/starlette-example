@@ -64,30 +64,36 @@ routes = [
     ),
 
     # ..schedule service
-    Route("/schedule-service/list/", schedule_service.sch_list),
+    Route("/schedule-service/list", schedule_service.sch_list),
     Route("/schedule-service/user-sch/{id:int}", schedule_service.user_list),
     Route("/schedule-service/srv-sch/{id:int}", schedule_service.srv_list),
 
     Route("/schedule-service/all-user-sch-list", schedule_service.all_user_sch_list),
-
+    # ..
     Route(
-        "/schedule-service/details/{user:int}/{service:int}",
-        schedule_service.sch_details,
+        "/schedule-service/details/{service:int}/{id:int}",
+        schedule_service.srv_id_sch_id,
         methods=["GET", "POST"],
     ),
     Route(
+        "/schedule-service/details/{id:int}",
+        schedule_service.details,
+        methods=["GET", "POST"],
+    ),
+    # ..
+    Route(
         "/schedule-service/create/",
-        schedule_service.item_create,
+        schedule_service.sch_create,
         methods=["GET", "POST"],
     ),
     Route(
         "/schedule-service/update/{id:int}",
-        schedule_service.item_update,
+        schedule_service.sch_update,
         methods=["GET", "POST"],
     ),
     Route(
         "/schedule-service/delete/{id:int}",
-        schedule_service.item_delete,
+        schedule_service.sch_delete,
         methods=["GET", "POST"],
     ),
     # ..

@@ -1,18 +1,64 @@
 
 {% extends "admin/base.html" %}
-{% block title %} admin schedule service {% endblock %}
+{% block title %} adm srv id sch id {% endblock %}
 
 {% block content %}
 
-<h1 class="lead my-3">admin schedule service detail</h1>
+<h1 class="lead my-3">admin ScheduleService id detail</h1>
 
-<div class="flex_cont">
-    <div class="card p-3 mb-5">
+<div class="card p-3">
 
-        <div class="card-footer mt-3">
-            {{ sch_json | safe }}
-        </div>
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item pt-3">
+            <sup class="float-start">id:</sup>
+            <span class="me-3">{{ i.id }}</span>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">owner:</sup>
+            <span>{{ i.owner }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">service id:</sup>
+            <span>{{ i.sch_s_service_id }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">name</sup>
+            <span>{{ i.name }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">type_on:</sup>
+            <span>{{ i.type_on.name }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">number on the schedule:</sup>
+           <span> {{ i.number_on }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">there_is:</sup>
+            <span>{{ i.there_is }}</span>
+        </li>
+    </ul>
 
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">title</sup>
+            <p class="mt-2">{{ i.title }}</p>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">description</sup>
+            <p class="mt-2">{{ i.description }}</p>
+        </li>
+        {% include "created_modified.html" %}
+    </ul>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <a class="btn btn-outline-primary btn-sm me-2" href="/admin/schedule-service/update/{{ i.id }}" role="button">
+            <i class="bi bi-pencil"></i> &raquo;
+        </a>
+        <a class="btn btn-outline-danger btn-sm" href="/admin/schedule-service/delete/{{ i.id }}" role="button">
+            <i class="bi bi-trash3"></i> &raquo;
+        </a>
     </div>
 </div>
 

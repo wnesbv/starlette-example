@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 import json
@@ -20,7 +19,7 @@ from item.models import ScheduleRent, ScheduleService
 
 from options_select.opt_slc import details_schedule_rent
 
-from .opt_slc import(
+from .opt_slc import (
     in_admin,
     in_schedule_r,
     all_service,
@@ -33,10 +32,8 @@ templates = Jinja2Templates(directory="templates")
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def rent_list(
-    request
-):
-
+async def rent_list(request):
+    # ..
     template = "/admin/schedule_rent/list.html"
 
     async with async_session() as session:
@@ -45,8 +42,7 @@ async def rent_list(
         # ..
         if admin:
             result = await session.execute(
-                select(ScheduleRent)
-                .order_by(ScheduleRent.created_at)
+                select(ScheduleRent).order_by(ScheduleRent.created_at)
             )
             obj_list = result.scalars().all()
             # ..
@@ -54,27 +50,22 @@ async def rent_list(
                 "request": request,
                 "obj_list": obj_list,
             }
-            return templates.TemplateResponse(
-                template, context
-            )
+            return templates.TemplateResponse(template, context)
     await engine.dispose()
 
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def rent_details(
-    request
-):
+async def rent_details(request):
     # ..
     id = request.path_params["id"]
     template = "/admin/schedule_rent/details.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
-            sch = await in_schedule_r(session, id)
+            i = await in_schedule_r(session, id)
             obj_list = await details_schedule_rent(request, session)
             # ..
             if admin:
@@ -91,31 +82,25 @@ async def rent_details(
                 sch_json = json.dumps(obj, default=str)
                 table_attributes = "style='width:100%', class='table table-bordered'"
                 sch_json = json2html.convert(
-                    json = sch_json,
-                    table_attributes=table_attributes
+                    json=sch_json, table_attributes=table_attributes
                 )
                 # ..
                 context = {
                     "request": request,
                     "sch_json": sch_json,
-                    "sch": sch,
+                    "i": i,
                 }
-            return templates.TemplateResponse(
-                template, context
-            )
+            return templates.TemplateResponse(template, context)
     await engine.dispose()
 
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def item_create(
-    request
-):
-
+async def item_create(request):
+    # ..
     template = "/admin/schedule_rent/create.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
@@ -124,11 +109,12 @@ async def item_create(
             # ..
             if admin:
                 return templates.TemplateResponse(
-                    template, {
+                    template,
+                    {
                         "request": request,
                         "obj_rent": obj_rent,
                         "obj_service": obj_service,
-                    }
+                    },
                 )
         # ...
         if request.method == "POST":
@@ -169,10 +155,8 @@ async def item_create(
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def item_update(
-    request
-):
-
+async def item_update(request):
+    # ..
     id = request.path_params["id"]
     template = "/admin/schedule-rent/update.html"
 
@@ -188,12 +172,8 @@ async def item_update(
         # ...
         if request.method == "GET":
             if admin:
-                return templates.TemplateResponse(
-                    template, context
-                )
-            return PlainTextResponse(
-                "You are banned - this is not your account..!"
-            )
+                return templates.TemplateResponse(template, context)
+            return PlainTextResponse("You are banned - this is not your account..!")
         # ...
         if request.method == "POST":
             # ..
@@ -222,15 +202,12 @@ async def item_update(
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def item_delete(
-    request
-):
-
+async def item_delete(request):
+    # ..
     id = request.path_params["id"]
     template = "/admin/schedule-rent/delete.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
@@ -244,16 +221,11 @@ async def item_delete(
                         "detail": detail,
                     },
                 )
-            return PlainTextResponse(
-                "You are banned - this is not your account..!"
-            )
+            return PlainTextResponse("You are banned - this is not your account..!")
         # ...
         if request.method == "POST":
             # ..
-            query = (
-                delete(ScheduleService)
-                .where(ScheduleService.id == id)
-            )
+            query = delete(ScheduleService).where(ScheduleService.id == id)
             await session.execute(query)
             await session.commit()
             # ..
@@ -268,19 +240,16 @@ async def item_delete(
 @requires("authenticated", redirect="user_login")
 # ...
 async def delete_rent_csv(request):
-
     async with async_session() as session:
-
         if request.method == "GET":
             # ..
             admin = await in_admin(request, session)
             # ..
             if admin:
-                directory = (
-                    BASE_DIR
-                    / "static/service/"
-                )
-                response = [f.unlink() for f in Path(directory).glob("*") if f.is_file()]
+                directory = BASE_DIR / "static/service/"
+                response = [
+                    f.unlink() for f in Path(directory).glob("*") if f.is_file()
+                ]
                 response = RedirectResponse(
                     "/item/schedule-service/list_service",
                     status_code=302,

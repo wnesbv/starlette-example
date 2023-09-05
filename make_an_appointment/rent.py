@@ -16,6 +16,7 @@ from db_config.storage_config import engine, async_session
 
 from options_select.opt_slc import (
     and_owner_request,
+    owner_request,
     period_item,
     period_rent,
     not_period_item,
@@ -190,13 +191,8 @@ async def reserve_list_rent(request):
 
     async with async_session() as session:
         # ..
-        stmt = await session.execute(
-            select(ReserveRentFor).where(
-                ReserveRentFor.owner == request.user.user_id
-            )
-        )
+        obj_list = await owner_request(request, session, ReserveRentFor)
         # ..
-        obj_list = stmt.scalars().all()
         if obj_list:
             context = {
                 "request": request,

@@ -157,7 +157,6 @@ async def i_create(request):
                 new = Service()
                 new.title = title
                 new.description = description
-                new.file = file
                 new.owner = int(owner)
                 new.service_belongs = int(service_belongs)
                 # ..
@@ -173,7 +172,7 @@ async def i_create(request):
             new = Service()
             new.title = title
             new.description = description
-            new.owner = int(owner)
+            new.owner = request.user.user_id
             new.service_belongs = int(service_belongs)
             new.created_at = datetime.now()
             # ..

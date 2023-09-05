@@ -35,6 +35,7 @@ templates = Jinja2Templates(directory="templates")
 async def list_service(request):
     # ..
     template = "/schedule/list_service.html"
+
     async with async_session() as session:
         # ..
         obj_count = await all_total(session, Service)
@@ -184,14 +185,16 @@ async def update_service(request):
 
     async with async_session() as session:
         # ..
-        detail = await and_owner_request(request, session, ScheduleService, id)
+        i = await and_owner_request(request, session, ScheduleService, id)
+        objects = list(MyEnum)
         context = {
             "request": request,
-            "detail": detail,
+            "i": i,
+            "objects": objects,
         }
         # ...
         if request.method == "GET":
-            if detail:
+            if i:
                 return templates.TemplateResponse(template, context)
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
@@ -229,11 +232,11 @@ async def update_service(request):
             await session.commit()
             # ..
             await send_mail(
-                f"changes were made at the facility - {detail}: {detail.name}"
+                f"changes were made at the facility - {i}: {i.name}"
             )
             # ..
             return RedirectResponse(
-                f"/item/schedule-service/details/{detail.sch_s_service_id}/{ detail.id }",
+                f"/item/schedule-service/details/{i.sch_s_service_id}/{ i.id }",
                 status_code=302,
             )
     await engine.dispose()

@@ -44,8 +44,7 @@ async def i_list(request):
             stmt = await session.execute(select(Rent).order_by(Rent.created_at.desc()))
             obj_list = stmt.scalars().all()
             # ..
-            stmt = await session.execute(select(func.count(Rent.id)))
-            obj_count = stmt.scalars().all()
+            obj_count = await all_total(session, Rent)
             # ..
             context = {
                 "request": request,

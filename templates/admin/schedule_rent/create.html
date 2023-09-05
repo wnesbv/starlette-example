@@ -7,72 +7,77 @@
 
 {% block content %}
 
-    <h1 class="lead my-4">create schedule rent</h1>
+<h1 class="lead my-3">create schedule rent</h1>
 
-    <form class="card p-3" method="POST">
-        <div class="card-header mb-3">
-            <select
-                name="sch_r_rent_id"
-                class="form-control shadow">
-                <option value="">rent select</option>
+<form class="card" method="POST">
 
-                {% for obj in obj_rent %}
-                    <option value="{{ obj.id }}">
-                        {{ obj.id }}
-                    </option>
-                {% endfor %}
+    <div class="card-header mb-2">
+        <select
+            name="sch_r_rent_id"
+            class="form-control shadow-sm">
+            <option value="">rent select</option>
 
-            </select>
-        </div>
+            {% for i in obj_rent %}
+                <option value="{{ i.id }}">
+                    {{ i.id }}
+                </option>
+            {% endfor %}
 
-        <div class="row m-2">
-        <div class="col-sm">
+        </select>
+    </div>
+
+    <div class="card-body row">
+
+        <div class="col-sm mb-2">
             <sup class="float-start">start</sup>
             <input
                 type="datetime-local"
                 required
                 name="start"
-                class="form-control my-2"
+                class="form-control mt-2"
             />
         </div>
-        <div class="col-sm">
+
+        <div class="col-sm mb-2">
             <sup class="float-start">end</sup>
             <input
                 type="datetime-local"
                 required
                 name="end"
-                class="form-control my-2"
+                class="form-control mt-2"
             />
         </div>
-        </div>
 
-        <div class="m-2">
-            <sup class="float-start">title</sup>
+        <div class="mb-2">
+            <sup>title</sup>
             <input
                 type="text"
                 required
                 placeholder="title"
                 name="title"
                 value="schedule rent 01"
-                class="form-control my-2"
+                class="form-control"
             />
         </div>
 
-        <div class="m-2">
-            <sup class="float-start">description</sup>
+        <div class="mb-2">
+            <sup>description</sup>
             <textarea
-                class="form-control my-2"
+                class="form-control"
                 name="description"
                 maxlength="333"
                 spellcheck
             ></textarea>
         </div>
-        <div class="m-2">
-        <button type="submit" class="btn btn-outline-primary btn-sm">
-            submit
-        </button>
-        </div>
-    </form>
+    </div>
+
+    <div class="card-footer">
+    <button type="submit" class="btn btn-outline-primary btn-sm">
+        submit
+    </button>
+    </div>
+
+</form>
 
 {% endblock %}
 

@@ -11,7 +11,7 @@ from db_config.storage_config import engine, async_session
 
 from mail.send import send_mail
 
-from options_select.opt_slc import for_id, and_owner_request
+from options_select.opt_slc import for_id, and_owner_request, owner_request
 
 from item.models import Service, ScheduleService
 from .models import ReserveServicerFor
@@ -87,13 +87,8 @@ async def reserve_list_service(request):
     template = "make_an_appointment/list_service.html"
     async with async_session() as session:
         # ..
-        stmt = await session.execute(
-            select(ReserveServicerFor).where(
-                ReserveServicerFor.owner == request.user.user_id
-            )
-        )
+        obj_list = await owner_request(request, session, ReserveServicerFor)
         # ..
-        obj_list = stmt.scalars().all()
         if obj_list:
             context = {
                 "request": request,
