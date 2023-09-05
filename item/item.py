@@ -25,7 +25,7 @@ templates = Jinja2Templates(directory="templates")
 
 
 @requires("authenticated", redirect="user_login")
-async def item_export_csv(request):
+async def export_item_csv(request):
     async with async_session() as session:
         # ..
         if request.method == "GET":
@@ -43,7 +43,7 @@ async def item_export_csv(request):
 
 
 @requires("authenticated", redirect="user_login")
-async def item_import_csv(request):
+async def import_item_csv(request):
     # ..
     template = "/item/item_import_csv.html"
 

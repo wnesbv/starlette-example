@@ -29,7 +29,7 @@ templates = Jinja2Templates(directory="templates")
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def import_csv(request):
+async def import_sch_csv(request):
 
     id = request.path_params["id"]
     template = "/item/schedule/import_csv.html"
@@ -38,8 +38,8 @@ async def import_csv(request):
 
         if request.method == "GET":
             # ..
-            detail = await sch_sv_user(request, session, id)
-            if detail:
+            i = await sch_sv_user(request, session, id)
+            if i:
                 # ..
                 context = {"request": request}
 

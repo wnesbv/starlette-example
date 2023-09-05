@@ -30,21 +30,23 @@ routes = [
         schedule_export_csv.delete_user_csv,
         methods=["GET", "POST"],
     ),
-    #..
+
+    #...
     Route(
         "/import-csv/{id:int}",
-        schedule_import_csv.import_csv,
+        schedule_import_csv.import_sch_csv,
         methods=["GET", "POST"],
+    ),
+    Route("/item-import-csv", item.import_item_csv, methods=["GET", "POST"]),
+    # ...
+
+    Route(
+        "/item-export-csv",
+        item.export_item_csv,
+        methods=["GET"],
     ),
     # ..
     Route("/search/", item.search, methods=["GET", "POST"]),
-    # ..
-    Route("/item-import-csv", item.item_import_csv, methods=["GET", "POST"]),
-    Route(
-        "/item-export-csv",
-        item.item_export_csv,
-        methods=["GET"],
-    ),
     # ..
     Route("/list", item.item_list),
     Route("/details/{id:int}", item.item_details),
