@@ -284,7 +284,7 @@ async def sch_create(request):
             await session.commit()
             # ..
             response = RedirectResponse(
-                f"/admin/schedule-service/details/{ new.sch_s_service_id }/{ new.id }",
+                f"/admin/schedule-service/details/{ new.id }",
                 status_code=302,
             )
             return response
@@ -349,7 +349,7 @@ async def sch_update(request):
             await session.commit()
             # ..
             response = RedirectResponse(
-                f"/admin/schedule-service/details/{i.sch_s_service_id}/{ i.id }",
+                f"/admin/schedule-service/details/{ i.id }",
                 status_code=302,
             )
             return response

@@ -83,11 +83,18 @@ routes = [
     # ..
     Route("/schedule-service/list-service", schedule_service.list_service),
     Route("/schedule-service/list/{id:int}", schedule_service.list_service_id),
+    # ...
     Route(
         "/schedule-service/details/{service:int}/{id:int}",
         schedule_service.details_service,
         methods=["GET", "POST"],
     ),
+    Route(
+        "/schedule-service/details/{id:int}",
+        schedule_service.details,
+        methods=["GET", "POST"],
+    ),
+    # ...
     Route(
         "/schedule-service/create/",
         schedule_service.create_service,

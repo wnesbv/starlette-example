@@ -16,6 +16,7 @@ from db_config.storage_config import engine, async_session
 from mail.send import send_mail
 
 from options_select.opt_slc import (
+    for_id,
     owner_request,
     all_total,
     schedule_sv,
@@ -115,6 +116,29 @@ async def details_service(request):
 
 @requires("authenticated", redirect="user_login")
 # ...
+async def details(request):
+    # ..
+    id = request.path_params["id"]
+    template = "/schedule/details.html"
+
+    async with async_session() as session:
+        if request.method == "GET":
+            # ..
+            obj = await and_owner_request(request, session, ScheduleService, id)
+            if obj:
+                # ..
+                i = await for_id(session, ScheduleService, id)
+                # ..
+                context = {
+                    "request": request,
+                    "i": i,
+                }
+            return templates.TemplateResponse(template, context)
+    await engine.dispose()
+
+
+@requires("authenticated", redirect="user_login")
+# ...
 async def create_service(request):
     # ..
     template = "/schedule/create_service.html"
@@ -169,7 +193,7 @@ async def create_service(request):
             await send_mail(f"A new object has been created - {new}: {name}")
             # ..
             response = RedirectResponse(
-                f"/item/schedule-service/details/{ new.sch_s_service_id }/{ new.id }",
+                f"/item/schedule-service/details/{ new.id }",
                 status_code=302,
             )
             return response
@@ -236,7 +260,7 @@ async def update_service(request):
             )
             # ..
             return RedirectResponse(
-                f"/item/schedule-service/details/{i.sch_s_service_id}/{ i.id }",
+                f"/item/schedule-service/details/{ i.id }",
                 status_code=302,
             )
     await engine.dispose()

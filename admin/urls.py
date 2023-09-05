@@ -69,7 +69,7 @@ routes = [
     Route("/schedule-service/srv-sch/{id:int}", schedule_service.srv_list),
 
     Route("/schedule-service/all-user-sch-list", schedule_service.all_user_sch_list),
-    # ..
+    # ...
     Route(
         "/schedule-service/details/{service:int}/{id:int}",
         schedule_service.srv_id_sch_id,
@@ -80,7 +80,7 @@ routes = [
         schedule_service.details,
         methods=["GET", "POST"],
     ),
-    # ..
+    # ...
     Route(
         "/schedule-service/create/",
         schedule_service.sch_create,

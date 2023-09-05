@@ -1,10 +1,10 @@
 
-{% extends "base.html" %}
-{% block title %} {{ i.title }} {% endblock %}
+{% extends "admin/base.html" %}
+{% block title %} sch id {% endblock %}
 
 {% block content %}
 
-<h1 class="lead my-3">schedule detail.. {{ i.title }}</h1>
+<h1 class="lead my-3">admin ScheduleService id detail</h1>
 
 <div class="card p-3">
 
@@ -49,24 +49,18 @@
         </li>
         {% include "created_modified.html" %}
     </ul>
-
-    <div class="card-footer mt-3">
-        {{ sch_json | safe }}
-    </div>
 </div>
 
-{% if request.user.is_authenticated %}
-    <div class="card">
-        <div class="card-header">
-            <a class="btn btn-outline-primary btn-sm me-2" href="/item/schedule-service/update/{{ i.id }}" role="button">
-                <i class="bi bi-pencil"></i> &raquo;
-            </a>
-            <a class="btn btn-outline-danger btn-sm" href="/item/schedule-service/delete/{{ i.id }}" role="button">
-                <i class="bi bi-trash3"></i> &raquo;
-            </a>
-        </div>
+<div class="card">
+    <div class="card-header">
+        <a class="btn btn-outline-primary btn-sm me-2" href="/item/schedule-service/update/{{ i.id }}" role="button">
+            <i class="bi bi-pencil"></i> &raquo;
+        </a>
+        <a class="btn btn-outline-danger btn-sm" href="/item/schedule-service/delete/{{ i.id }}" role="button">
+            <i class="bi bi-trash3"></i> &raquo;
+        </a>
     </div>
-{% endif %}
+</div>
 
 {% endblock %}
 

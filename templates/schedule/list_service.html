@@ -12,7 +12,7 @@
             services: who have a ScheduleService from your account
         </sup>
     </h2>
-    <span class="card-header">total services: {{ obj_count | max }}</span>
+    <span>total services: {{ obj_count | max }}</span>
     </div>
 </div>
 
@@ -29,18 +29,18 @@
                 <sup class="float-start">owner:</sup>
                 <span>{{ i.owner }}</span>
             </li>
+            <li class="list-group-item pt-3">
+                <sup class="float-start">service_belongs:</sup>
+                <span>{{ i.service_belongs }}</span>
+            </li>
         </ul>
 
         <ul class="card-body list-group list-group-flush">
             <li class="list-group-item">
-                <sup class="float-start">service_belongs:</sup>
-                <span>{{ i.service_belongs }}</span>
-            </li>
-            <li class="list-group-item">
                 <sup class="float-start">title:</sup>
                 <p>{{ i.title }}</p>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">description:</sup>
                 <p>
                     {{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}
@@ -50,10 +50,14 @@
         </ul>
 
         <div class="card-footer">
-            <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/list/{{ i.id }}" role="button">
-                view service schedule &raquo;
-            </a>
+        <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/list/{{ i.id }}" role="button">
+            view service schedule &raquo;
+        </a>
+        <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/details/{{ i.id }}" role="button">
+            view details &raquo;
+        </a>
         </div>
+        
         <div class="card-footer">
         <a class="btn btn-primary btn-sm me-2" href="/item/dump_{{ i.id }}" role="button">
             export csv &raquo;
