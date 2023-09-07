@@ -43,10 +43,14 @@
                 <sup class="float-start">title:</sup>
                 <p>{{ i.title }}</p>
             </li>
+
             <li class="list-group-item pt-3">
-                <sup class="float-start">number on the schedule:</sup>
+                <sup class="float-start">type_on:</sup>
+                {% if i.type_on %}
                 <span>{{ i.type_on.name }}</span>
+                {% endif %}
             </li>
+            
         </ul>
 
         <ul class="card-body list-group list-group-flush">

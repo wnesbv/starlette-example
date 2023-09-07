@@ -82,6 +82,7 @@ async def user_list(request):
 @requires("authenticated", redirect="user_login")
 # ...
 async def srv_list(request):
+    # ..
     id = request.path_params["id"]
     template = "/admin/schedule_service/srv_list.html"
 
@@ -172,18 +173,20 @@ async def srv_id_sch_id(request):
             if admin:
                 # ..
                 obj_list = await details_schedule_service(
-                    request, session, service
+                    session, service
                 )
                 # ..
                 obj = [
                     {
                         "id": i.id,
+                        "owner": i.owner,
                         "name": i.name,
-                        "type_on": i.type_on.name,
                         "title": i.title,
+                        "description": i.description,
+                        "type_on": i.type_on.name,
                         "number_on": i.number_on,
                         "there_is": i.there_is,
-                        "description": i.description,
+                        "sch_s_service_id": i.sch_s_service_id
                     }
                     for i in obj_list
                 ]

@@ -35,7 +35,7 @@ async def create_reserve_service(request):
         if request.method == "GET":
             # ..
             stmt = await session.execute(select(Service).where(Service.id == service))
-            srv = stmt.scalars().first()
+            i = stmt.scalars().first()
             # ..
             there_is = sch.there_is
             # ..
@@ -43,7 +43,7 @@ async def create_reserve_service(request):
                 template,
                 {
                     "request": request,
-                    "srv": srv,
+                    "i": i,
                     "sch": sch,
                     "there_is": there_is,
                 },

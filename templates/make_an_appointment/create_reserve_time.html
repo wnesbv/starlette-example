@@ -1,60 +1,62 @@
 
 {% extends "base.html" %}
-{% block title %} reserve time {{ srv.id }}  {% endblock %}
+{% block title %} reserve time {{ i.id }}  {% endblock %}
 
 {% block content %}
 
-    <h1 class="lead my-3">reserve time...</h1>
-    <div class="card p-3">
-        <h2 class="lead">service</h2>
-        <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item pt-3">
-                <sup class="float-start">id:</sup>
-                <span>{{ srv.id }}</span>
-            </li>
-            <li class="list-group-item pt-3">
-                <sup class="float-start">owner:</sup>
-                <span>{{ srv.owner }}</span>
-            </li>
-        </ul>
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item pt-3">
-                <sup class="float-start">title:</sup>
-                <p class="mt-2">{{ srv.title }}</p>
-            </li>
-            <li class="list-group-item pt-3">
-                <sup class="float-start">description:</sup>
-                <p class="mt-2">{{ srv.description }}</p>
-            </li>
-        </ul>
+<h1 class="lead my-3">reserve time</h1>
+<div class="card p-3">
+    <h2 class="lead">service</h2>
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item pt-3">
+            <sup class="float-start">id:</sup>
+            <span>{{ i.id }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">owner:</sup>
+            <span>{{ i.owner }}</span>
+        </li>
+    </ul>
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item pt-3">
+            <sup class="float-start">title:</sup>
+            <p class="mt-2">{{ i.title }}</p>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">description:</sup>
+            <p class="mt-2">{{ i.description | safe }}</p>
+        </li>
+    </ul>
+</div>
 
-        <h2 class="lead">reserve</h2>
-        <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item">
-                <sup class="float-start">schedule id:</sup>
-                <span>{{ sch.id }}</span>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">there is:</sup>
-                <time>{{ there_is }}</time>
-            </li>
-        </ul>
+<div class="card p-3">
+    <h2 class="lead">reserve</h2>
+    <ul class="card-header list-group list-group-horizontal">
+        <li class="list-group-item pt-3">
+            <sup class="float-start">schedule id:</sup>
+            <span>{{ sch.id }}</span>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">there is:</sup>
+            <time>{{ there_is }}</time>
+        </li>
+    </ul>
 
-        <form class="card-body m-2" method="POST">
-            <sup class="float-start">description</sup>
-            <input
-                type="text"
-                name="description"
-                placeholder="description"
-                class="form-control my-2"
-            />
-            <div class="card-footer mt-2">
-            <button type="submit" class="btn btn-outline-primary btn-sm">
-                submit
-            </button>
-            </div>
-        </form>
-    </div>
+    <form class="card-body m-2" method="POST">
+        <sup>description</sup>
+        <input
+            type="text"
+            name="description"
+            placeholder="description"
+            class="form-control my-2"
+        />
+        <div class="card-footer">
+        <button type="submit" class="btn btn-outline-primary btn-sm">
+            submit
+        </button>
+        </div>
+    </form>
+</div>
 
 
 {% endblock %}

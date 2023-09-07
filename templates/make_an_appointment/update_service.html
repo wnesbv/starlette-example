@@ -1,26 +1,26 @@
 
 {% extends "base.html" %}
-{% block title %} update reserve service {{ i.id}} {% endblock%}
+{% block title %} update rsv service {{ i.id}} {% endblock%}
 
 {% block content %}
 
 <h1 class="lead my-3">update reserve service</h1>
 
-<form class="row" method="POST">
-    <div class="list-group col-sm mb-3">
-        <span class="list-group-item">
-            <sup class="float-start">reserve time</sup>
+<form class="card" method="POST">
+    <div class="card-body">
+        <div class="mb-3">
+            <sup>reserve time</sup>
             <input
-                class="mt-2"
                 type="datetime-local"
                 name="reserve_time"
                 value="{{ i.reserve_time }}"
+                class="form-control"
             />
         </span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">description</label>
+        <sup>description</sup>
         <textarea
             class="form-control"
             name="description"
@@ -29,7 +29,12 @@
         >{{ i.description }}</textarea>
     </div>
 
-    <button type="submit" class="btn btn-outline-primary btn-sm">submit</button>
+    </div>
+
+    <div class="card-footer">
+        <button type="submit" class="btn btn-outline-primary btn-sm">submit</button>
+    </div>
+
 </form>
 
 {% endblock %}

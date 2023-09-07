@@ -24,10 +24,14 @@
             <sup class="float-start">name</sup>
             <span>{{ i.name }}</span>
         </li>
+
         <li class="list-group-item pt-3">
             <sup class="float-start">type_on:</sup>
+            {% if i.type_on %}
             <span>{{ i.type_on.name }}</span>
+            {% endif %}
         </li>
+        
         <li class="list-group-item pt-3">
             <sup class="float-start">number on the schedule:</sup>
            <span> {{ i.number_on }}</span>

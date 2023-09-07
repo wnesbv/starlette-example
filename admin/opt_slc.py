@@ -142,7 +142,7 @@ async def in_schedule_sv(
     return result
 
 
-async def details_schedule_service(request, session, service):
+async def details_schedule_service(session, service):
     stmt = await session.execute(
         select(ScheduleService)
         .where(ScheduleService.sch_s_service_id == service)

@@ -1,10 +1,10 @@
 
 {% extends "admin/base.html" %}
-{% block title %} admin list schedule service {% endblock %}
+{% block title %} adm user list sch service {% endblock %}
 
 {% block content %}
 
-<h1 class="lead my-3">admin list schedule service..</h1>
+<h1 class="lead my-3">admin user list schedule service..</h1>
 
 <div class="flex_start">
     {% if obj_list %}
@@ -35,10 +35,14 @@
                 <sup class="float-start">title:</sup>
                 <span>{{ i.title }}</span>
             </li>
+            
             <li class="list-group-item pt-3">
                 <sup class="float-start">type_on:</sup>
+                {% if i.type_on %}
                 <span class="me-3">{{ i.type_on.name }}</span>
+                {% endif %}
             </li>
+
             <li class="list-group-item pt-3">
                 <sup class="float-start">number_on:</sup>
                 <span class="me-3">{{ i.number_on }}</span>
@@ -51,7 +55,7 @@
         </ul>
 
         <div class="card-footer">
-        <a class="btn btn-outline-primary btn-sm" href="/admin/schedule-service/details/{{ i.owner }}" role="button">view details &raquo;</a>
+        <a class="btn btn-outline-primary btn-sm" href="/admin/schedule-service/details/{{ i.id }}" role="button">view details &raquo;</a>
         </div>
 
     </div>
