@@ -21,6 +21,7 @@ class User(Base):
     password: Mapped[str] = mapped_column(String, nullable=False)
     file: Mapped[str] = mapped_column(String, nullable=True)
     email_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    privileged: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=False)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     # ..

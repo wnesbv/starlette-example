@@ -1,15 +1,16 @@
+
 import jwt
 
 from starlette.authentication import (
-    AuthCredentials,
     AuthenticationBackend,
+    AuthCredentials,
     BaseUser,
 )
 
 from db_config.settings import settings
 
 
-class JWTUser(BaseUser):
+class JwtUser(BaseUser):
     def __init__(
         self, username: str, user_id: int, email: str, token: str, payload: dict
     ) -> None:
@@ -33,29 +34,27 @@ class JWTUser(BaseUser):
         )
 
 
-class JWTAuthenticationBackend(AuthenticationBackend):
+class JwtBackend(AuthenticationBackend):
     def __init__(
         self,
         key: str,
-        algorithm: str = settings.JWT_ALGORITHM,
+        algorithm: str,
     ):
         self.key = key
         self.algorithm = algorithm
-
 
     async def authenticate(self, conn):
         if "visited" not in conn.cookies:
             return None
 
         token = conn.cookies.get("visited")
-
         payload = jwt.decode(
             token, key=str(self.key), algorithms=self.algorithm
         )
 
         return (
             AuthCredentials(["authenticated"]),
-            JWTUser(
+            JwtUser(
                 username=payload["name"],
                 user_id=payload["user_id"],
                 email=payload["email"],

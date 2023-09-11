@@ -1,4 +1,3 @@
-
 import uvicorn
 
 from sqlalchemy.future import select
@@ -15,62 +14,69 @@ from db_config.storage_config import engine, async_session
 from db_config.settings import settings
 
 from item.models import Slider
+
 from account.models import User
+from account.middleware import JwtBackend
 
-from middleware import JWTAuthenticationBackend
+from auth_privileged.views import get_privileged_user
+from auth_privileged.middleware import PrivilegedBackend
+from auth_privileged.auth import PrivilegedMiddleware
 
-#...
-#from db_startup.db import on_app_startup
-#...
+
+# ...
+# from db_startup.db import on_app_startup
+# ...
 
 
 templates = Jinja2Templates(directory="templates")
+middleware=[
+    Middleware(
+        AuthenticationMiddleware,
+        backend=JwtBackend(
+            key=str(settings.SECRET_KEY),
+            algorithm=settings.JWT_ALGORITHM,
+        ),
+    ),
+    Middleware(
+        PrivilegedMiddleware,
+        backend=PrivilegedBackend(
+            key=str(settings.SECRET_KEY),
+            algorithm=settings.JWT_ALGORITHM,
+        ),
+    ),
+]
 
 app = Starlette(
-    debug = settings.DEBUG,
-    routes = routes,
-    #...
-    #on_startup=[on_app_startup],
+    debug=settings.DEBUG,
+    routes=routes,
+    # ...
+    # on_startup=[on_app_startup],
     # on_shutdown=[on_app_shutdown],
-    #...
-    middleware=[
-        Middleware(
-            AuthenticationMiddleware,
-            backend=JWTAuthenticationBackend(
-                key=str(settings.SECRET_KEY),
-                algorithm=settings.JWT_ALGORITHM,
-            ),
-        ),
-    ],
+    # ...
+    middleware=middleware
 )
+
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-
-
 @app.route("/")
-async def homepage(
-    request
-):
+async def homepage(request):
+    # ..
     template = "index.html"
 
     async with async_session() as session:
-
-        stmt_sl = await session.execute(
-            select(Slider)
-        )
+        stmt_sl = await session.execute(select(Slider))
         obj_sl = stmt_sl.scalars().all()
+        obj = await get_privileged_user(request, session)
         # ..
         if not request.user.is_authenticated:
-            response = templates.TemplateResponse(
-                template, {"request": request, "obj_sl": obj_sl}
+            return templates.TemplateResponse(
+                template, {"request": request, "obj": obj, "obj_sl": obj_sl}
             )
-            return response
-
+        # ..
         stmt = await session.execute(
-            select(User)
-            .where(User.id==request.user.user_id)
+            select(User).where(User.id == request.user.user_id)
         )
         obj_list = stmt.scalars().all()
         # ..
@@ -84,18 +90,14 @@ async def homepage(
 
 
 @app.route("/details/{id:int}")
-async def details(
-    request
-):
-
+async def details(request):
+    # ..
     id = request.path_params["id"]
     template = "details.html"
 
     async with async_session() as session:
         result = await session.execute(
-            select(User)
-            .where(User.id==id)
-            .where(User.id==request.user.user_id)
+            select(User).where(User.id == id).where(User.id == request.user.user_id)
         )
         detail = result.scalars().first()
         context = {
@@ -107,28 +109,19 @@ async def details(
 
 
 @app.route("/error")
-async def error(
-    request
-):
-
+async def error(request):
     raise RuntimeError("Oh no")
 
 
 @app.exception_handler(404)
-async def not_found(
-    request, exc
-):
-
+async def not_found(request, exc):
     template = "404.html"
     context = {"request": request}
     return templates.TemplateResponse(template, context, status_code=404)
 
 
 @app.exception_handler(500)
-async def server_error(
-    request, exc
-):
-
+async def server_error(request, exc):
     template = "500.html"
     context = {"request": request}
     return templates.TemplateResponse(template, context, status_code=500)
@@ -146,5 +139,4 @@ def messages(request):
 
 
 if __name__ == "__main__":
-
     uvicorn.run(app, host="127.0.0.1", port=8000)

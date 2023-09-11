@@ -119,6 +119,7 @@ async def i_create(request):
             file = form["file"]
             #
             email_verified = form["email_verified"]
+            privileged = form["privileged"]
             is_active = form["is_active"]
             is_admin = form["is_admin"]
             # ..
@@ -145,6 +146,7 @@ async def i_create(request):
                 new.password = password
                 new.created_at = datetime.now()
                 new.email_verified = strtobool(email_verified)
+                new.privileged = strtobool(privileged)
                 new.is_active = strtobool(is_active)
                 new.is_admin = strtobool(is_admin)
                 new.created_at = datetime.now()

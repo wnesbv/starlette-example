@@ -131,6 +131,7 @@ async def item_create(request):
             # ..
             session.add(new)
             await session.flush()
+            # ..
             new.file = await img.item_img_creat(file, email.email, new.id, basewidth)
             session.add(new)
             await session.commit()

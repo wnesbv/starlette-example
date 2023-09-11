@@ -1,8 +1,8 @@
 
+from pathlib import Path
 from datetime import datetime, timedelta
-from pathlib import Path, PurePosixPath
 
-import os, jwt
+import os, jwt, json, string, secrets
 
 from sqlalchemy import update as sqlalchemy_update, delete
 
@@ -10,7 +10,6 @@ from sqlalchemy.future import select
 
 from passlib.hash import pbkdf2_sha1
 
-from starlette.datastructures import UploadFile
 from starlette.exceptions import HTTPException
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
@@ -23,10 +22,13 @@ from db_config.storage_config import engine, async_session
 from options_select.opt_slc import for_id
 
 from admin import img
-from account.models import User
-from mail.verify import verify_mail
 
+from account.models import User
+from auth_privileged.models import Privileged
+
+from mail.verify import verify_mail
 from .token import mail_verify
+
 
 key = settings.SECRET_KEY
 algorithm = settings.JWT_ALGORITHM
@@ -35,66 +37,43 @@ EMAIL_TOKEN_EXPIRY_MINUTES = settings.EMAIL_TOKEN_EXPIRY_MINUTES
 templates = Jinja2Templates(directory="templates")
 
 
-async def user_register(request):
-    # ..
-    template = "/auth/register.html"
-
-    async with async_session() as session:
-        if request.method == "POST":
-            form = await request.form()
-            name = form["name"]
-            email = form["email"]
-            password = form["password"]
-            # ..
-            stmt_name = await session.execute(select(User).where(User.name == name))
-            name_exist = stmt_name.scalars().first()
-            stmt_email = await session.execute(select(User).where(User.email == email))
-            email_exist = stmt_email.scalars().first()
-            # ..
-            if name_exist:
-                raise HTTPException(
-                    status_code=HTTP_400_BAD_REQUEST,
-                    detail="name already registered..!",
-                )
-            if email_exist:
-                raise HTTPException(
-                    status_code=HTTP_400_BAD_REQUEST,
-                    detail="email already registered..!",
-                )
-            new = User()
-            new.name = name
-            new.email = email
-            new.password = pbkdf2_sha1.hash(password)
-            new.created_at = datetime.now()
-
-            session.add(new)
-            await session.commit()
-            # ..
-            payload = {
-                "email": email,
-                "exp": datetime.utcnow()
-                + timedelta(minutes=int(EMAIL_TOKEN_EXPIRY_MINUTES)),
-                "iat": datetime.utcnow(),
-                "scope": "email_verification",
-            }
-            token = jwt.encode(payload, key, algorithm)
-            # ..
-            verify = email
-            await verify_mail(
-                f"Follow the link, confirm your email - http://127.0.0.1:8000/account/email-verify?token={token}",
-                verify,
-            )
-            return RedirectResponse(
-                "/messages?msg=Go to the specified email address..", status_code=302
-            )
-
-        return templates.TemplateResponse(template, {"request": request})
-    await engine.dispose()
+async def get_random_string():
+    alphabet = string.ascii_letters + string.digits
+    prv_key = "".join(secrets.choice(alphabet) for i in range(32))
+    return prv_key
 
 
-@requires("authenticated", redirect="user_login")
-# ...
-async def user_update(request):
+# ..
+async def get_token_privileged(request):
+    if request.cookies.get("privileged"):
+        token = request.cookies.get("privileged")
+        if token:
+            payload = jwt.decode(token, key, algorithm)
+            prv_key = payload["prv_key"]
+            return prv_key
+
+async def get_privileged(request, session):
+    token = await get_token_privileged(request)
+    stmt = await session.execute(
+        select(Privileged).where(Privileged.prv_key == token)
+    )
+    result = stmt.scalars().first()
+    return result
+
+async def get_privileged_user(request, session):
+    while True:
+        prv = await get_privileged(request, session)
+        if not prv:
+            break
+        stmt = await session.execute(
+            select(User).where(User.id == prv.prv_in)
+        )
+        result = stmt.scalars().first()
+        return result
+# ..
+
+@requires("auth_prv", redirect="prv__login")
+async def prv_update(request):
     # ..
     basewidth = 256
     id = request.path_params["id"]
@@ -103,16 +82,19 @@ async def user_update(request):
     async with async_session() as session:
         # ..
         i = await for_id(session, User, id)
+        print(" i..", i)
+        prv = await get_privileged_user(request, session)
+        print(" prv..", prv)
         # ..
         context = {
             "request": request,
             "i": i,
+            "prv": prv,
         }
         # ...
         if request.method == "GET":
-            if request.user.user_id == i.id:
+            if prv == i:
                 return templates.TemplateResponse(template, context)
-
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
         if request.method == "POST":
@@ -128,11 +110,7 @@ async def user_update(request):
                 query = (
                     sqlalchemy_update(User)
                     .where(User.id == id)
-                    .values(
-                        name=name,
-                        file=i.file,
-                        modified_at=datetime.now()
-                    )
+                    .values(name=name, file=i.file, modified_at=datetime.now())
                     .execution_options(synchronize_session="fetch")
                 )
                 await session.execute(query)
@@ -145,10 +123,7 @@ async def user_update(request):
                     fle_not = (
                         sqlalchemy_update(User)
                         .where(User.id == id)
-                        .values(
-                            file=None,
-                            modified_at=datetime.now()
-                        )
+                        .values(file=None, modified_at=datetime.now())
                         .execution_options(synchronize_session="fetch")
                     )
                     await session.execute(fle_not)
@@ -188,7 +163,7 @@ async def user_update(request):
 
 @requires("authenticated", redirect="user_login")
 # ...
-async def user_delete(request):
+async def prv_delete(request):
     # ..
     id = request.path_params["id"]
     template = "/auth/delete.html"
@@ -197,9 +172,7 @@ async def user_delete(request):
         if request.method == "GET":
             # ..
             if request.user.user_id == id:
-                return templates.TemplateResponse(
-                    template, {"request": request}
-                )
+                return templates.TemplateResponse(template, {"request": request})
             return PlainTextResponse("You are banned - this is not your account..!")
 
         # ...
@@ -219,8 +192,8 @@ async def user_delete(request):
     await engine.dispose()
 
 
-# ...
-async def user_login(request):
+# ..
+async def prv_login(request):
     # ..
     template = "/auth/login.html"
 
@@ -232,6 +205,11 @@ async def user_login(request):
             # ..
             result = await session.execute(select(User).where(User.email == email))
             user = result.scalars().first()
+            # ..
+            stmt = await session.execute(
+                select(Privileged).where(Privileged.prv_in == user.id)
+            )
+            prv = stmt.scalars().first()
             # ..
             if user:
                 if not user.email_verified:
@@ -245,18 +223,30 @@ async def user_login(request):
                     user.last_login_date = datetime.now()
                     # ..
                     session.add(user)
+                    await session.flush()
+                    # ..
+                    if prv:
+                        query = delete(Privileged).where(Privileged.id == prv.id)
+                        await session.execute(query)
+                        await session.commit()
+                    prv_key = await get_random_string()
+                    # ..
+                    new = Privileged()
+                    new.prv_key = prv_key
+                    new.prv_in = user.id
+                    # ..
+                    session.add(new)
                     await session.commit()
                     # ..
                     payload = {
-                        "user_id": user.id,
-                        "name": user.name,
-                        "email": user.email,
+                        "prv_key": prv_key,
+                        "prv_id": user.id,
                     }
-                    visited = jwt.encode(payload, key, algorithm)
+                    privileged = jwt.encode(payload, key, algorithm)
                     response = RedirectResponse("/", status_code=302)
                     response.set_cookie(
-                        "visited",
-                        visited,
+                        "privileged",
+                        privileged,
                         path="/",
                         httponly=True,
                     )
@@ -274,18 +264,34 @@ async def user_login(request):
     await engine.dispose()
 
 
-async def user_logout(request):
+async def prv_logout(request):
+    # ..
     template = "/auth/logout.html"
 
     if request.method == "POST":
-        if request.user:
-            response = RedirectResponse("/", status_code=302)
-            response.delete_cookie(key="visited", path="/")
-            # ..
-            return response
+        if request.cookies.get("privileged"):
+            token = request.cookies.get("privileged")
+            if token:
+                payload = jwt.decode(token, key, algorithm)
+                prv_key = payload["prv_key"]
+                async with async_session() as session:
+                    stmt = await session.execute(
+                        select(Privileged).where(Privileged.prv_key == prv_key)
+                    )
+                    prv = stmt.scalars().first()
+                    query = delete(Privileged).where(Privileged.id == prv.id)
+                    await session.execute(query)
+                    await session.commit()
+                await engine.dispose()
+                # ..
+                response = RedirectResponse("/", status_code=302)
+                response.delete_cookie(key="privileged", path="/")
+                # ..
+                return response
 
         return templates.TemplateResponse(template, {"request": request})
     return templates.TemplateResponse(template, {"request": request})
+# ..
 
 
 async def verify_email(request):
@@ -329,7 +335,7 @@ async def resend_email(request):
     await engine.dispose()
 
 
-async def user_list(request):
+async def prv_list(request):
     template = "/auth/list.html"
 
     async with async_session() as session:
@@ -347,7 +353,7 @@ async def user_list(request):
     await engine.dispose()
 
 
-async def user_detail(request):
+async def prv_detail(request):
     # ..
     id = request.path_params["id"]
     template = "/auth/details.html"

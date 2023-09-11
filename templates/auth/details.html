@@ -4,8 +4,8 @@
 
 {% block content %}
 
-<h1 class="lead my-3">detail user {{ i.email }}</h1>
-
+<h1 class="lead my-3">detail user.. {{ i.email }}</h1>
+<sup class="my-3">detail prv id.. {{ request.prv.prv_id }}</sup>
 <div class="card p-3">
 
     <ul class="card-header list-group list-group-horizontal">
@@ -47,5 +47,19 @@
     </div>
 </div>
 {% endif %}
+
+{% if request.prv.prv_id == i.id %}
+<div class="card mt-2">
+    <div class="card-header">
+        <a class="btn btn-outline-primary btn-sm me-2" href="/privileged/update/{{ i.id }}" role="button">
+            <i class="bi bi-pencil"></i> &raquo;
+        </a>
+        <a class="btn btn-outline-danger btn-sm" href="/privileged/delete/{{ i.id }}" role="button">
+            <i class="bi bi-trash3"></i> &raquo;
+        </a>
+    </div>
+</div>
+{% endif %}
+
 
 {% endblock %}

@@ -226,7 +226,7 @@ async def service_comment(session, id):
     return result
 
 
-# ..tm
+# ...tm
 async def period_item(time_start, time_end, session):
     # ..
     stmt = await session.execute(select(Item.id).join(ReserveRentFor.rrf_item))

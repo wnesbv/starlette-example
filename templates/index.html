@@ -3,13 +3,19 @@
 
 {% block content %}
 
-    <h1 class="h6 my-1">
-        Hello, world!
+    <h1 class="h6">
+        Hello, world..!
+        {% if obj %}
+            privileged: {{ obj.email }}
+        {% endif %}
+        {% if request.user.email %}
+            user: {{ request.user.email }}
+        {% endif %}
     </h1>
     <a class="float-end mx-1 btn btn-light" href="#">Learn more &raquo;</a>
-    <div class="p-2 bg-light">
+    <div class="p-1 bg-light">
         <h2 class="lead">Hello!</h2>
-        <p class="m-1">New..! Item 03..! mail: one@example.com..! Lorem ipsum dolor sit amet, </p>
+        <p>New..! Item 03..! mail: one@example.com..! Lorem ipsum dolor sit amet, </p>
     </div>
 
     <link rel="stylesheet" href="/static/slider/slider.css">

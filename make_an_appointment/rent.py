@@ -199,7 +199,9 @@ async def reserve_list_rent(request):
                 "obj_list": obj_list,
             }
             return templates.TemplateResponse(template, context)
-        return PlainTextResponse("This is not your account..!")
+        return PlainTextResponse(
+            "either it's not your account or you don't have a reservation.!"
+        )
     await engine.dispose()
 
 
@@ -212,16 +214,16 @@ async def reserve_detail_rent(request):
 
     async with async_session() as session:
         # ..
-        i = await and_owner_request(
-            request, session, ReserveRentFor, id
-        )
+        i = await and_owner_request(request, session, ReserveRentFor, id)
         if i:
             context = {
                 "request": request,
                 "i": i,
             }
             return templates.TemplateResponse(template, context)
-        return PlainTextResponse("there is no position of your account..!")
+        return PlainTextResponse(
+            "either it's not your account, or you don't have one. booking positions..!"
+        )
     await engine.dispose()
 
 
@@ -234,9 +236,7 @@ async def reserve_update_rent(request):
 
     async with async_session() as session:
         # ..
-        i = await and_owner_request(
-            request, session, ReserveRentFor, id
-        )
+        i = await and_owner_request(request, session, ReserveRentFor, id)
         # ..
         rsv_period = await period_reserve(i.time_start, i.time_end)
         # ..
@@ -293,9 +293,7 @@ async def delete(request):
         # ...
         if request.method == "GET":
             # ..
-            i = await and_owner_request(
-                request, session, ReserveRentFor, id
-            )
+            i = await and_owner_request(request, session, ReserveRentFor, id)
             if i:
                 return templates.TemplateResponse(
                     template,
