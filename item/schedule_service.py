@@ -51,7 +51,6 @@ async def list_service(request):
     await engine.dispose()
 
 
-
 # ...
 async def list_service_id(request):
     # ..
@@ -68,7 +67,6 @@ async def list_service_id(request):
         }
         return templates.TemplateResponse(template, context)
     await engine.dispose()
-
 
 
 # ...
@@ -114,7 +112,6 @@ async def details_service(request):
     await engine.dispose()
 
 
-
 # ...
 async def details(request):
     # ..
@@ -135,7 +132,6 @@ async def details(request):
                 }
             return templates.TemplateResponse(template, context)
     await engine.dispose()
-
 
 
 # ...
@@ -205,7 +201,6 @@ async def create_service(request):
     await engine.dispose()
 
 
-
 # ...
 async def update_service(request):
     # ..
@@ -260,16 +255,13 @@ async def update_service(request):
             await session.execute(query)
             await session.commit()
             # ..
-            await send_mail(
-                f"changes were made at the facility - {i}: {i.name}"
-            )
+            await send_mail(f"changes were made at the facility - {i}: {i.name}")
             # ..
             return RedirectResponse(
                 f"/item/schedule-service/details/{ i.id }",
                 status_code=302,
             )
     await engine.dispose()
-
 
 
 # ...

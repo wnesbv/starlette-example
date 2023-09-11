@@ -57,7 +57,7 @@ routes = [
     # ..
     Route("/rent/list", rent.rent_list),
     Route("/rent/details/{id:int}", rent.rent_details),
-    Route("/rent/create/", rent.rent_create, methods=["GET", "POST"]),
+    Route("/rent/create", rent.rent_create, methods=["GET", "POST"]),
     Route("/rent/update/{id:int}", rent.rent_update, methods=["GET", "POST"]),
     Route("/rent/delete/{id:int}", rent.rent_delete, methods=["GET", "POST"]),
     # ..

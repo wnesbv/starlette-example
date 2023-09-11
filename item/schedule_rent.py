@@ -19,17 +19,17 @@ from db_config.storage_config import engine, async_session
 from mail.send import send_mail
 
 from options_select.opt_slc import (
-    owner_request,
+    owner_prv,
     schedule_rent_user,
     and_owner_request,
     details_schedule_rent,
 )
+from auth_privileged.views import get_privileged_user
 
 from .models import Rent, ScheduleRent
 
 
 templates = Jinja2Templates(directory="templates")
-
 
 
 # ...
@@ -45,7 +45,6 @@ async def list_rent(request):
         }
         return templates.TemplateResponse(template, context)
     await engine.dispose()
-
 
 
 # ...
@@ -85,24 +84,28 @@ async def details_rent(request):
     await engine.dispose()
 
 
-
 # ...
 async def create_rent(request):
     # ..
     template = "/schedule/create_rent.html"
 
     async with async_session() as session:
+        # ..
+        prv = await get_privileged_user(request, session)
+        # ..
         if request.method == "GET":
             # ..
-            obj_rent = await owner_request(request, session, Rent)
+            obj_rent = await owner_prv(session, Rent, prv)
             # ..
-            return templates.TemplateResponse(
-                template,
-                {
-                    "request": request,
-                    "obj_rent": obj_rent,
-                },
-            )
+            if obj_rent:
+                return templates.TemplateResponse(
+                    template,
+                    {
+                        "request": request,
+                        "obj_rent": obj_rent,
+                    },
+                )
+            return RedirectResponse("/item/rent/create")
         # ...
         if request.method == "POST":
             # ..
@@ -118,7 +121,7 @@ async def create_rent(request):
             start = datetime.strptime(str_start, settings.DATE_T)
             end = datetime.strptime(str_end, settings.DATE_T)
             # ..
-            owner = request.user.user_id
+            owner = prv.id
             # ...
             new = ScheduleRent()
             new.start = start
@@ -140,7 +143,6 @@ async def create_rent(request):
             )
             return response
     await engine.dispose()
-
 
 
 # ...
@@ -200,7 +202,6 @@ async def update_rent(request):
             )
             return response
     await engine.dispose()
-
 
 
 # ...

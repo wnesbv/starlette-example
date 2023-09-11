@@ -16,19 +16,18 @@ from admin import img
 from mail.send import send_mail
 from account.models import User
 
-from options_select import file_img
 from options_select.opt_slc import (
-    owner_request,
+    owner_prv,
     for_id,
     rent_comment,
     and_owner_request,
     id_fle_delete,
 )
+from auth_privileged.views import get_privileged_user
 from .models import Item, Rent, ScheduleRent
 
 
 templates = Jinja2Templates(directory="templates")
-
 
 
 # ...
@@ -38,17 +37,22 @@ async def rent_create(request):
     template = "/rent/create.html"
 
     async with async_session() as session:
+        # ..
+        prv = await get_privileged_user(request, session)
+        # ..
         if request.method == "GET":
             # ..
-            obj_item = await owner_request(request, session, Item)
+            obj_item = await owner_prv(session, Item, prv)
             # ..
-            return templates.TemplateResponse(
-                template,
-                {
-                    "request": request,
-                    "obj_item": obj_item,
-                },
-            )
+            if obj_item:
+                return templates.TemplateResponse(
+                    template,
+                    {
+                        "request": request,
+                        "obj_item": obj_item,
+                    },
+                )
+            return RedirectResponse("/item/create")
         # ...
         if request.method == "POST":
             # ..
@@ -58,7 +62,7 @@ async def rent_create(request):
             description = form["description"]
             file = form["file"]
             rent_belongs = form["rent_belongs"]
-            owner = request.user.user_id
+            owner = prv.id
             # ..
             if file.filename == "":
                 # ..
@@ -106,7 +110,6 @@ async def rent_create(request):
             )
 
     await engine.dispose()
-
 
 
 # ...
@@ -206,7 +209,6 @@ async def rent_update(request):
             )
 
     await engine.dispose()
-
 
 
 # ...
