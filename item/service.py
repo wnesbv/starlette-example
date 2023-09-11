@@ -19,18 +19,16 @@ from make_an_appointment.models import ReserveServicerFor
 
 from .models import Item, Service, ScheduleService
 
-from options_select import file_img
 from options_select.opt_slc import (
-    owner_request,
     for_id,
+    owner_prv,
     service_comment,
     and_owner_request,
-    id_fle_delete,
 )
+from auth_privileged.views import get_privileged_user
 
 
 templates = Jinja2Templates(directory="templates")
-
 
 
 # ...
@@ -40,18 +38,22 @@ async def service_create(request):
     template = "/service/create.html"
 
     async with async_session() as session:
-        # ...
+        # ..
+        prv = await get_privileged_user(request, session)
+        # ..
         if request.method == "GET":
             # ..
-            obj_item = await owner_request(request, session, Item)
+            obj_item = await owner_prv(session, Item, prv)
             # ..
-            return templates.TemplateResponse(
-                template,
-                {
-                    "request": request,
-                    "obj_item": obj_item,
-                },
-            )
+            if obj_item:
+                return templates.TemplateResponse(
+                    template,
+                    {
+                        "request": request,
+                        "obj_item": obj_item,
+                    },
+                )
+            return RedirectResponse("/item/create")
         # ...
         if request.method == "POST":
             # ..
@@ -61,14 +63,14 @@ async def service_create(request):
             description = form["description"]
             file = form["file"]
             service_belongs = form["service_belongs"]
-            owner = request.user.user_id
+            owner = prv.id
             # ..
             if file.filename == "":
 
                 new = Service()
                 new.title = title
                 new.description = description
-                new.owner = request.user.user_id
+                new.owner = owner
                 # ..
                 new.service_belongs = int(service_belongs)
                 # ..
@@ -88,7 +90,7 @@ async def service_create(request):
             new = Service()
             new.title = title
             new.description = description
-            new.owner = request.user.user_id
+            new.owner = owner
             new.service_belongs = int(service_belongs)
             new.created_at = datetime.now()
             # ..

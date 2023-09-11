@@ -17,7 +17,7 @@ from mail.send import send_mail
 
 from options_select.opt_slc import (
     for_id,
-    owner_request,
+    owner_prv,
     all_total,
     schedule_sv,
     srv_sch_user,
@@ -25,11 +25,11 @@ from options_select.opt_slc import (
     details_schedule_service,
 )
 
+from auth_privileged.views import get_privileged_user
 from .models import Service, ScheduleService, MyEnum
 
 
 templates = Jinja2Templates(directory="templates")
-
 
 
 # ...
@@ -144,19 +144,24 @@ async def create_service(request):
     template = "/schedule/create_service.html"
 
     async with async_session() as session:
+        # ..
+        prv = await get_privileged_user(request, session)
+        # ..
         if request.method == "GET":
             # ..
-            obj_service = await owner_request(request, session, Service)
+            obj_service = await owner_prv(session, Service, prv)
             objects = list(MyEnum)
             # ..
-            return templates.TemplateResponse(
-                template,
-                {
-                    "request": request,
-                    "obj_service": obj_service,
-                    "objects": objects,
-                },
-            )
+            if obj_service:
+                return templates.TemplateResponse(
+                    template,
+                    {
+                        "request": request,
+                        "obj_service": obj_service,
+                        "objects": objects,
+                    },
+                )
+            return RedirectResponse("/item/service/create")
         # ...
         if request.method == "POST":
             # ..
@@ -171,7 +176,7 @@ async def create_service(request):
             type_on = form["type_on"]
             sch_s_service_id = form["sch_s_service_id"]
             # ..
-            owner = request.user.user_id
+            owner = prv.id
             # ..
             number_on = datetime.strptime(str_date, settings.DATE)
             there_is = datetime.strptime(str_there_is, settings.DATE_T)

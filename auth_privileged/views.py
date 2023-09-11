@@ -82,10 +82,17 @@ async def prv_update(request):
     async with async_session() as session:
         # ..
         i = await for_id(session, User, id)
-        print(" i..", i)
         prv = await get_privileged_user(request, session)
+        print(" i..", i)
+        print(" i id..", i.id)
+        print(" type i..", type(i))
+        print(" type i id..", type(i.id))
         print(" prv..", prv)
-        # ..
+        print(" prv id..", prv.id)
+        print(" request.auth..", bool(request.auth))
+        print(" type prv..", type(prv))
+        print(" type prv id..", type(prv.id))
+        # ..request.auth
         context = {
             "request": request,
             "i": i,

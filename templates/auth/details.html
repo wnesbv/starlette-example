@@ -5,7 +5,11 @@
 {% block content %}
 
 <h1 class="lead my-3">detail user.. {{ i.email }}</h1>
+
+{% if request.prv.prv_id %}
 <sup class="my-3">detail prv id.. {{ request.prv.prv_id }}</sup>
+{% endif %}
+
 <div class="card p-3">
 
     <ul class="card-header list-group list-group-horizontal">

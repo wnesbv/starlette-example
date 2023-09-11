@@ -46,12 +46,12 @@ routes = [
         methods=["GET"],
     ),
     # ..
-    Route("/search/", item.search, methods=["GET", "POST"]),
+    Route("/search", item.search, methods=["GET", "POST"]),
     # ..
     Route("/list", item.item_list),
     Route("/details/{id:int}", item.item_details),
 
-    Route("/create/", item.item_create, methods=["GET", "POST"]),
+    Route("/create", item.item_create, methods=["GET", "POST"]),
     Route("/update/{id:int}", item.item_update, methods=["GET", "POST"]),
     Route("/delete/{id:int}", item.item_delete, methods=["GET", "POST"]),
     # ..
@@ -63,7 +63,7 @@ routes = [
     # ..
     Route("/service/list", service.service_list),
     Route("/service/details/{id:int}", service.service_details),
-    Route("/service/create/", service.service_create, methods=["GET", "POST"]),
+    Route("/service/create", service.service_create, methods=["GET", "POST"]),
     Route("/service/update/{id:int}", service.service_update, methods=["GET", "POST"]),
     Route("/service/delete/{id:int}", service.service_delete, methods=["GET", "POST"]),
     # ..
@@ -98,7 +98,7 @@ routes = [
     ),
     # ...
     Route(
-        "/schedule-service/create/",
+        "/schedule-service/create",
         schedule_service.create_service,
         methods=["GET", "POST"],
     ),

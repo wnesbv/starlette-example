@@ -101,6 +101,12 @@ async def user_update(request):
     async with async_session() as session:
         # ..
         i = await for_id(session, User, id)
+        print(" i..", i)
+        print(" i id..", i.id)
+        print(" user_id..", request.user.user_id)
+        print(" type i..", type(i))
+        print(" type i id..", type(i.id))
+        print(" type user_id..", type(request.user.user_id))
         # ..
         context = {
             "request": request,

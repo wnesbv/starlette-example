@@ -15,14 +15,17 @@ from mail.send import send_mail
 from account.models import User
 
 from options_select.opt_slc import for_id, item_comment, and_owner_request, owner_request
+
 from options_select.csv_import import import_csv
 from options_select.csv_export import export_csv
+
+from auth_privileged.views import get_privileged_user
 
 from .models import Item, Service, Rent
 from config.settings import BASE_DIR
 
-templates = Jinja2Templates(directory="templates")
 
+templates = Jinja2Templates(directory="templates")
 
 
 async def export_item_csv(request):
@@ -40,7 +43,6 @@ async def export_item_csv(request):
                 return RedirectResponse(f"/static/csv/{user}/export_csv.csv")
             # ..
     await engine.dispose()
-
 
 
 async def import_item_csv(request):
@@ -82,6 +84,9 @@ async def item_create(request):
     template = "/item/create.html"
 
     async with async_session() as session:
+        # ..
+        prv = await get_privileged_user(request, session)
+        # ..
         if request.method == "GET":
             response = templates.TemplateResponse(
                 template,
@@ -89,9 +94,9 @@ async def item_create(request):
                     "request": request,
                 },
             )
-            if not request.user.is_authenticated:
+            if request.auth is False:
                 response = RedirectResponse(
-                    "/account/login",
+                    "/privileged/login",
                     status_code=302,
                 )
             return response
@@ -103,7 +108,7 @@ async def item_create(request):
             title = form["title"]
             description = form["description"]
             file = form["file"]
-            owner = request.user.user_id
+            owner = prv.id
             # ..
             if file.filename == "":
                 new = Item()
