@@ -53,7 +53,7 @@ class JwtBackend(AuthenticationBackend):
         )
 
         return (
-            AuthCredentials(["authenticated"]),
+            AuthCredentials(),
             JwtUser(
                 username=payload["name"],
                 user_id=payload["user_id"],

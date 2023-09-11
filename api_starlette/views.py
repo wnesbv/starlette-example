@@ -29,7 +29,7 @@ from .schemas import FormCreate, FormUpdate, ListItem, DBItem
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def item_create(request):
     # ..
@@ -104,7 +104,7 @@ async def item_create(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def item_update(request):
     # ..

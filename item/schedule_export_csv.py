@@ -34,7 +34,7 @@ from .models import DumpService
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def export_csv(request):
     # ..
@@ -115,7 +115,7 @@ async def export_csv(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def dump_csv(request):
     # ..
@@ -140,7 +140,7 @@ async def dump_csv(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def delete_user_csv(request):
     # ..

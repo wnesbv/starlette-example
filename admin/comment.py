@@ -28,7 +28,7 @@ from .opt_slc import in_admin
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def cmt_item_create(request):
     # ..
@@ -79,7 +79,7 @@ async def cmt_item_create(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def cmt_service_create(request):
     # ..
@@ -128,7 +128,7 @@ async def cmt_service_create(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def cmt_rent_create(request):
     # ..
@@ -180,7 +180,7 @@ async def cmt_rent_create(request):
 # update
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def cmt_item_update(request):
     id = request.path_params["id"]
@@ -229,7 +229,7 @@ async def cmt_item_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def cmt_service_update(request):
     id = request.path_params["id"]
@@ -277,7 +277,7 @@ async def cmt_service_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def cmt_rent_update(request):
     id = request.path_params["id"]
@@ -325,7 +325,7 @@ async def cmt_rent_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def cmt_delete(request):
     id = request.path_params["id"]

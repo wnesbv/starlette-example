@@ -20,7 +20,7 @@ from .models import ReserveServicerFor
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def create_reserve_service(request):
     # ..
@@ -80,7 +80,7 @@ async def create_reserve_service(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def reserve_list_service(request):
     # ..
@@ -99,7 +99,7 @@ async def reserve_list_service(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def reserve_detail_service(request):
     # ..
@@ -121,7 +121,7 @@ async def reserve_detail_service(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def reserve_update_service(request):
     # ..
@@ -168,7 +168,7 @@ async def reserve_update_service(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def delete_rsf(request):
     # ..

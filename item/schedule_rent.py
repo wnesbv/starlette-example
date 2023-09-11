@@ -31,7 +31,7 @@ from .models import Rent, ScheduleRent
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def list_rent(request):
     template = "/schedule/list_rent.html"
@@ -47,7 +47,7 @@ async def list_rent(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def details_rent(request):
     # ..
@@ -85,7 +85,7 @@ async def details_rent(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def create_rent(request):
     # ..
@@ -142,7 +142,7 @@ async def create_rent(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def update_rent(request):
     # ..
@@ -202,7 +202,7 @@ async def update_rent(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def schedule_delete(request):
     # ..

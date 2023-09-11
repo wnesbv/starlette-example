@@ -29,7 +29,7 @@ from . import img
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def i_list(request):
     # ..
@@ -56,7 +56,7 @@ async def i_list(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def i_details(request):
     # ..
@@ -101,7 +101,7 @@ async def i_details(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def i_create(request):
     # ..
@@ -175,7 +175,7 @@ async def i_create(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def i_update(request):
     # ..
@@ -263,7 +263,7 @@ async def i_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def i_delete(request):
     # ..

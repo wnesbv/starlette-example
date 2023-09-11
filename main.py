@@ -1,3 +1,4 @@
+
 import uvicorn
 
 from sqlalchemy.future import select
@@ -29,7 +30,9 @@ from auth_privileged.auth import PrivilegedMiddleware
 
 
 templates = Jinja2Templates(directory="templates")
-middleware=[
+
+
+middleware = [
     Middleware(
         AuthenticationMiddleware,
         backend=JwtBackend(
@@ -46,6 +49,7 @@ middleware=[
     ),
 ]
 
+
 app = Starlette(
     debug=settings.DEBUG,
     routes=routes,
@@ -53,7 +57,7 @@ app = Starlette(
     # on_startup=[on_app_startup],
     # on_shutdown=[on_app_shutdown],
     # ...
-    middleware=middleware
+    middleware=middleware,
 )
 
 

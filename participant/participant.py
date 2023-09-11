@@ -17,7 +17,7 @@ from .models import PersonParticipant
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def participant_create(request):
     # ..
@@ -66,7 +66,7 @@ async def participant_create(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def participant_list(request):
     id = request.path_params["id"]
@@ -93,7 +93,7 @@ async def participant_list(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def participant_add(request):
     id = request.path_params["id"]
@@ -115,7 +115,7 @@ async def participant_add(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def participant_delete(request):
     # ..

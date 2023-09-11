@@ -32,7 +32,7 @@ from .opt_slc import (
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def sch_list(request):
     # ..
@@ -53,7 +53,7 @@ async def sch_list(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def user_list(request):
     # ..
@@ -79,7 +79,7 @@ async def user_list(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def srv_list(request):
     # ..
@@ -105,7 +105,7 @@ async def srv_list(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def all_user_sch_list(request):
     # ..
@@ -157,7 +157,7 @@ async def all_user_sch_list(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def srv_id_sch_id(request):
     # ..
@@ -207,7 +207,7 @@ async def srv_id_sch_id(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def details(request):
     # ..
@@ -230,7 +230,7 @@ async def details(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def sch_create(request):
     template = "/admin/schedule_service/create.html"
@@ -294,7 +294,7 @@ async def sch_create(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def sch_update(request):
     # ..
@@ -359,7 +359,7 @@ async def sch_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def sch_delete(request):
     # ..
@@ -396,7 +396,7 @@ async def sch_delete(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def delete_service_csv(request):
     async with async_session() as session:

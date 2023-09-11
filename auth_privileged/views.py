@@ -72,7 +72,7 @@ async def get_privileged_user(request, session):
         return result
 # ..
 
-@requires("auth_prv", redirect="prv__login")
+# ...
 async def prv_update(request):
     # ..
     basewidth = 256
@@ -161,7 +161,7 @@ async def prv_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def prv_delete(request):
     # ..

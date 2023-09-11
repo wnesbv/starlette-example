@@ -36,7 +36,7 @@ async def group_list(request):
 
 
 # ..
-@requires("authenticated", redirect="user_login")
+
 # ..
 async def group_details(request):
     # ..
@@ -67,7 +67,7 @@ async def group_details(request):
         await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ..
 async def group_create(request):
     # ..
@@ -115,7 +115,7 @@ async def group_create(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ..
 async def group_update(request):
     # ..
@@ -159,7 +159,7 @@ async def group_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ..
 async def group_delete(request):
     # ..

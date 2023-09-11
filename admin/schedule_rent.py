@@ -30,7 +30,7 @@ from .opt_slc import (
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def rent_list(request):
     # ..
@@ -54,7 +54,7 @@ async def rent_list(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def rent_details(request):
     # ..
@@ -94,7 +94,7 @@ async def rent_details(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def item_create(request):
     # ..
@@ -153,7 +153,7 @@ async def item_create(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def item_update(request):
     # ..
@@ -200,7 +200,7 @@ async def item_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def item_delete(request):
     # ..
@@ -237,7 +237,7 @@ async def item_delete(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def delete_rent_csv(request):
     async with async_session() as session:

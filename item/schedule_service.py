@@ -31,7 +31,7 @@ from .models import Service, ScheduleService, MyEnum
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def list_service(request):
     # ..
@@ -51,7 +51,7 @@ async def list_service(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def list_service_id(request):
     # ..
@@ -70,7 +70,7 @@ async def list_service_id(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def details_service(request):
     # ..
@@ -114,7 +114,7 @@ async def details_service(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def details(request):
     # ..
@@ -137,7 +137,7 @@ async def details(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def create_service(request):
     # ..
@@ -200,7 +200,7 @@ async def create_service(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def update_service(request):
     # ..
@@ -266,7 +266,7 @@ async def update_service(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def schedule_delete(request):
     # ..

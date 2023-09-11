@@ -91,8 +91,6 @@ async def user_register(request):
         return templates.TemplateResponse(template, {"request": request})
     await engine.dispose()
 
-
-@requires("authenticated", redirect="user_login")
 # ...
 async def user_update(request):
     # ..
@@ -186,7 +184,7 @@ async def user_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def user_delete(request):
     # ..

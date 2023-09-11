@@ -18,7 +18,7 @@ from .models import Comment
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def cmt_item_create(request):
     # ..
@@ -68,7 +68,7 @@ async def cmt_item_create(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def cmt_rent_create(request):
     # ..
@@ -118,7 +118,7 @@ async def cmt_rent_create(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def cmt_service_create(request):
     # ..
@@ -168,7 +168,7 @@ async def cmt_service_create(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def cmt_item_update(request):
     # ..
@@ -215,7 +215,7 @@ async def cmt_item_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def cmt_rent_update(request):
     # ..
@@ -262,7 +262,7 @@ async def cmt_rent_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def cmt_service_update(request):
     # ..
@@ -309,7 +309,7 @@ async def cmt_service_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def cmt_delete(request):
     # ..

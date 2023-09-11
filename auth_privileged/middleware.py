@@ -50,7 +50,7 @@ class PrivilegedBackend(AuthenticationBackend):
         )
 
         return (
-            AuthCredentials(["auth_prv"]),
+            AuthCredentials(),
             PrivilegedUser(
                 token=token,
                 payload=payload,

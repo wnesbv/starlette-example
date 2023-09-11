@@ -248,7 +248,7 @@ class ChannelTwo(WebSocketEndpoint):
 
 
 # ..
-@requires("authenticated", redirect="user_login")
+
 # ..
 async def all_chat(request):
 

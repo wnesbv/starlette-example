@@ -25,7 +25,7 @@ from . import img
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def slider_list(request):
     template = "/admin/slider/list.html"
@@ -50,7 +50,7 @@ async def slider_list(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def slider_details(request):
     # ..
@@ -117,7 +117,7 @@ async def slider_create(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def slider_update(request):
     # ..
@@ -166,7 +166,7 @@ async def slider_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def slider_file_update(
     request
@@ -221,7 +221,7 @@ async def slider_file_update(
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def slider_delete(request):
     # ..
@@ -265,7 +265,7 @@ async def slider_delete(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def slider_file_delete(
     request

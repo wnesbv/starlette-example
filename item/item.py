@@ -24,7 +24,7 @@ from config.settings import BASE_DIR
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 async def export_item_csv(request):
     async with async_session() as session:
         # ..
@@ -42,7 +42,7 @@ async def export_item_csv(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 async def import_item_csv(request):
     # ..
     template = "/item/item_import_csv.html"
@@ -146,7 +146,7 @@ async def item_create(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def item_update(request):
     # ..
@@ -243,7 +243,7 @@ async def item_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def item_delete(request):
     # ..

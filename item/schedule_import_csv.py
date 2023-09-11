@@ -27,7 +27,7 @@ root_directory = BASE_DIR / "static/upload"
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def import_sch_csv(request):
 

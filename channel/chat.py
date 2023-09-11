@@ -15,7 +15,7 @@ from .models import MessageChat
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ..
 async def chat_update(request):
     # ..
@@ -58,7 +58,7 @@ async def chat_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ..
 async def chat_delete(request):
 

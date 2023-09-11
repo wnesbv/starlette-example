@@ -29,7 +29,7 @@ from .models import ReserveRentFor
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def reserve_add(request):
     # ..
@@ -86,7 +86,7 @@ async def period_reserve(time_start, time_end):
 
 
 # ..ITEM
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def reserve_choice_item(request):
     # ..
@@ -125,7 +125,7 @@ async def reserve_choice_item(request):
 
 
 # ..RENT
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def reserve_choice_rent(request):
     # ..
@@ -183,7 +183,7 @@ async def reserve_choice_rent(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def reserve_list_rent(request):
     # ..
@@ -205,7 +205,7 @@ async def reserve_list_rent(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def reserve_detail_rent(request):
     # ..
@@ -227,7 +227,7 @@ async def reserve_detail_rent(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def reserve_update_rent(request):
     # ..
@@ -282,7 +282,7 @@ async def reserve_update_rent(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def delete(request):
     # ..

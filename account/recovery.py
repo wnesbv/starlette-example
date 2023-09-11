@@ -1,4 +1,3 @@
-
 from sqlalchemy.future import select
 
 import jwt
@@ -21,21 +20,16 @@ from .token import encode_reset_password, decode_reset_password
 templates = Jinja2Templates(directory="templates")
 
 
-async def reset_password(
-    request
-):
-
+async def reset_password(request):
+    # ..
     template = "/auth/reset-password.html"
 
     async with async_session() as session:
-
         if request.method == "POST":
             form = await request.form()
             email = form["email"]
 
-            result = await session.execute(
-                select(User).where(User.email == email)
-            )
+            result = await session.execute(select(User).where(User.email == email))
             user = result.scalars().first()
 
             if not user:
@@ -46,30 +40,22 @@ async def reset_password(
             token = await encode_reset_password(email)
             verify = email
             await verify_mail(
-                f"Follow the link, confirm your email - http://127.0.0.1:8000/account/reset-password-confirm?token={token}", verify
+                f"Follow the link, confirm your email - http://127.0.0.1:8000/account/reset-password-confirm?token={token}",
+                verify,
             )
 
             response = Response("Ok..! Link to password recovery. Check email")
             return response
 
-        return templates.TemplateResponse(
-            template, {"request": request}
-        )
+        return templates.TemplateResponse(template, {"request": request})
     await engine.dispose()
 
 
-async def reset_password_verification(
-    request
-):
-
+async def reset_password_verification(request):
     async with async_session() as session:
-
         email = await decode_reset_password(request)
-
         # ...
-        result = await session.execute(
-            select(User).where(User.email == email)
-        )
+        result = await session.execute(select(User).where(User.email == email))
         user = result.scalars().first()
         # ...
 
@@ -79,7 +65,6 @@ async def reset_password_verification(
                 "Недействительный пользователь..! Пожалуйста, создайте учетную запись",
             )
 
-
         form = await request.form()
         user.password = pbkdf2_sha1.hash(form["password"])
         await session.commit()
@@ -87,9 +72,7 @@ async def reset_password_verification(
     await engine.dispose()
 
 
-async def reset_password_confirm(
-    request
-):
+async def reset_password_confirm(request):
     template = "auth/reset-password-confirm.html"
     if request.method == "GET":
         return templates.TemplateResponse(

@@ -32,7 +32,7 @@ from options_select.opt_slc import (
 templates = Jinja2Templates(directory="templates")
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def service_create(request):
     # ..
@@ -110,7 +110,7 @@ async def service_create(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def service_update(request):
     # ..
@@ -210,7 +210,7 @@ async def service_update(request):
     await engine.dispose()
 
 
-@requires("authenticated", redirect="user_login")
+
 # ...
 async def service_delete(request):
     # ..
