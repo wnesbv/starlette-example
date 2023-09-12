@@ -43,6 +43,7 @@ routes = [
         "/login",
         user_login,
         methods=["GET", "POST", "OPTIONS"],
+        name="user_to_login",
     ),
     Route(
         "/logout",

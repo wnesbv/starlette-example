@@ -1,8 +1,7 @@
-
 from pathlib import Path
 from datetime import datetime, timedelta
 
-import os, jwt, json, string, secrets
+import os, jwt, json, string, secrets, functools
 
 from sqlalchemy import update as sqlalchemy_update, delete
 
@@ -14,7 +13,6 @@ from starlette.exceptions import HTTPException
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 from starlette.status import HTTP_400_BAD_REQUEST
-from starlette.authentication import requires
 
 from db_config.settings import settings
 from db_config.storage_config import engine, async_session
@@ -52,13 +50,16 @@ async def get_token_privileged(request):
             prv_key = payload["prv_key"]
             return prv_key
 
+
 async def get_privileged(request, session):
     token = await get_token_privileged(request)
     stmt = await session.execute(
-        select(Privileged).where(Privileged.prv_key == token)
+        select(Privileged)
+        .where(Privileged.prv_key == token)
     )
     result = stmt.scalars().first()
     return result
+
 
 async def get_privileged_user(request, session):
     while True:
@@ -66,12 +67,30 @@ async def get_privileged_user(request, session):
         if not prv:
             break
         stmt = await session.execute(
-            select(User).where(User.id == prv.prv_in)
+            select(User)
+            .where(User.id == prv.prv_in)
+            .where(User.privileged == True)
         )
         result = stmt.scalars().first()
         return result
+
+
+def privileged():
+    def decorator(func):
+        @functools.wraps(func)
+        async def wrapper(request, *a, **ka):
+            async with async_session() as session:
+                user = await get_privileged_user(request, session)
+            await engine.dispose()
+            if user:
+                return await func(request, *a, **ka)
+            return RedirectResponse("/privileged/login")
+        return wrapper
+    return decorator
 # ..
 
+
+@privileged()
 # ...
 async def prv_update(request):
     # ..
@@ -168,7 +187,7 @@ async def prv_update(request):
     await engine.dispose()
 
 
-
+@privileged()
 # ...
 async def prv_delete(request):
     # ..
@@ -206,19 +225,28 @@ async def prv_login(request):
 
     async with async_session() as session:
         if request.method == "POST":
+            # ..
             form = await request.form()
+            # ..
             email = form["email"]
             password = form["password"]
             # ..
-            result = await session.execute(select(User).where(User.email == email))
-            user = result.scalars().first()
-            # ..
             stmt = await session.execute(
-                select(Privileged).where(Privileged.prv_in == user.id)
+                select(User)
+                .where(User.email == email)
+                .where(User.privileged == True)
             )
-            prv = stmt.scalars().first()
+            user = stmt.scalars().first()
             # ..
             if user:
+                # ..
+                stmt = await session.execute(
+                    select(Privileged)
+                    .where(Privileged.prv_in == user.id)
+                )
+                prv = stmt.scalars().first()
+                # ..
+
                 if not user.email_verified:
                     raise HTTPException(
                         401,
@@ -249,11 +277,11 @@ async def prv_login(request):
                         "prv_key": prv_key,
                         "prv_id": user.id,
                     }
-                    privileged = jwt.encode(payload, key, algorithm)
+                    token = jwt.encode(payload, key, algorithm)
                     response = RedirectResponse("/", status_code=302)
                     response.set_cookie(
                         "privileged",
-                        privileged,
+                        token,
                         path="/",
                         httponly=True,
                     )
@@ -271,33 +299,33 @@ async def prv_login(request):
     await engine.dispose()
 
 
+@privileged()
+# ...
 async def prv_logout(request):
     # ..
     template = "/auth/logout.html"
 
+    if request.method == "GET":
+        return templates.TemplateResponse(
+            template, {"request": request}
+        )
+    # ...
     if request.method == "POST":
-        if request.cookies.get("privileged"):
-            token = request.cookies.get("privileged")
-            if token:
-                payload = jwt.decode(token, key, algorithm)
-                prv_key = payload["prv_key"]
-                async with async_session() as session:
-                    stmt = await session.execute(
-                        select(Privileged).where(Privileged.prv_key == prv_key)
-                    )
-                    prv = stmt.scalars().first()
-                    query = delete(Privileged).where(Privileged.id == prv.id)
-                    await session.execute(query)
-                    await session.commit()
-                await engine.dispose()
-                # ..
-                response = RedirectResponse("/", status_code=302)
-                response.delete_cookie(key="privileged", path="/")
-                # ..
-                return response
-
-        return templates.TemplateResponse(template, {"request": request})
-    return templates.TemplateResponse(template, {"request": request})
+        prv_key = await get_token_privileged(request)
+        async with async_session() as session:
+            stmt = await session.execute(
+                select(Privileged).where(Privileged.prv_key == prv_key)
+            )
+            prv = stmt.scalars().first()
+            query = delete(Privileged).where(Privileged.id == prv.id)
+            await session.execute(query)
+            await session.commit()
+        await engine.dispose()
+        # ..
+        response = RedirectResponse("/", status_code=302)
+        response.delete_cookie(key="privileged", path="/")
+        # ..
+        return response
 # ..
 
 
@@ -342,6 +370,8 @@ async def resend_email(request):
     await engine.dispose()
 
 
+@privileged()
+# ...
 async def prv_list(request):
     template = "/auth/list.html"
 
@@ -360,6 +390,8 @@ async def prv_list(request):
     await engine.dispose()
 
 
+@privileged()
+# ...
 async def prv_detail(request):
     # ..
     id = request.path_params["id"]

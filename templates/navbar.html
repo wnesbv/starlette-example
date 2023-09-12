@@ -249,7 +249,12 @@
                         <li>
                             <span class="dropdown-item">
                                 <i class="bi bi-person-check"></i>
+                                {% if request.user.email %}
                                 {{ request.user.email}}
+                                {% endif %}
+                                {% if request.prv.prv_id %}
+                                {{ request.prv.prv_id}}
+                                {% endif %}
                             </span>
                         </li>
                         <li>

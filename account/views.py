@@ -1,8 +1,8 @@
 
 from datetime import datetime, timedelta
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 
-import os, jwt
+import os, jwt, functools
 
 from sqlalchemy import update as sqlalchemy_update, delete
 
@@ -10,12 +10,10 @@ from sqlalchemy.future import select
 
 from passlib.hash import pbkdf2_sha1
 
-from starlette.datastructures import UploadFile
 from starlette.exceptions import HTTPException
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 from starlette.status import HTTP_400_BAD_REQUEST
-from starlette.authentication import requires
 
 from db_config.settings import settings
 from db_config.storage_config import engine, async_session
@@ -33,6 +31,54 @@ algorithm = settings.JWT_ALGORITHM
 EMAIL_TOKEN_EXPIRY_MINUTES = settings.EMAIL_TOKEN_EXPIRY_MINUTES
 
 templates = Jinja2Templates(directory="templates")
+
+
+# ..
+async def get_token_visited(request):
+    if request.cookies.get("visited"):
+        token = request.cookies.get("visited")
+        if token:
+            payload = jwt.decode(token, key, algorithm)
+            email = payload["email"]
+            return email
+
+
+async def get_visited(request, session):
+    email = await get_token_visited(request)
+    stmt = await session.execute(
+        select(User)
+        .where(User.email == email)
+    )
+    result = stmt.scalars().first()
+    return result
+
+
+async def get_visited_user(request, session):
+    while True:
+        user = await get_visited(request, session)
+        if not user:
+            break
+        stmt = await session.execute(
+            select(User)
+            .where(User.email == user.email)
+        )
+        result = stmt.scalars().first()
+        return result
+
+
+def visited():
+    def decorator(func):
+        @functools.wraps(func)
+        async def wrapper(request, *a, **ka):
+            async with async_session() as session:
+                user = await get_visited_user(request, session)
+            await engine.dispose()
+            if user:
+                return await func(request, *a, **ka)
+            return RedirectResponse("/account/login")
+        return wrapper
+    return decorator
+# ..
 
 
 async def user_register(request):
@@ -91,6 +137,8 @@ async def user_register(request):
         return templates.TemplateResponse(template, {"request": request})
     await engine.dispose()
 
+
+@visited()
 # ...
 async def user_update(request):
     # ..
@@ -188,7 +236,6 @@ async def user_update(request):
             )
 
     await engine.dispose()
-
 
 
 # ...

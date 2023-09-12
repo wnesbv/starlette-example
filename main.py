@@ -34,15 +34,15 @@ templates = Jinja2Templates(directory="templates")
 
 middleware = [
     Middleware(
-        AuthenticationMiddleware,
-        backend=JwtBackend(
+        PrivilegedMiddleware,
+        backend=PrivilegedBackend(
             key=str(settings.SECRET_KEY),
             algorithm=settings.JWT_ALGORITHM,
         ),
     ),
     Middleware(
-        PrivilegedMiddleware,
-        backend=PrivilegedBackend(
+        AuthenticationMiddleware,
+        backend=JwtBackend(
             key=str(settings.SECRET_KEY),
             algorithm=settings.JWT_ALGORITHM,
         ),

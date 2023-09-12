@@ -19,7 +19,7 @@ from options_select.opt_slc import for_id, item_comment, and_owner_request, owne
 from options_select.csv_import import import_csv
 from options_select.csv_export import export_csv
 
-from auth_privileged.views import get_privileged_user
+from auth_privileged.views import get_privileged_user, privileged
 
 from .models import Item, Service, Rent
 from config.settings import BASE_DIR
@@ -78,6 +78,7 @@ async def import_item_csv(request):
     await engine.dispose()
 
 
+@privileged()
 async def item_create(request):
     # ..
     basewidth = 800
