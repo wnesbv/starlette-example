@@ -1,6 +1,4 @@
 
-from pathlib import Path
-
 from datetime import datetime
 
 import aiofiles
@@ -8,7 +6,6 @@ from aiocsv import AsyncDictReader
 
 from sqlalchemy import delete
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
@@ -16,8 +13,10 @@ from config.settings import BASE_DIR
 
 from db_config.settings import settings
 from db_config.storage_config import engine, async_session
+
 from options_select.opt_slc import sch_sv_user, sch_sv_id
 
+from auth_privileged.views import get_privileged_user, privileged
 from .models import ScheduleService
 
 
@@ -27,10 +26,10 @@ root_directory = BASE_DIR / "static/upload"
 templates = Jinja2Templates(directory="templates")
 
 
-
+@privileged()
 # ...
 async def import_sch_csv(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/item/schedule/import_csv.html"
 

@@ -5,7 +5,6 @@ import json
 
 from sqlalchemy import update as sqlalchemy_update, delete, and_
 from sqlalchemy.future import select
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
@@ -25,12 +24,13 @@ from options_select.opt_slc import (
     service_comment,
     and_owner_request,
 )
-from auth_privileged.views import get_privileged_user
+from auth_privileged.views import get_privileged_user, privileged
 
 
 templates = Jinja2Templates(directory="templates")
 
 
+@privileged()
 # ...
 async def service_create(request):
     # ..
@@ -112,7 +112,7 @@ async def service_create(request):
     await engine.dispose()
 
 
-
+@privileged()
 # ...
 async def service_update(request):
     # ..
@@ -212,7 +212,7 @@ async def service_update(request):
     await engine.dispose()
 
 
-
+@privileged()
 # ...
 async def service_delete(request):
     # ..
@@ -255,6 +255,7 @@ async def service_delete(request):
 
 
 async def service_list(request):
+    # ..
     template = "/service/list.html"
 
     async with async_session() as session:
@@ -274,7 +275,7 @@ async def service_list(request):
 
 
 async def service_details(request):
-
+    # ..
     id = request.path_params["id"]
     template = "/service/details.html"
 

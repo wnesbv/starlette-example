@@ -1,10 +1,10 @@
+
 from pathlib import Path
 from datetime import datetime
 
 from sqlalchemy import update as sqlalchemy_update, delete
 from sqlalchemy.future import select
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
@@ -28,6 +28,8 @@ from config.settings import BASE_DIR
 templates = Jinja2Templates(directory="templates")
 
 
+@privileged()
+# ...
 async def export_item_csv(request):
     async with async_session() as session:
         # ..
@@ -45,6 +47,8 @@ async def export_item_csv(request):
     await engine.dispose()
 
 
+@privileged()
+# ...
 async def import_item_csv(request):
     # ..
     template = "/item/item_import_csv.html"
@@ -79,6 +83,7 @@ async def import_item_csv(request):
 
 
 @privileged()
+# ...
 async def item_create(request):
     # ..
     basewidth = 800
@@ -152,7 +157,7 @@ async def item_create(request):
     await engine.dispose()
 
 
-
+@privileged()
 # ...
 async def item_update(request):
     # ..
@@ -249,7 +254,7 @@ async def item_update(request):
     await engine.dispose()
 
 
-
+@privileged()
 # ...
 async def item_delete(request):
     # ..
@@ -289,6 +294,7 @@ async def item_delete(request):
 
 
 async def item_list(request):
+    # ..
     template = "/item/list.html"
 
     async with async_session() as session:

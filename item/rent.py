@@ -6,7 +6,6 @@ import json
 from sqlalchemy import update as sqlalchemy_update, delete
 from sqlalchemy.future import select
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
@@ -21,15 +20,15 @@ from options_select.opt_slc import (
     for_id,
     rent_comment,
     and_owner_request,
-    id_fle_delete,
 )
-from auth_privileged.views import get_privileged_user
+from auth_privileged.views import get_privileged_user, privileged
 from .models import Item, Rent, ScheduleRent
 
 
 templates = Jinja2Templates(directory="templates")
 
 
+@privileged()
 # ...
 async def rent_create(request):
     # ..
@@ -112,6 +111,7 @@ async def rent_create(request):
     await engine.dispose()
 
 
+@privileged()
 # ...
 async def rent_update(request):
     # ..
@@ -211,6 +211,7 @@ async def rent_update(request):
     await engine.dispose()
 
 
+@privileged()
 # ...
 async def rent_delete(request):
     # ..

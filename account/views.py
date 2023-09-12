@@ -238,6 +238,7 @@ async def user_update(request):
     await engine.dispose()
 
 
+@visited()
 # ...
 async def user_delete(request):
     # ..
@@ -270,7 +271,6 @@ async def user_delete(request):
     await engine.dispose()
 
 
-# ...
 async def user_login(request):
     # ..
     template = "/auth/login.html"
@@ -303,11 +303,11 @@ async def user_login(request):
                         "name": user.name,
                         "email": user.email,
                     }
-                    visited = jwt.encode(payload, key, algorithm)
+                    token = jwt.encode(payload, key, algorithm)
                     response = RedirectResponse("/", status_code=302)
                     response.set_cookie(
                         "visited",
-                        visited,
+                        token,
                         path="/",
                         httponly=True,
                     )
@@ -325,7 +325,10 @@ async def user_login(request):
     await engine.dispose()
 
 
+@visited()
+# ...
 async def user_logout(request):
+    # ..
     template = "/auth/logout.html"
 
     if request.method == "POST":
@@ -381,6 +384,7 @@ async def resend_email(request):
 
 
 async def user_list(request):
+    # ..
     template = "/auth/list.html"
 
     async with async_session() as session:

@@ -1,13 +1,10 @@
-from pathlib import Path
 
 from datetime import datetime
 
 import json
 
 from sqlalchemy import update as sqlalchemy_update, delete, and_
-from sqlalchemy.future import select
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
@@ -24,7 +21,7 @@ from options_select.opt_slc import (
     and_owner_request,
     details_schedule_rent,
 )
-from auth_privileged.views import get_privileged_user
+from auth_privileged.views import get_privileged_user, privileged
 
 from .models import Rent, ScheduleRent
 
@@ -32,6 +29,7 @@ from .models import Rent, ScheduleRent
 templates = Jinja2Templates(directory="templates")
 
 
+@privileged()
 # ...
 async def list_rent(request):
     template = "/schedule/list_rent.html"
@@ -47,6 +45,7 @@ async def list_rent(request):
     await engine.dispose()
 
 
+@privileged()
 # ...
 async def details_rent(request):
     # ..
@@ -84,6 +83,7 @@ async def details_rent(request):
     await engine.dispose()
 
 
+@privileged()
 # ...
 async def create_rent(request):
     # ..
@@ -145,6 +145,7 @@ async def create_rent(request):
     await engine.dispose()
 
 
+@privileged()
 # ...
 async def update_rent(request):
     # ..
@@ -204,6 +205,7 @@ async def update_rent(request):
     await engine.dispose()
 
 
+@privileged()
 # ...
 async def schedule_delete(request):
     # ..

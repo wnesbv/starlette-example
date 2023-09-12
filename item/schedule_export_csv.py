@@ -27,14 +27,14 @@ from options_select.opt_slc import (
     schedule_sv,
     dump_schedule_service,
 )
-
+from auth_privileged.views import get_privileged_user, privileged
 from .models import DumpService
 
 
 templates = Jinja2Templates(directory="templates")
 
 
-
+@privileged()
 # ...
 async def export_csv(request):
     # ..
@@ -115,7 +115,7 @@ async def export_csv(request):
     await engine.dispose()
 
 
-
+@privileged()
 # ...
 async def dump_csv(request):
     # ..
@@ -140,7 +140,7 @@ async def dump_csv(request):
     await engine.dispose()
 
 
-
+@privileged()
 # ...
 async def delete_user_csv(request):
     # ..

@@ -25,13 +25,14 @@ from options_select.opt_slc import (
     details_schedule_service,
 )
 
-from auth_privileged.views import get_privileged_user
+from auth_privileged.views import get_privileged_user, privileged
 from .models import Service, ScheduleService, MyEnum
 
 
 templates = Jinja2Templates(directory="templates")
 
 
+@privileged()
 # ...
 async def list_service(request):
     # ..
@@ -51,6 +52,7 @@ async def list_service(request):
     await engine.dispose()
 
 
+@privileged()
 # ...
 async def list_service_id(request):
     # ..
@@ -69,6 +71,7 @@ async def list_service_id(request):
     await engine.dispose()
 
 
+@privileged()
 # ...
 async def details_service(request):
     # ..
@@ -112,6 +115,7 @@ async def details_service(request):
     await engine.dispose()
 
 
+@privileged()
 # ...
 async def details(request):
     # ..
@@ -134,6 +138,7 @@ async def details(request):
     await engine.dispose()
 
 
+@privileged()
 # ...
 async def create_service(request):
     # ..
@@ -201,6 +206,7 @@ async def create_service(request):
     await engine.dispose()
 
 
+@privileged()
 # ...
 async def update_service(request):
     # ..
@@ -264,6 +270,7 @@ async def update_service(request):
     await engine.dispose()
 
 
+@privileged()
 # ...
 async def schedule_delete(request):
     # ..
