@@ -12,9 +12,8 @@ from .auth import AuthenticationBackend
 
 class PrivilegedUser(BaseUser):
     def __init__(
-        self, token: str, prv_id: int, prv_key: int, payload: dict) -> None:
+        self, token: str, prv_key: int, payload: dict) -> None:
         self.token = token
-        self.prv_id = prv_id
         self.prv_key = prv_key
         self.payload = payload
 
@@ -29,7 +28,7 @@ class PrivilegedUser(BaseUser):
 
     def __str__(self) -> str:
         return (
-            f"prv: prv_key={self.prv_key}, prv_id={self.prv_id}"
+            f"prv: prv_key={self.prv_key}"
         )
 
 
@@ -56,7 +55,6 @@ class PrivilegedBackend(AuthenticationBackend):
             PrivilegedUser(
                 token=token,
                 payload=payload,
-                prv_id=payload["prv_id"],
                 prv_key=payload["prv_key"],
             ),
         )

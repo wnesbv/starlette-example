@@ -146,7 +146,6 @@ async def prv_login(request):
                     # ..
                     payload = {
                         "prv_key": prv_key,
-                        "prv_id": user.id,
                     }
                     token = jwt.encode(payload, key, algorithm)
                     response = RedirectResponse("/", status_code=302)
@@ -212,15 +211,7 @@ async def prv_update(request):
         # ..
         i = await for_id(session, User, id)
         prv = await get_privileged_user(request, session)
-        print(" i..", i)
-        print(" i id..", i.id)
-        print(" type i..", type(i))
-        print(" type i id..", type(i.id))
-        print(" prv..", prv)
-        print(" prv id..", prv.id)
-        print(" type prv..", type(prv))
-        print(" type prv id..", type(prv.id))
-        # ...
+        # ..
         if request.method == "GET":
             if prv == i:
                 context = {
@@ -397,14 +388,15 @@ async def prv_detail(request):
     async with async_session() as session:
         # ..
         i = await for_id(session, User, id)
+        prv = await get_privileged_user(request, session)
         # ..
-        context = {
-            "request": request,
-            "i": i,
-        }
-        # ...
         if request.method == "GET":
             if i:
+                context = {
+                    "request": request,
+                    "i": i,
+                    "prv": prv,
+                }
                 return templates.TemplateResponse(template, context)
-        return RedirectResponse("/account/list", status_code=302)
+            return RedirectResponse("/account/list", status_code=302)
     await engine.dispose()

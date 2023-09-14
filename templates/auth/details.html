@@ -6,8 +6,8 @@
 
 <h1 class="lead my-3">detail user.. {{ i.email }}</h1>
 
-{% if request.prv.prv_id %}
-<sup class="my-3">detail prv id.. {{ request.prv.prv_id }}</sup>
+{% if request.prv.prv_key %}
+<sup class="my-3">detail prv key.. {{ request.prv.prv_key }}</sup>
 {% endif %}
 
 <div class="card p-3">
@@ -52,7 +52,7 @@
 </div>
 {% endif %}
 
-{% if request.prv.prv_id == i.id %}
+{% if request.prv.prv_key and prv.id == i.id %}
 <div class="card mt-2">
     <div class="card-header">
         <a class="btn btn-outline-primary btn-sm me-2" href="/privileged/update/{{ i.id }}" role="button">
