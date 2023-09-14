@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import os, jwt, json, string, secrets, functools
 
-from sqlalchemy import update as sqlalchemy_update, delete
+from sqlalchemy import update as sqlalchemy_update, delete, true, and_
 
 from sqlalchemy.future import select
 
@@ -22,6 +22,7 @@ from options_select.opt_slc import for_id
 from admin import img
 
 from account.models import User
+
 from auth_privileged.models import Privileged
 
 from mail.verify import verify_mail
@@ -67,9 +68,7 @@ async def get_privileged_user(request, session):
         if not prv:
             break
         stmt = await session.execute(
-            select(User)
-            .where(User.id == prv.prv_in)
-            .where(User.privileged == True)
+            select(User).where(and_(User.id == prv.prv_in, User.privileged, true()))
         )
         result = stmt.scalars().first()
         return result
@@ -108,18 +107,16 @@ async def prv_update(request):
         print(" type i id..", type(i.id))
         print(" prv..", prv)
         print(" prv id..", prv.id)
-        print(" request.auth..", bool(request.auth))
         print(" type prv..", type(prv))
         print(" type prv id..", type(prv.id))
-        # ..request.auth
-        context = {
-            "request": request,
-            "i": i,
-            "prv": prv,
-        }
         # ...
         if request.method == "GET":
             if prv == i:
+                context = {
+                    "request": request,
+                    "i": i,
+                    "prv": prv,
+                }
                 return templates.TemplateResponse(template, context)
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
@@ -233,8 +230,7 @@ async def prv_login(request):
             # ..
             stmt = await session.execute(
                 select(User)
-                .where(User.email == email)
-                .where(User.privileged == True)
+                .where(and_(User.email == email, User.privileged, true()))
             )
             user = stmt.scalars().first()
             # ..

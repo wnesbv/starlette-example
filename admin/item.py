@@ -4,7 +4,6 @@ from datetime import datetime, date
 
 from sqlalchemy import select, update as sqlalchemy_update, delete, func, true
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
@@ -15,14 +14,14 @@ from item.models import Item, Service, Rent
 
 from options_select.opt_slc import all_total, for_id
 
-from .opt_slc import in_admin, all_user, item_comment, in_item
+from .opt_slc import admin, get_admin_user, all_user, item_comment, in_item
 from . import img
 
 
 templates = Jinja2Templates(directory="templates")
 
 
-
+@admin()
 # ...
 async def all_list(request):
     # ..
@@ -30,9 +29,9 @@ async def all_list(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             return templates.TemplateResponse(
                 template, {"request": request,}
             )
@@ -42,7 +41,7 @@ async def all_list(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_list(request):
     # ..
@@ -50,9 +49,9 @@ async def i_list(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             # ..
             stmt = await session.execute(select(Item).order_by(Item.created_at.desc()))
             obj_list = stmt.scalars().all()
@@ -73,7 +72,7 @@ async def i_list(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_details(request):
     # ..
@@ -82,9 +81,9 @@ async def i_details(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             # ..
             cmt_list = await item_comment(session, id)
             # ..
@@ -116,7 +115,7 @@ async def i_details(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_create(request):
     # ..
@@ -126,10 +125,10 @@ async def i_create(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             owner_all = await all_user(session)
             # ..
-            if admin:
+            if obj:
                 return templates.TemplateResponse(
                     template, {
                         "request": request,
@@ -184,7 +183,7 @@ async def i_create(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_update(request):
     # ..
@@ -194,7 +193,7 @@ async def i_update(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         i = await in_item(session, id)
         # ..
         context = {
@@ -203,7 +202,7 @@ async def i_update(request):
         }
         # ...
         if request.method == "GET":
-            if admin and i:
+            if obj and i:
                 return templates.TemplateResponse(
                     template, context
                 )
@@ -275,7 +274,7 @@ async def i_update(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_delete(request):
     # ..
@@ -286,10 +285,10 @@ async def i_delete(request):
 
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             i = await in_item(session, id)
             # ..
-            if admin:
+            if obj:
                 return templates.TemplateResponse(
                     template,
                     {

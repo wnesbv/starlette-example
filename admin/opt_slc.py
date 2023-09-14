@@ -1,88 +1,106 @@
 
-from sqlalchemy import select, func, true, and_
+import jwt, functools
+
+from sqlalchemy import select, true, and_
 
 from starlette.templating import Jinja2Templates
+from starlette.responses import RedirectResponse
+
 from account.models import User
 from comment.models import Comment
-
+from auth_privileged.models import Privileged
 from item.models import Item, Rent, Service, ScheduleRent, ScheduleService
 
+from db_config.settings import settings
+from db_config.storage_config import engine, async_session
+
+key = settings.SECRET_KEY
+algorithm = settings.JWT_ALGORITHM
+EMAIL_TOKEN_EXPIRY_MINUTES = settings.EMAIL_TOKEN_EXPIRY_MINUTES
 
 templates = Jinja2Templates(directory="templates")
 
 
-async def all_user(
-    session
-):
-    stmt = await session.execute(
-        select(User)
-    )
-    result = stmt.scalars().all()
-    return result
+# ..
+async def get_token_privileged(request):
+    if request.cookies.get("privileged"):
+        token = request.cookies.get("privileged")
+        if token:
+            payload = jwt.decode(token, key, algorithm)
+            prv_key = payload["prv_key"]
+            return prv_key
 
 
-async def all_item(
-    session
-):
-    stmt = await session.execute(
-        select(Item)
-    )
-    result = stmt.scalars().all()
-    return result
-
-
-async def all_service(
-    session
-):
-    stmt = await session.execute(
-        select(Service)
-    )
-    result = stmt.scalars().all()
-    return result
-
-
-async def all_rent(
-    session
-):
-    stmt = await session.execute(
-        select(Rent)
-    )
-    result = stmt.scalars().all()
-    return result
-
-
-async def all_schedule(
-    session
-):
-    stmt = await session.execute(
-        select(ScheduleService)
-    )
-    result = stmt.scalars().all()
-    return result
-
-
-async def in_admin(
-    request, session
-):
-    stmt = await session.execute(
-        select(User)
-        .where(
-            and_(
-                User.id == request.user.user_id,
-                User.is_admin, true()
-            )
-        )
-    )
+async def get_privileged(request, session):
+    token = await get_token_privileged(request)
+    stmt = await session.execute(select(Privileged).where(Privileged.prv_key == token))
     result = stmt.scalars().first()
     return result
 
 
-async def in_item(
-    session, id
-):
+async def get_admin_user(request, session):
+    while True:
+        prv = await get_privileged(request, session)
+        if not prv:
+            break
+        stmt = await session.execute(
+            select(User)
+            .where(User.id == prv.prv_in)
+            .where(User.is_admin, true())
+            .where(User.privileged, true())
+        )
+        result = stmt.scalars().first()
+        return result
+
+
+def admin():
+    def decorator(func):
+        @functools.wraps(func)
+        async def wrapper(request, *a, **ka):
+            async with async_session() as session:
+                user = await get_admin_user(request, session)
+            await engine.dispose()
+            if user:
+                return await func(request, *a, **ka)
+            return RedirectResponse("/privileged/login")
+        return wrapper
+    return decorator
+# ..
+
+
+async def all_user(session):
+    stmt = await session.execute(select(User))
+    result = stmt.scalars().all()
+    return result
+
+
+async def all_item(session):
+    stmt = await session.execute(select(Item))
+    result = stmt.scalars().all()
+    return result
+
+
+async def all_service(session):
+    stmt = await session.execute(select(Service))
+    result = stmt.scalars().all()
+    return result
+
+
+async def all_rent(session):
+    stmt = await session.execute(select(Rent))
+    result = stmt.scalars().all()
+    return result
+
+
+async def all_schedule(session):
+    stmt = await session.execute(select(ScheduleService))
+    result = stmt.scalars().all()
+    return result
+
+
+async def in_item(session, id):
     stmt = await session.execute(
-        select(Item)
-        .where(
+        select(Item).where(
             Item.id == id,
         )
     )
@@ -90,12 +108,9 @@ async def in_item(
     return result
 
 
-async def in_service(
-    session, id
-):
+async def in_service(session, id):
     stmt = await session.execute(
-        select(Service)
-        .where(
+        select(Service).where(
             Service.id == id,
         )
     )
@@ -103,25 +118,19 @@ async def in_service(
     return result
 
 
-async def in_rent(
-    session, id
-):
+async def in_rent(session, id):
     stmt = await session.execute(
-        select(Rent)
-        .where(
-            Rent.id==id,
+        select(Rent).where(
+            Rent.id == id,
         )
     )
     result = stmt.scalars().first()
     return result
 
 
-async def in_schedule_r(
-    session, id
-):
+async def in_schedule_r(session, id):
     stmt = await session.execute(
-        select(ScheduleRent)
-        .where(
+        select(ScheduleRent).where(
             ScheduleRent.id == id,
         )
     )
@@ -129,12 +138,9 @@ async def in_schedule_r(
     return result
 
 
-async def in_schedule_sv(
-    session, id
-):
+async def in_schedule_sv(session, id):
     stmt = await session.execute(
-        select(ScheduleService)
-        .where(
+        select(ScheduleService).where(
             ScheduleService.id == id,
         )
     )
@@ -152,9 +158,16 @@ async def details_schedule_service(session, service):
     return result
 
 
-async def item_comment(
-    session, id
-):
+async def admin_comment(session, id):
+    stmt = await session.execute(
+        select(Comment)
+        .where(Comment.id == id).where(User.is_admin, true())
+    )
+    result = stmt.scalars().first()
+    return result
+
+
+async def item_comment(session, id):
     stmt = await session.execute(
         select(Comment)
         .where(Comment.cmt_item_id == id)
@@ -164,9 +177,7 @@ async def item_comment(
     return result
 
 
-async def service_comment(
-    session, id
-):
+async def service_comment(session, id):
     stmt = await session.execute(
         select(Comment)
         .where(Comment.cmt_service_id == id)
@@ -176,9 +187,7 @@ async def service_comment(
     return result
 
 
-async def rent_comment(
-    session, id
-):
+async def rent_comment(session, id):
     stmt = await session.execute(
         select(Comment)
         .where(Comment.cmt_rent_id == id)

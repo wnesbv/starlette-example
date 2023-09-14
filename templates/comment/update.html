@@ -1,6 +1,6 @@
 
 {% extends "base.html" %}
-{% block title %} comment update {{ detail.ld }} {% endblock%}
+{% block title %} comment update {{ i.ld }} {% endblock%}
 
 {% block content %}
 
@@ -15,7 +15,7 @@
             class="form-control"
             name="opinion"
             rows="3"
-        >{{ detail.opinion }} </textarea>
+        >{{ i.opinion }} </textarea>
     </div>
     <div class="card-footer">
     <button type="submit" class="btn btn-outline-primary btn-sm">

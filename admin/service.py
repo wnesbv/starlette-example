@@ -6,7 +6,6 @@ import json
 
 from sqlalchemy import select, update as sqlalchemy_update, delete, func, and_
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
@@ -20,12 +19,11 @@ from make_an_appointment.models import ReserveServicerFor
 from options_select.opt_slc import all_total, for_id
 
 from .opt_slc import (
-    in_admin,
+    admin,
+    get_admin_user,
     all_user,
     all_item,
-    all_schedule,
     in_service,
-    all_service,
     service_comment,
 )
 from . import img
@@ -34,7 +32,7 @@ from . import img
 templates = Jinja2Templates(directory="templates")
 
 
-
+@admin()
 # ...
 async def i_list(request):
     # ..
@@ -42,9 +40,9 @@ async def i_list(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             # ..
             stmt = await session.execute(select(Service).order_by(Service.id))
             obj_list = stmt.scalars().all()
@@ -60,7 +58,7 @@ async def i_list(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_details(request):
     # ..
@@ -69,9 +67,9 @@ async def i_details(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             # ..
             cmt_list = await service_comment(session, id)
             # ..
@@ -85,10 +83,9 @@ async def i_details(request):
                 )
             )
             rsv_list = rsv.scalars().all()
-            #..
+            # ..
             stmt = await session.execute(
-                select(ScheduleService)
-                .where(
+                select(ScheduleService).where(
                     and_(
                         ScheduleService.id.not_in(rsv_list),
                         ScheduleService.sch_s_service_id == id,
@@ -120,20 +117,21 @@ async def i_details(request):
     await engine.dispose()
 
 
+@admin()
+# ...
 async def i_create(request):
     # ..
     basewidth = 800
     template = "/admin/service/create.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             owner_all = await all_user(session)
             obj_item = await all_item(session)
             # ..
-            if admin:
+            if obj:
                 return templates.TemplateResponse(
                     template,
                     {
@@ -191,7 +189,7 @@ async def i_create(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_update(request):
     # ..
@@ -201,7 +199,7 @@ async def i_update(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         i = await in_service(session, id)
         # ..
         context = {
@@ -210,7 +208,7 @@ async def i_update(request):
         }
         # ...
         if request.method == "GET":
-            if admin:
+            if obj:
                 return templates.TemplateResponse(template, context)
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
@@ -228,7 +226,10 @@ async def i_update(request):
                     sqlalchemy_update(Service)
                     .where(Service.id == id)
                     .values(
-                        title=title, description=description, file=i.file, modified_at=datetime.now(),
+                        title=title,
+                        description=description,
+                        file=i.file,
+                        modified_at=datetime.now(),
                     )
                     .execution_options(synchronize_session="fetch")
                 )
@@ -282,7 +283,7 @@ async def i_update(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_delete(request):
     # ..
@@ -290,13 +291,12 @@ async def i_delete(request):
     template = "/admin/service/delete.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             i = await in_service(session, id)
             # ..
-            if admin:
+            if obj:
                 return templates.TemplateResponse(
                     template,
                     {
@@ -311,9 +311,7 @@ async def i_delete(request):
             i = await in_service(session, id)
             email = await for_id(session, User, i.owner)
             # ..
-            await img.del_service(
-                email.email, i.service_belongs, id
-            )
+            await img.del_service(email.email, i.service_belongs, id)
             # ..
             await session.delete(i)
             await session.commit()

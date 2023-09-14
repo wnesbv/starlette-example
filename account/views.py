@@ -24,6 +24,8 @@ from admin import img
 from account.models import User
 from mail.verify import verify_mail
 
+from auth_privileged.views import get_privileged_user
+
 from .token import mail_verify
 
 key = settings.SECRET_KEY
@@ -76,6 +78,23 @@ def visited():
             if user:
                 return await func(request, *a, **ka)
             return RedirectResponse("/account/login")
+        return wrapper
+    return decorator
+
+
+def auth():
+    def decorator(func):
+        @functools.wraps(func)
+        async def wrapper(request, *a, **ka):
+            async with async_session() as session:
+                user = await get_visited_user(request, session)
+                if user:
+                    return await func(request, *a, **ka)
+                prv = await get_privileged_user(request, session)
+                if prv:
+                    return await func(request, *a, **ka)
+                return RedirectResponse("/")
+            await engine.dispose()
         return wrapper
     return decorator
 # ..

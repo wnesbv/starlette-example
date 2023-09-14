@@ -23,9 +23,7 @@ async def all_total(session, model):
     return result
 
 
-async def for_id(
-    session, model, id
-):
+async def for_id(session, model, id):
     stmt = await session.execute(
         select(model)
         .where(model.id == id)
@@ -179,14 +177,6 @@ async def sch_sv_id(request, session, id):
 
 
 # ..
-async def in_comment(request, session, id):
-    stmt = await session.execute(
-        select(Comment).where(Comment.owner == request.user.user_id)
-    )
-    result = stmt.scalars().all()
-    return result
-
-
 async def person_participant(request, session, id):
     stmt = await session.execute(
         select(PersonParticipant)

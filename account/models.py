@@ -46,7 +46,6 @@ class User(Base):
     # ...
     user_cmt: Mapped[list["Comment"]] = relationship(
         back_populates="cmt_user",
-        cascade="all, delete-orphan"
     )
     # ...
     user_group: Mapped[list["GroupChat"]] = relationship(

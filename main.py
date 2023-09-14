@@ -3,6 +3,7 @@ import uvicorn
 
 from sqlalchemy.future import select
 
+from starlette.requests import cookie_parser
 from starlette.middleware import Middleware
 from starlette.applications import Starlette
 from starlette.middleware.authentication import AuthenticationMiddleware
@@ -75,8 +76,13 @@ async def homepage(request):
         obj = await get_privileged_user(request, session)
         # ..
         if not request.user.is_authenticated:
+            context = {
+                "request": request,
+                "obj": obj,
+                "obj_sl": obj_sl,
+            }
             return templates.TemplateResponse(
-                template, {"request": request, "obj": obj, "obj_sl": obj_sl}
+                template, context
             )
         # ..
         stmt = await session.execute(

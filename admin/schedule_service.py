@@ -1,3 +1,4 @@
+
 from pathlib import Path
 from datetime import datetime
 import json
@@ -6,7 +7,6 @@ from sqlalchemy import update as sqlalchemy_update, delete
 
 from sqlalchemy.future import select
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
@@ -20,7 +20,8 @@ from account.models import User
 from item.models import Service, ScheduleService, MyEnum
 
 from .opt_slc import (
-    in_admin,
+    admin,
+    get_admin_user,
     in_schedule_sv,
     all_service,
     all_rent,
@@ -32,7 +33,7 @@ from .opt_slc import (
 templates = Jinja2Templates(directory="templates")
 
 
-
+@admin()
 # ...
 async def sch_list(request):
     # ..
@@ -40,9 +41,9 @@ async def sch_list(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             # ..
             obj_list = await all_schedule(session)
             context = {
@@ -53,7 +54,7 @@ async def sch_list(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def user_list(request):
     # ..
@@ -62,9 +63,9 @@ async def user_list(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             # ..
             stmt = await session.execute(
                 select(ScheduleService).where(ScheduleService.owner == id)
@@ -79,7 +80,7 @@ async def user_list(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def srv_list(request):
     # ..
@@ -88,9 +89,9 @@ async def srv_list(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             # ..
             stmt = await session.execute(
                 select(ScheduleService).where(ScheduleService.sch_s_service_id == id)
@@ -105,7 +106,7 @@ async def srv_list(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def all_user_sch_list(request):
     # ..
@@ -113,9 +114,9 @@ async def all_user_sch_list(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             # ..
             stmt = await session.execute(
                 select(ScheduleService.id).join(ScheduleService.sch_s_service)
@@ -157,7 +158,7 @@ async def all_user_sch_list(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def srv_id_sch_id(request):
     # ..
@@ -168,13 +169,11 @@ async def srv_id_sch_id(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             # ..
-            if admin:
+            if obj:
                 # ..
-                obj_list = await details_schedule_service(
-                    session, service
-                )
+                obj_list = await details_schedule_service(session, service)
                 # ..
                 obj = [
                     {
@@ -186,7 +185,7 @@ async def srv_id_sch_id(request):
                         "type_on": i.type_on.name,
                         "number_on": i.number_on,
                         "there_is": i.there_is,
-                        "sch_s_service_id": i.sch_s_service_id
+                        "sch_s_service_id": i.sch_s_service_id,
                     }
                     for i in obj_list
                 ]
@@ -207,7 +206,7 @@ async def srv_id_sch_id(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def details(request):
     # ..
@@ -217,9 +216,9 @@ async def details(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             # ..
-            if admin:
+            if obj:
                 # ..
                 i = await in_schedule_sv(session, id)
                 context = {
@@ -230,20 +229,21 @@ async def details(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def sch_create(request):
+    # ..
     template = "/admin/schedule_service/create.html"
 
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             obj_service = await all_service(session)
             obj_rent = await all_rent(session)
             objects = list(MyEnum)
             # ..
-            if admin:
+            if obj:
                 return templates.TemplateResponse(
                     template,
                     {
@@ -294,7 +294,7 @@ async def sch_create(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def sch_update(request):
     # ..
@@ -303,7 +303,7 @@ async def sch_update(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
         i = await in_schedule_sv(session, id)
         objects = list(MyEnum)
@@ -314,7 +314,7 @@ async def sch_update(request):
         }
         # ...
         if request.method == "GET":
-            if admin:
+            if obj:
                 return templates.TemplateResponse(template, context)
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
@@ -359,7 +359,7 @@ async def sch_update(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def sch_delete(request):
     # ..
@@ -369,10 +369,10 @@ async def sch_delete(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             i = await in_schedule_sv(session, id)
             # ..
-            if admin:
+            if obj:
                 return templates.TemplateResponse(
                     template,
                     {
@@ -396,15 +396,15 @@ async def sch_delete(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def delete_service_csv(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             # ..
-            if admin:
+            if obj:
                 directory = BASE_DIR / "static/service/"
                 response = [
                     f.unlink() for f in Path(directory).glob("*") if f.is_file()

@@ -78,7 +78,7 @@ async def item_create(request):
                 await session.commit()
                 # ..
                 return RedirectResponse(
-                    f"/item/details/{ new.id }",
+                    f"/item/item/details/{ new.id }",
                     status_code=302,
                 )
             # ..
@@ -98,7 +98,7 @@ async def item_create(request):
             await session.commit()
             # ..
             return RedirectResponse(
-                f"/item/details/{ new.id }",
+                f"/item/item/details/{ new.id }",
                 status_code=302,
             )
     await engine.dispose()
@@ -166,11 +166,11 @@ async def item_update(request):
                     await session.commit()
                     # ..
                     return RedirectResponse(
-                        f"/item/details/{id}",
+                        f"/item/item/details/{id}",
                         status_code=302,
                     )
                 return RedirectResponse(
-                    f"/item/details/{id}",
+                    f"/item/item/details/{id}",
                     status_code=302,
                 )
             # ..
@@ -197,7 +197,7 @@ async def item_update(request):
             # ..
             print(str(FormUpdate.model_dump(obj)))
             return RedirectResponse(
-                f"/item/details/{id}",
+                f"/item/item/details/{id}",
                 status_code=302,
             )
     await engine.dispose()

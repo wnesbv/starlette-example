@@ -24,7 +24,7 @@ class Comment(Base):
         ForeignKey(
             "users.id",
             ondelete="CASCADE"
-        ), nullable=False
+        ), nullable=True
     )
     # ...
     cmt_item_id: Mapped[int] = mapped_column(

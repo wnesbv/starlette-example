@@ -1,4 +1,3 @@
-
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -6,7 +5,6 @@ import random, shutil
 
 from sqlalchemy import select, update as sqlalchemy_update, delete
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
@@ -17,24 +15,25 @@ from item.models import Slider
 from config.settings import BASE_DIR
 from options_select.opt_slc import all_total
 
-from .opt_slc import in_admin
+from .opt_slc import admin, get_admin_user
 from .opt_slider import all_slider, in_slider
 
 from . import img
 
+
 templates = Jinja2Templates(directory="templates")
 
 
-
+@admin()
 # ...
 async def slider_list(request):
     template = "/admin/slider/list.html"
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             # ..
             obj_list = await all_slider(session)
             # ..
@@ -50,7 +49,7 @@ async def slider_list(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def slider_details(request):
     # ..
@@ -59,9 +58,9 @@ async def slider_details(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             # ..
             i = await in_slider(session, id)
             # ..
@@ -73,20 +72,18 @@ async def slider_details(request):
     await engine.dispose()
 
 
+@admin()
+# ...
 async def slider_create(request):
-
     template = "/admin/slider/create.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             # ..
-            if admin:
-                return templates.TemplateResponse(
-                    template, {"request": request}
-                )
+            if obj:
+                return templates.TemplateResponse(template, {"request": request})
         # ...
         if request.method == "POST":
             mdl = "slider"
@@ -117,7 +114,7 @@ async def slider_create(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def slider_update(request):
     # ..
@@ -126,7 +123,7 @@ async def slider_update(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         detail = await in_slider(session, id)
         # ..
         context = {
@@ -135,7 +132,7 @@ async def slider_update(request):
         }
         # ...
         if request.method == "GET":
-            if admin:
+            if obj:
                 return templates.TemplateResponse(template, context)
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
@@ -149,10 +146,7 @@ async def slider_update(request):
             query = (
                 sqlalchemy_update(Slider)
                 .where(Slider.id == id)
-                .values(
-                        title=title,
-                        description=description
-                    )
+                .values(title=title, description=description)
                 .execution_options(synchronize_session="fetch")
             )
             await session.execute(query)
@@ -166,11 +160,9 @@ async def slider_update(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
-async def slider_file_update(
-    request
-):
+async def slider_file_update(request):
     # ..
     id = request.path_params["id"]
     template = "/admin/slider/update_file.html"
@@ -186,33 +178,29 @@ async def slider_file_update(
         # ...
         if request.method == "GET":
             if i:
-                return templates.TemplateResponse(
-                    template, context
-                )
-            return PlainTextResponse(
-                "You are banned - this is not your account..!"
-            )
+                return templates.TemplateResponse(template, context)
+            return PlainTextResponse("You are banned - this is not your account..!")
         # ...
         if request.method == "POST":
             mdl = "slider"
             basewidth = 800
-            #..
+            # ..
             form = await request.form()
             file = form["file"]
             id_sl = i.id_sl
-            #..
+            # ..
             file_query = (
                 sqlalchemy_update(Slider)
                 .where(Slider.id == id)
                 .values(
-                    file= await img.sl_img_creat(request, file, mdl, id_sl, basewidth),
+                    file=await img.sl_img_creat(request, file, mdl, id_sl, basewidth),
                     modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
             )
             await session.execute(file_query)
             await session.commit()
-            #..
+            # ..
             response = RedirectResponse(
                 f"/admin/slider/details/{ i.id }",
                 status_code=302,
@@ -221,7 +209,7 @@ async def slider_file_update(
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def slider_delete(request):
     # ..
@@ -229,16 +217,16 @@ async def slider_delete(request):
     template = "/admin/slider/delete.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             detail = await in_slider(session, id)
             # ..
-            if admin:
+            if obj:
                 return templates.TemplateResponse(
                     template,
-                    {"request": request,
+                    {
+                        "request": request,
                         "detail": detail,
                     },
                 )
@@ -248,8 +236,7 @@ async def slider_delete(request):
             # ..
             i = await in_slider(session, id)
             directory = (
-                BASE_DIR
-                / f"static/upload/slider/{request.user.email}/{i.id_sl}"
+                BASE_DIR / f"static/upload/slider/{request.user.email}/{i.id_sl}"
             )
             shutil.rmtree(directory)
             # ..
@@ -265,16 +252,13 @@ async def slider_delete(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
-async def slider_file_delete(
-    request
-):
+async def slider_file_delete(request):
     # ..
     id = request.path_params["id"]
 
     async with async_session() as session:
-
         if request.method == "GET":
             # ..
             i = await in_slider(session, id)
@@ -297,7 +281,5 @@ async def slider_file_delete(
                     f"/admin/slider/details/{i.id}",
                     status_code=302,
                 )
-            return PlainTextResponse(
-                "You are banned - this is not your account..!"
-            )
+            return PlainTextResponse("You are banned - this is not your account..!")
     await engine.dispose()

@@ -1,14 +1,27 @@
 
 {% extends "base.html" %}
-{% block title %} admin new comment {% endblock%}
+{% block title %} adm new tm comment {% endblock%}
 
 {% block content %}
 
-<h1 class="lead my-4">new comment</h1>
-
-{% if request.user.is_authenticated %}
+<h1 class="lead my-3">new item comment</h1>
 
 <form class="card" method="POST">
+    <div class="card-header">
+        <select
+            required
+            name="owner"
+            class="form-control shadow-sm">
+            <option value="">user select</option>
+
+            {% for i in owner_all %}
+                <option value="{{ i.id }}">
+                    id: {{ i.id }} email: {{ i.email }}
+                </option>
+            {% endfor %}
+
+        </select>
+    </div>
     <div class="card-body mb-2">
         <sup>opinion</sup>
         <textarea
@@ -25,7 +38,5 @@
         </button>
     </div>
 </form>
-
-{% endif %}
 
 {% endblock %}

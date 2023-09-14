@@ -6,8 +6,6 @@
 
 <h1 class="lead my-3">new comment</h1>
 
-{% if request.user.is_authenticated %}
-
 <form class="card" method="POST">
     <div class="card-body">
         <sup>opinion</sup>
@@ -25,7 +23,5 @@
         </button>
     </div>
 </form>
-
-{% endif %}
 
 {% endblock %}

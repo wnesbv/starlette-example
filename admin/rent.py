@@ -6,7 +6,6 @@ import json
 
 from sqlalchemy import select, update as sqlalchemy_update, delete, func
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
@@ -17,7 +16,8 @@ from options_select.opt_slc import all_total, for_id
 
 from item.models import Rent, ScheduleRent
 from .opt_slc import (
-    in_admin,
+    admin,
+    get_admin_user,
     all_user,
     all_item,
     rent_comment,
@@ -29,7 +29,7 @@ from . import img
 templates = Jinja2Templates(directory="templates")
 
 
-
+@admin()
 # ...
 async def i_list(request):
     # ..
@@ -37,9 +37,9 @@ async def i_list(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             # ..
             stmt = await session.execute(select(Rent).order_by(Rent.created_at.desc()))
             obj_list = stmt.scalars().all()
@@ -56,7 +56,7 @@ async def i_list(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_details(request):
     # ..
@@ -65,9 +65,9 @@ async def i_details(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             # ..
             cmt_list = await rent_comment(session, id)
             # ..
@@ -101,7 +101,7 @@ async def i_details(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_create(request):
     # ..
@@ -111,11 +111,11 @@ async def i_create(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             owner_all = await all_user(session)
             obj_item = await all_item(session)
             # ..
-            if admin:
+            if obj:
                 return templates.TemplateResponse(
                     template,
                     {
@@ -175,7 +175,7 @@ async def i_create(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_update(request):
     # ..
@@ -185,7 +185,7 @@ async def i_update(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         i = await in_rent(session, id)
         # ..
         context = {
@@ -194,7 +194,7 @@ async def i_update(request):
         }
         # ...
         if request.method == "GET":
-            if admin:
+            if obj:
                 return templates.TemplateResponse(template, context)
             return PlainTextResponse("False..!")
         # ...
@@ -212,7 +212,10 @@ async def i_update(request):
                     sqlalchemy_update(Rent)
                     .where(Rent.id == id)
                     .values(
-                        title=title, description=description, file=i.file, modified_at=datetime.now(),
+                        title=title,
+                        description=description,
+                        file=i.file,
+                        modified_at=datetime.now(),
                     )
                     .execution_options(synchronize_session="fetch")
                 )
@@ -247,7 +250,9 @@ async def i_update(request):
                 .values(
                     title=title,
                     description=description,
-                    file=await img.rent_img_creat(file, email.email, i.rent_belongs, i.id, basewidth),
+                    file=await img.rent_img_creat(
+                        file, email.email, i.rent_belongs, i.id, basewidth
+                    ),
                     modified_at=datetime.now(),
                 )
                 .execution_options(synchronize_session="fetch")
@@ -263,7 +268,7 @@ async def i_update(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_delete(request):
     # ..
@@ -271,13 +276,12 @@ async def i_delete(request):
     template = "/admin/rent/delete.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             i = await in_rent(session, id)
             # ..
-            if admin:
+            if obj:
                 return templates.TemplateResponse(
                     template,
                     {
@@ -292,9 +296,7 @@ async def i_delete(request):
             i = await in_rent(session, id)
             email = await for_id(session, User, i.owner)
             # ..
-            await img.del_rent(
-                email.email, i.rent_belongs, id
-            )
+            await img.del_rent(email.email, i.rent_belongs, id)
             # ..
             await session.delete(i)
             await session.commit()

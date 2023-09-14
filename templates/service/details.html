@@ -32,16 +32,13 @@
 
     <ul class="card-body list-group list-group-flush">
         <li class="list-group-item">
-            <sup class="float-start">title:</sup>
+            <sup>title:</sup>
             <p>{{ i.title }}</p>
         </li>
         <li class="list-group-item">
-            <sup class="float-start">description:</sup>
+            <sup>description:</sup>
             <p>{{ i.description | safe }}</p>
         </li>
-    </ul>
-
-    <ul class="card-footer list-group list-group-flush">
         {% include "created_modified.html" %}
     </ul>
 

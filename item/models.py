@@ -30,7 +30,6 @@ class Item(Base):
     # ...
     item_user: Mapped[list["User"]] = relationship(
         back_populates="user_item",
-
     )
     item_cmt: Mapped[list["Comment"]] = relationship(
         back_populates="cmt_item",
@@ -80,7 +79,8 @@ class Rent(Base):
         back_populates="item_rent",
     )
     rent_cmt: Mapped[list["Comment"]] = relationship(
-        back_populates="cmt_rent"
+        back_populates="cmt_rent",
+        cascade="all, delete-orphan"
     )
     rent_sch_r: Mapped[list["ScheduleRent"]] = relationship(
         back_populates="sch_r_rent",
@@ -120,7 +120,8 @@ class Service(Base):
         back_populates="item_service",
     )
     service_cmt: Mapped[list["Comment"]] = relationship(
-        back_populates="cmt_service"
+        back_populates="cmt_service",
+        cascade="all, delete-orphan"
     )
     service_sch_s: Mapped[list["ScheduleService"]] = relationship(
         back_populates="sch_s_service",

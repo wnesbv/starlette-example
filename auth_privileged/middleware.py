@@ -28,7 +28,9 @@ class PrivilegedUser(BaseUser):
         return self.prv_key
 
     def __str__(self) -> str:
-        return self.prv_key
+        return (
+            f"prv: prv_key={self.prv_key}, prv_id={self.prv_id}"
+        )
 
 
 class PrivilegedBackend(AuthenticationBackend):

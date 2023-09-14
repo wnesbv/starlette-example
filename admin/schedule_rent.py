@@ -1,3 +1,4 @@
+
 from pathlib import Path
 
 import json
@@ -6,7 +7,6 @@ from sqlalchemy import update as sqlalchemy_update, delete
 
 from sqlalchemy.future import select
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
@@ -20,7 +20,8 @@ from item.models import ScheduleRent, ScheduleService
 from options_select.opt_slc import details_schedule_rent
 
 from .opt_slc import (
-    in_admin,
+    admin,
+    get_admin_user,
     in_schedule_r,
     all_service,
     all_rent,
@@ -30,7 +31,7 @@ from .opt_slc import (
 templates = Jinja2Templates(directory="templates")
 
 
-
+@admin()
 # ...
 async def rent_list(request):
     # ..
@@ -38,9 +39,9 @@ async def rent_list(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             result = await session.execute(
                 select(ScheduleRent).order_by(ScheduleRent.created_at)
             )
@@ -54,7 +55,7 @@ async def rent_list(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def rent_details(request):
     # ..
@@ -64,11 +65,11 @@ async def rent_details(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             i = await in_schedule_r(session, id)
             obj_list = await details_schedule_rent(request, session)
             # ..
-            if admin:
+            if obj:
                 # ..
                 obj = [
                     {
@@ -94,7 +95,7 @@ async def rent_details(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def item_create(request):
     # ..
@@ -103,11 +104,11 @@ async def item_create(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             obj_service = await all_service(session)
             obj_rent = await all_rent(session)
             # ..
-            if admin:
+            if obj:
                 return templates.TemplateResponse(
                     template,
                     {
@@ -153,7 +154,7 @@ async def item_create(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def item_update(request):
     # ..
@@ -162,7 +163,7 @@ async def item_update(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
         detail = await in_schedule_r(session, id)
         context = {
@@ -171,7 +172,7 @@ async def item_update(request):
         }
         # ...
         if request.method == "GET":
-            if admin:
+            if obj:
                 return templates.TemplateResponse(template, context)
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
@@ -200,7 +201,7 @@ async def item_update(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def item_delete(request):
     # ..
@@ -210,10 +211,10 @@ async def item_delete(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             detail = await in_schedule_r(session, id)
             # ..
-            if admin:
+            if obj:
                 return templates.TemplateResponse(
                     template,
                     {
@@ -237,15 +238,15 @@ async def item_delete(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def delete_rent_csv(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             # ..
-            if admin:
+            if obj:
                 directory = BASE_DIR / "static/service/"
                 response = [
                     f.unlink() for f in Path(directory).glob("*") if f.is_file()

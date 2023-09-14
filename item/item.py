@@ -100,11 +100,6 @@ async def item_create(request):
                     "request": request,
                 },
             )
-            if request.auth is False:
-                response = RedirectResponse(
-                    "/privileged/login",
-                    status_code=302,
-                )
             return response
         # ...
         if request.method == "POST":
@@ -129,7 +124,7 @@ async def item_create(request):
                 await send_mail(f"A new object has been created - {new}: {title}")
                 # ..
                 return RedirectResponse(
-                    f"/item/details/{ new.id }",
+                    f"/item/item/details/{ new.id }",
                     status_code=302,
                 )
             # ..
@@ -150,7 +145,7 @@ async def item_create(request):
             await send_mail(f"A new object has been created - {new}: {title}")
             # ..
             return RedirectResponse(
-                f"/item/details/{ new.id }",
+                f"/item/item/details/{ new.id }",
                 status_code=302,
             )
 
@@ -221,11 +216,11 @@ async def item_update(request):
                     )
                     # ..
                     return RedirectResponse(
-                        f"/item/details/{id}",
+                        f"/item/item/details/{id}",
                         status_code=302,
                     )
                 return RedirectResponse(
-                    f"/item/details/{id}",
+                    f"/item/item/details/{id}",
                     status_code=302,
                 )
             # ..
@@ -248,7 +243,7 @@ async def item_update(request):
             await send_mail(f"changes were made at the facility - {i}: {i.title}")
             # ..
             return RedirectResponse(
-                f"/item/details/{id}",
+                f"/item/item/details/{id}",
                 status_code=302,
             )
     await engine.dispose()

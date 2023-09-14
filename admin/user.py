@@ -6,7 +6,6 @@ import random, shutil
 
 from sqlalchemy import select, update as sqlalchemy_update, delete
 
-from starlette.authentication import requires
 from starlette.exceptions import HTTPException
 from starlette.status import HTTP_400_BAD_REQUEST
 from starlette.templating import Jinja2Templates
@@ -22,23 +21,23 @@ from account.models import User
 from item.models import Item, Service, Rent
 from options_select.opt_slc import all_total, for_id
 
-from .opt_slc import in_admin
+from .opt_slc import admin, get_admin_user
 from . import img
 
 
 templates = Jinja2Templates(directory="templates")
 
 
-
-# ..
+@admin()
+# ...
 async def i_list(request):
     template = "/admin/user/list.html"
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             stmt = await session.execute(select(User).order_by(User.created_at.desc()))
             obj_list = stmt.scalars().all()
             obj_count = await all_total(session, User)
@@ -52,7 +51,7 @@ async def i_list(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_details(request):
     # ..
@@ -61,26 +60,19 @@ async def i_details(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
-        if admin:
+        if obj:
             i = await for_id(session, User, id)
             # ..
-            opt_item = await session.execute(
-                select(Item)
-                .where(Item.owner == id)
-            )
+            opt_item = await session.execute(select(Item).where(Item.owner == id))
             all_item = opt_item.scalars().all()
             opt_service = await session.execute(
-                select(Service)
-                .where(Service.owner == id)
+                select(Service).where(Service.owner == id)
             )
             all_service = opt_service.scalars().unique()
             # ..
-            opt_rent = await session.execute(
-                select(Rent)
-                .where(Rent.owner == id)
-            )
+            opt_rent = await session.execute(select(Rent).where(Rent.owner == id))
             all_rent = opt_rent.scalars().unique()
             # ...
             context = {
@@ -94,7 +86,7 @@ async def i_details(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_create(request):
     # ..
@@ -104,9 +96,9 @@ async def i_create(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             # ..
-            if admin:
+            if obj:
                 return templates.TemplateResponse(template, {"request": request})
         # ...
         if request.method == "POST":
@@ -181,7 +173,7 @@ async def i_create(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_update(request):
     # ..
@@ -191,7 +183,7 @@ async def i_update(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         i = await for_id(session, User, id)
         # ..
         context = {
@@ -200,7 +192,7 @@ async def i_update(request):
         }
         # ...
         if request.method == "GET":
-            if admin:
+            if obj:
                 return templates.TemplateResponse(template, context)
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
@@ -282,7 +274,7 @@ async def i_update(request):
     await engine.dispose()
 
 
-
+@admin()
 # ...
 async def i_delete(request):
     # ..
@@ -292,10 +284,10 @@ async def i_delete(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            admin = await in_admin(request, session)
+            obj = await get_admin_user(request, session)
             i = await for_id(session, User, id)
             # ..
-            if admin:
+            if obj:
                 return templates.TemplateResponse(
                     template,
                     {
@@ -321,8 +313,7 @@ async def i_delete(request):
     await engine.dispose()
 
 
-
-
+@admin()
 # ...
 async def i_update_password(request):
     # ..
@@ -331,14 +322,14 @@ async def i_update_password(request):
 
     async with async_session() as session:
         # ..
-        admin = await in_admin(request, session)
+        obj = await get_admin_user(request, session)
         # ..
         context = {
             "request": request,
         }
         # ...
         if request.method == "GET":
-            if admin:
+            if obj:
                 return templates.TemplateResponse(template, context)
             return PlainTextResponse("You are banned - this is not your account..!")
         # ...
