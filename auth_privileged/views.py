@@ -296,7 +296,8 @@ async def prv_delete(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            if request.user.user_id == id:
+            prv = await get_privileged_user(request, session)
+            if prv.id == id:
                 return templates.TemplateResponse(template, {"request": request})
             return PlainTextResponse("You are banned - this is not your account..!")
 

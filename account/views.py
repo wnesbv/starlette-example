@@ -296,7 +296,7 @@ async def user_login(request):
             stmt = await session.execute(
                 select(User)
                 .where(
-                    and_(User.email == email, User.privileged, false())
+                    and_(User.email == email, User.privileged == false())
                 )
             )
             user = stmt.scalars().first()
