@@ -248,11 +248,12 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li>
                             <span class="dropdown-item">
-                                <i class="bi bi-person-check"></i>
                                 {% if request.user.email %}
-                                {{ request.user.email}}
+                                <i class="bi bi-person-check"></i>
+                                {{request.user.email}}
                                 {% endif %}
                                 {% if request.prv.prv_id %}
+                                <i class="bi bi-person-check"></i>
                                 {{ request.prv.prv_id}}
                                 {% endif %}
                             </span>
@@ -267,40 +268,47 @@
                         <li>
                             <hr class="dropdown-divider" />
                         </li>
-                        
+
+                        {% if not request.user.email and not request.prv.prv_id %}
                         <li>
                             <a class="dropdown-item" href="/account/login">
-                                <i class="bi bi-person-check"></i>
+                                <i class="bi bi-person"></i>
                                 <sup class="ms-2">login</sup>
                             </a>
                         </li>
+                        {% endif %}
+                        {% if request.user.email %}
                         <li>
-                            <a class="dropdown-item" href="/account/logout"
-                                >logout</a
-                            >
+                            <a class="dropdown-item" href="/account/logout">
+                                <i class="bi bi-person"></i>
+                                <sup class="ms-2">logout</sup>
+                            </a>
                         </li>
+                        {% endif %}
 
                         <li>
                             <hr class="dropdown-divider" />
                         </li>
 
+                        {% if not request.user.email and not request.prv.prv_id %}
                         <li>
                             <a class="dropdown-item" href="/privileged/login">
-                                <i class="bi bi-person-check"></i>
                                 <sup class="ms-2">privileged login</sup>
                             </a>
                         </li>
+                        {% endif %}
+                        {% if request.prv.prv_id %}
                         <li>
                             <a class="dropdown-item" href="/privileged/logout">
-                                <i class="bi bi-person-check"></i>
                                 <sup class="ms-2">privileged logout</sup>
                             </a>
                         </li>
-
+                        {% endif %}
                     </ul>
                 </li>
             </ul>
 
+            {% if request.prv.prv_id %}
             <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
                 <li class="nav-item dropdown">
                     <a
@@ -326,6 +334,7 @@
                     </ul>
                 </li>
             </ul>
+            {% endif %}
             <form class="d-flex" action="/item/search/">
                 <input
                     class="form-control me-2"

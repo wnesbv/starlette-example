@@ -61,7 +61,7 @@ async def on_app_startup() -> None:
                     ),
                     User(
                         name="three",
-                        email="threeo@example.com",
+                        email="three@example.com",
                         password=password_hash,
                         is_admin=False,
                         is_active=True,
