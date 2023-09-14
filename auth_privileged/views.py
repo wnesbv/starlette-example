@@ -253,7 +253,7 @@ async def prv_login(request):
                     # ..
                     user.last_login_date = datetime.now()
                     # ..
-                    session.add(user)
+                    session.add(prv)
                     await session.flush()
                     # ..
                     if prv:
@@ -264,14 +264,14 @@ async def prv_login(request):
                     # ..
                     new = Privileged()
                     new.prv_key = prv_key
-                    new.prv_in = user.id
+                    new.prv_in = prv.id
                     # ..
                     session.add(new)
                     await session.commit()
                     # ..
                     payload = {
                         "prv_key": prv_key,
-                        "prv_id": user.id,
+                        "prv_id": prv.id,
                     }
                     token = jwt.encode(payload, key, algorithm)
                     response = RedirectResponse("/", status_code=302)
