@@ -1,10 +1,10 @@
+
 from pathlib import Path
 from datetime import datetime, timedelta
 
 import os, jwt, json, string, secrets, functools
 
 from sqlalchemy import update as sqlalchemy_update, delete, true, and_
-
 from sqlalchemy.future import select
 
 from passlib.hash import pbkdf2_sha1
@@ -42,7 +42,7 @@ async def get_random_string():
     return prv_key
 
 
-# ..
+# ...
 async def get_token_privileged(request):
     if request.cookies.get("privileged"):
         token = request.cookies.get("privileged")
@@ -86,7 +86,118 @@ def privileged():
             return RedirectResponse("/privileged/login")
         return wrapper
     return decorator
-# ..
+# ...
+
+
+# ...
+async def prv_login(request):
+    # ..
+    template = "/auth/login.html"
+
+    async with async_session() as session:
+        if request.method == "POST":
+            # ..
+            form = await request.form()
+            # ..
+            email = form["email"]
+            password = form["password"]
+            # ..
+            stmt = await session.execute(
+                select(User)
+                .where(
+                    and_(User.email == email, User.privileged, true())
+                )
+            )
+            user = stmt.scalars().first()
+            # ..
+            if user:
+                # ..
+                stmt = await session.execute(
+                    select(Privileged)
+                    .where(Privileged.prv_in == user.id)
+                )
+                prv = stmt.scalars().first()
+                # ..
+                if not user.email_verified:
+                    raise HTTPException(
+                        401,
+                        "Электронная почта не подтверждена. Проверьте свою почту, чтобы узнать, как пройти верификацию.",
+                    )
+
+                if pbkdf2_sha1.verify(password, user.password):
+                    # ..
+                    user.last_login_date = datetime.now()
+                    # ..
+                    session.add(user)
+                    await session.flush()
+                    # ..
+                    if prv:
+                        query = delete(Privileged).where(Privileged.id == prv.id)
+                        await session.execute(query)
+                        await session.commit()
+                    prv_key = await get_random_string()
+                    # ..
+                    new = Privileged()
+                    new.prv_key = prv_key
+                    new.prv_in = user.id
+                    # ..
+                    session.add(new)
+                    await session.commit()
+                    # ..
+                    payload = {
+                        "prv_key": prv_key,
+                        "prv_id": user.id,
+                    }
+                    token = jwt.encode(payload, key, algorithm)
+                    response = RedirectResponse("/", status_code=302)
+                    response.set_cookie(
+                        "privileged",
+                        token,
+                        path="/",
+                        httponly=True,
+                    )
+                    # ..
+                    return response
+
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Invalid password",
+                )
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST, detail="Invalid login"
+            )
+        return templates.TemplateResponse(template, {"request": request})
+    await engine.dispose()
+
+
+@privileged()
+# ...
+async def prv_logout(request):
+    # ..
+    template = "/auth/logout.html"
+
+    if request.method == "GET":
+        return templates.TemplateResponse(
+            template, {"request": request}
+        )
+    # ...
+    if request.method == "POST":
+        prv_key = await get_token_privileged(request)
+        async with async_session() as session:
+            stmt = await session.execute(
+                select(Privileged).where(Privileged.prv_key == prv_key)
+            )
+            prv = stmt.scalars().first()
+            query = delete(Privileged).where(Privileged.id == prv.id)
+            await session.execute(query)
+            await session.commit()
+        await engine.dispose()
+        # ..
+        response = RedirectResponse("/", status_code=302)
+        response.delete_cookie(key="privileged", path="/")
+        # ..
+        return response
+# ...
 
 
 @privileged()
@@ -213,116 +324,6 @@ async def prv_delete(request):
             )
             return response
     await engine.dispose()
-
-
-# ..
-async def prv_login(request):
-    # ..
-    template = "/auth/login.html"
-
-    async with async_session() as session:
-        if request.method == "POST":
-            # ..
-            form = await request.form()
-            # ..
-            email = form["email"]
-            password = form["password"]
-            # ..
-            stmt = await session.execute(
-                select(User)
-                .where(and_(User.email == email, User.privileged, true()))
-            )
-            user = stmt.scalars().first()
-            # ..
-            if user:
-                # ..
-                stmt = await session.execute(
-                    select(Privileged)
-                    .where(Privileged.prv_in == user.id)
-                )
-                prv = stmt.scalars().first()
-                # ..
-
-                if not user.email_verified:
-                    raise HTTPException(
-                        401,
-                        "Электронная почта не подтверждена. Проверьте свою почту, чтобы узнать, как пройти верификацию.",
-                    )
-
-                if pbkdf2_sha1.verify(password, user.password):
-                    # ..
-                    user.last_login_date = datetime.now()
-                    # ..
-                    session.add(prv)
-                    await session.flush()
-                    # ..
-                    if prv:
-                        query = delete(Privileged).where(Privileged.id == prv.id)
-                        await session.execute(query)
-                        await session.commit()
-                    prv_key = await get_random_string()
-                    # ..
-                    new = Privileged()
-                    new.prv_key = prv_key
-                    new.prv_in = prv.id
-                    # ..
-                    session.add(new)
-                    await session.commit()
-                    # ..
-                    payload = {
-                        "prv_key": prv_key,
-                        "prv_id": prv.id,
-                    }
-                    token = jwt.encode(payload, key, algorithm)
-                    response = RedirectResponse("/", status_code=302)
-                    response.set_cookie(
-                        "privileged",
-                        token,
-                        path="/",
-                        httponly=True,
-                    )
-                    # ..
-                    return response
-
-                raise HTTPException(
-                    status_code=HTTP_400_BAD_REQUEST,
-                    detail="Invalid password",
-                )
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST, detail="Invalid login"
-            )
-        return templates.TemplateResponse(template, {"request": request})
-    await engine.dispose()
-
-
-@privileged()
-# ...
-async def prv_logout(request):
-    # ..
-    template = "/auth/logout.html"
-
-    if request.method == "GET":
-        return templates.TemplateResponse(
-            template, {"request": request}
-        )
-    # ...
-    if request.method == "POST":
-        prv_key = await get_token_privileged(request)
-        async with async_session() as session:
-            stmt = await session.execute(
-                select(Privileged).where(Privileged.prv_key == prv_key)
-            )
-            prv = stmt.scalars().first()
-            query = delete(Privileged).where(Privileged.id == prv.id)
-            await session.execute(query)
-            await session.commit()
-        await engine.dispose()
-        # ..
-        response = RedirectResponse("/", status_code=302)
-        response.delete_cookie(key="privileged", path="/")
-        # ..
-        return response
-# ..
 
 
 async def verify_email(request):

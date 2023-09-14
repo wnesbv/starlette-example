@@ -300,7 +300,9 @@ async def user_login(request):
             email = form["email"]
             password = form["password"]
             # ..
-            result = await session.execute(select(User).where(User.email == email))
+            result = await session.execute(
+                select(User).where(User.email == email)
+            )
             user = result.scalars().first()
             # ..
             if user:
