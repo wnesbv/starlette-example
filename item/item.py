@@ -19,10 +19,13 @@ from options_select.opt_slc import for_id, item_comment, and_owner_request, owne
 from options_select.csv_import import import_csv
 from options_select.csv_export import export_csv
 
-from auth_privileged.views import get_privileged_user, privileged
+from auth_privileged.opt_slc import get_privileged_user, privileged, owner_prv, get_owner_prv, id_and_owner_prv
 
 from .models import Item, Service, Rent
 from config.settings import BASE_DIR
+
+from .img import im_item
+from .create_update import parent_create, child_create, child_update
 
 
 templates = Jinja2Templates(directory="templates")
@@ -35,11 +38,12 @@ async def export_item_csv(request):
         # ..
         if request.method == "GET":
             # ..
-            result = await owner_request(request, session, Item)
+            prv = await get_privileged_user(request, session)
+            result = await owner_prv(session, Item, prv)
             # ..
-            await export_csv(request, result)
+            await export_csv(result, prv)
             # ..
-            user = request.user.email
+            user = prv.email
             directory = BASE_DIR / f"static/csv/{user}/export_csv.csv"
             if Path(directory).exists():
                 return RedirectResponse(f"/static/csv/{user}/export_csv.csv")
@@ -56,22 +60,18 @@ async def import_item_csv(request):
     async with async_session() as session:
         # ..
         if request.method == "GET":
-            response = templates.TemplateResponse(
+            return templates.TemplateResponse(
                 template,
                 {
                     "request": request,
                 },
             )
-            if not request.user.is_authenticated:
-                response = RedirectResponse(
-                    "/account/login",
-                    status_code=302,
-                )
-            return response
         # ...
         if request.method == "POST":
             # ..
-            await import_csv(request, Item, session)
+            prv = await get_privileged_user(request, session)
+            # ..
+            await import_csv(request, session, Item, prv)
             await session.commit()
             # ..
             return RedirectResponse(
@@ -85,168 +85,21 @@ async def import_item_csv(request):
 @privileged()
 # ...
 async def item_create(request):
-    # ..
-    basewidth = 800
-    template = "/item/create.html"
-
-    async with async_session() as session:
-        # ..
-        prv = await get_privileged_user(request, session)
-        # ..
-        if request.method == "GET":
-            response = templates.TemplateResponse(
-                template,
-                {
-                    "request": request,
-                },
-            )
-            return response
-        # ...
-        if request.method == "POST":
-            # ..
-            form = await request.form()
-            # ..
-            title = form["title"]
-            description = form["description"]
-            file = form["file"]
-            owner = prv.id
-            # ..
-            if file.filename == "":
-                new = Item()
-                new.title = title
-                new.description = description
-                new.owner = owner
-                new.created_at = datetime.now()
-                # ..
-                session.add(new)
-                await session.commit()
-                # ..
-                await send_mail(f"A new object has been created - {new}: {title}")
-                # ..
-                return RedirectResponse(
-                    f"/item/item/details/{ new.id }",
-                    status_code=302,
-                )
-            # ..
-            email = await for_id(session, User, owner)
-            new = Item()
-            new.title = title
-            new.description = description
-            new.owner = owner
-            new.created_at = datetime.now()
-            # ..
-            session.add(new)
-            await session.flush()
-            # ..
-            new.file = await img.item_img_creat(file, email.email, new.id, basewidth)
-            session.add(new)
-            await session.commit()
-            # ..
-            await send_mail(f"A new object has been created - {new}: {title}")
-            # ..
-            return RedirectResponse(
-                f"/item/item/details/{ new.id }",
-                status_code=302,
-            )
-
-    await engine.dispose()
+    obj = await parent_create(
+        request, Item, "item", im_item
+    )
+    return obj
 
 
 @privileged()
 # ...
 async def item_update(request):
     # ..
-    basewidth = 800
     id = request.path_params["id"]
-    template = "/item/update.html"
-
-    async with async_session() as session:
-        # ..
-        i = await and_owner_request(request, session, Item, id)
-        # ..
-        context = {
-            "request": request,
-            "i": i,
-        }
-        # ...
-        if request.method == "GET":
-            if i:
-                return templates.TemplateResponse(template, context)
-            return PlainTextResponse("You are banned - this is not your account..!")
-        # ...
-        if request.method == "POST":
-            # ..
-            form = await request.form()
-            # ..
-            title = form["title"]
-            description = form["description"]
-            file = form["file"]
-            del_obj = form.get("del_bool")
-            # ..
-            if file.filename == "":
-                query = (
-                    sqlalchemy_update(Item)
-                    .where(Item.id == id)
-                    .values(
-                        title=title,
-                        description=description,
-                        file=i.file,
-                        modified_at=datetime.now(),
-                    )
-                    .execution_options(synchronize_session="fetch")
-                )
-                await session.execute(query)
-                await session.commit()
-
-                if del_obj:
-                    if Path(f".{i.file}").exists():
-                        Path.unlink(f".{i.file}")
-
-                    fle_not = (
-                        sqlalchemy_update(Item)
-                        .where(Item.id == id)
-                        .values(file=None, modified_at=datetime.now())
-                        .execution_options(synchronize_session="fetch")
-                    )
-                    await session.execute(fle_not)
-                    await session.commit()
-                    # ..
-                    await send_mail(
-                        f"changes were made at the facility - {i}: {i.title}"
-                    )
-                    # ..
-                    return RedirectResponse(
-                        f"/item/item/details/{id}",
-                        status_code=302,
-                    )
-                return RedirectResponse(
-                    f"/item/item/details/{id}",
-                    status_code=302,
-                )
-            # ..
-            email = await for_id(session, User, i.owner)
-            file_query = (
-                sqlalchemy_update(Item)
-                .where(Item.id == id)
-                .values(
-                    title=title,
-                    description=description,
-                    file=await img.item_img_creat(file, email.email, id, basewidth),
-                    modified_at=datetime.now(),
-                )
-                .execution_options(synchronize_session="fetch")
-            )
-            # ..
-            await session.execute(file_query)
-            await session.commit()
-            # ..
-            await send_mail(f"changes were made at the facility - {i}: {i.title}")
-            # ..
-            return RedirectResponse(
-                f"/item/item/details/{id}",
-                status_code=302,
-            )
-    await engine.dispose()
+    obj = await child_update(
+        request, Item, id, "item", im_item
+    )
+    return obj
 
 
 @privileged()
@@ -312,9 +165,9 @@ async def item_details(request):
 
     async with async_session() as session:
         # ..
-        cmt_list = await item_comment(session, id)
-        # ...
         i = await for_id(session, Item, id)
+        cmt_list = await item_comment(session, id)
+        prv = await get_privileged_user(request, session)
         # ..
         if i:
             stmt = await session.execute(select(Rent).where(Rent.rent_belongs == id))
@@ -328,6 +181,7 @@ async def item_details(request):
             context = {
                 "request": request,
                 "i": i,
+                "prv": prv,
                 "cmt_list": cmt_list,
                 "all_rent": all_rent,
                 "all_service": all_service,

@@ -16,12 +16,11 @@ from db_config.storage_config import engine, async_session
 from mail.send import send_mail
 
 from options_select.opt_slc import (
-    owner_prv,
     schedule_rent_user,
     and_owner_request,
     details_schedule_rent,
 )
-from auth_privileged.views import get_privileged_user, privileged
+from auth_privileged.opt_slc import get_privileged_user, privileged, owner_prv
 
 from .models import Rent, ScheduleRent
 

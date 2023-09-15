@@ -23,70 +23,16 @@ from admin import img
 
 from account.models import User
 
-from auth_privileged.models import Privileged
-
 from mail.verify import verify_mail
 from .token import mail_verify
-
+from .models import Privileged
+from .opt_slc import get_random_string, privileged, get_token_privileged, get_privileged_user
 
 key = settings.SECRET_KEY
 algorithm = settings.JWT_ALGORITHM
 EMAIL_TOKEN_EXPIRY_MINUTES = settings.EMAIL_TOKEN_EXPIRY_MINUTES
 
 templates = Jinja2Templates(directory="templates")
-
-
-async def get_random_string():
-    alphabet = string.ascii_letters + string.digits
-    prv_key = "".join(secrets.choice(alphabet) for i in range(32))
-    return prv_key
-
-
-# ...
-async def get_token_privileged(request):
-    if request.cookies.get("privileged"):
-        token = request.cookies.get("privileged")
-        if token:
-            payload = jwt.decode(token, key, algorithm)
-            prv_key = payload["prv_key"]
-            return prv_key
-
-
-async def get_privileged(request, session):
-    token = await get_token_privileged(request)
-    stmt = await session.execute(
-        select(Privileged)
-        .where(Privileged.prv_key == token)
-    )
-    result = stmt.scalars().first()
-    return result
-
-
-async def get_privileged_user(request, session):
-    while True:
-        prv = await get_privileged(request, session)
-        if not prv:
-            break
-        stmt = await session.execute(
-            select(User).where(and_(User.id == prv.prv_in, User.privileged, true()))
-        )
-        result = stmt.scalars().first()
-        return result
-
-
-def privileged():
-    def decorator(func):
-        @functools.wraps(func)
-        async def wrapper(request, *a, **ka):
-            async with async_session() as session:
-                user = await get_privileged_user(request, session)
-            await engine.dispose()
-            if user:
-                return await func(request, *a, **ka)
-            return RedirectResponse("/privileged/login")
-        return wrapper
-    return decorator
-# ...
 
 
 # ...

@@ -14,7 +14,7 @@ from mail.send import send_mail
 from account.models import User
 from account.views import auth
 
-from auth_privileged.views import get_privileged_user
+from auth_privileged.opt_slc import get_privileged_user
 from options_select.opt_slc import for_id, and_owner_request
 
 from .models import Comment

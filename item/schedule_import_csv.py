@@ -16,7 +16,7 @@ from db_config.storage_config import engine, async_session
 
 from options_select.opt_slc import sch_sv_user, sch_sv_id
 
-from auth_privileged.views import get_privileged_user, privileged
+from auth_privileged.opt_slc import get_privileged_user, privileged
 from .models import ScheduleService
 
 

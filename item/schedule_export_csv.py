@@ -27,7 +27,7 @@ from options_select.opt_slc import (
     schedule_sv,
     dump_schedule_service,
 )
-from auth_privileged.views import get_privileged_user, privileged
+from auth_privileged.opt_slc import get_privileged_user, privileged
 from .models import DumpService
 
 

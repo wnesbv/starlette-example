@@ -100,7 +100,7 @@ async def slider_create(request):
             new.id_sl = id_sl
             new.title = title
             new.description = description
-            new.file = await img.sl_img_creat(request, file, mdl, id_sl, basewidth)
+            new.file = await img.sl_img_creat(request, session, file, mdl, id_sl, basewidth)
             new.created_at = datetime.now()
             # ..
             session.add(new)

@@ -20,7 +20,7 @@ from item.models import Slider
 from account.models import User
 from account.middleware import JwtBackend
 
-from auth_privileged.views import get_privileged_user
+from auth_privileged.opt_slc import get_privileged_user
 from auth_privileged.middleware import PrivilegedBackend
 from auth_privileged.auth import PrivilegedMiddleware
 

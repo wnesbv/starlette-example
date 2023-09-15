@@ -16,13 +16,18 @@ from mail.send import send_mail
 from account.models import User
 
 from options_select.opt_slc import (
-    owner_prv,
     for_id,
     rent_comment,
     and_owner_request,
 )
-from auth_privileged.views import get_privileged_user, privileged
+
+from auth_privileged.opt_slc import get_privileged_user, privileged, owner_prv
+
+from .create_update import child_create, child_update
+
+from .img import im_rent
 from .models import Item, Rent, ScheduleRent
+
 
 
 templates = Jinja2Templates(directory="templates")
@@ -32,183 +37,26 @@ templates = Jinja2Templates(directory="templates")
 # ...
 async def rent_create(request):
     # ..
-    basewidth = 800
-    template = "/rent/create.html"
-
-    async with async_session() as session:
-        # ..
-        prv = await get_privileged_user(request, session)
-        # ..
-        if request.method == "GET":
-            # ..
-            obj_item = await owner_prv(session, Item, prv)
-            # ..
-            if obj_item:
-                return templates.TemplateResponse(
-                    template,
-                    {
-                        "request": request,
-                        "obj_item": obj_item,
-                    },
-                )
-            return RedirectResponse("/item/create")
-        # ...
-        if request.method == "POST":
-            # ..
-            form = await request.form()
-            # ..
-            title = form["title"]
-            description = form["description"]
-            file = form["file"]
-            rent_belongs = form["rent_belongs"]
-            owner = prv.id
-            # ..
-            if file.filename == "":
-                # ..
-                new = Rent()
-                new.title = title
-                new.description = description
-                new.owner = request.user.user_id
-                # ..
-                new.rent_belongs = int(rent_belongs)
-                # ..
-                new.created_at = datetime.now()
-
-                session.add(new)
-                await session.commit()
-                # ..
-                await send_mail(f"A new object has been created - {new}: {title}")
-                # ..
-                return RedirectResponse(
-                    f"/item/rent/details/{ new.id }",
-                    status_code=302,
-                )
-            # ..
-            email = await for_id(session, User, owner)
-            # ..
-            new = Rent()
-            new.title = title
-            new.description = description
-            new.owner = owner
-            new.rent_belongs = int(rent_belongs)
-            new.created_at = datetime.now()
-            # ..
-            session.add(new)
-            await session.flush()
-            new.file = await img.rent_img_creat(
-                file, email.email, rent_belongs, new.id, basewidth
-            )
-            session.add(new)
-            await session.commit()
-            # ..
-            await send_mail(f"A new object has been created - {new}: {title}")
-            # ..
-            return RedirectResponse(
-                f"/item/rent/details/{ new.id }",
-                status_code=302,
-            )
-
-    await engine.dispose()
+    form = await request.form()
+    belongs = form.get("belongs")
+    new = Rent()
+    new.rent_belongs = belongs
+    # ..
+    obj = await child_create(
+        request, form, belongs, Item, new, "rent", "item", im_rent
+    )
+    return obj
 
 
 @privileged()
 # ...
 async def rent_update(request):
     # ..
-    basewidth = 800
     id = request.path_params["id"]
-    template = "/rent/update.html"
-
-    async with async_session() as session:
-        # ..
-        i = await and_owner_request(request, session, Rent, id)
-        # ..
-        context = {
-            "request": request,
-            "i": i,
-        }
-        # ...
-        if request.method == "GET":
-            if i:
-                return templates.TemplateResponse(template, context)
-            return PlainTextResponse("You are banned - this is not your account..!")
-        # ...
-        if request.method == "POST":
-            # ..
-            form = await request.form()
-            # ..
-            title = form["title"]
-            description = form["description"]
-            file = form["file"]
-            del_obj = form.get("del_bool")
-            # ..
-            if file.filename == "":
-                query = (
-                    sqlalchemy_update(Rent)
-                    .where(Rent.id == id)
-                    .values(
-                        title=title,
-                        description=description,
-                        file=i.file,
-                        modified_at=datetime.now(),
-                    )
-                    .execution_options(synchronize_session="fetch")
-                )
-                await session.execute(query)
-                await session.commit()
-
-                if del_obj:
-                    if Path(f".{i.file}").exists():
-                        Path.unlink(f".{i.file}")
-
-                    fle_not = (
-                        sqlalchemy_update(Rent)
-                        .where(Rent.id == id)
-                        .values(file=None, modified_at=datetime.now())
-                        .execution_options(synchronize_session="fetch")
-                    )
-                    await session.execute(fle_not)
-                    await session.commit()
-                    # ..
-                    await send_mail(
-                        f"changes were made at the facility - {i}: {i.title}"
-                    )
-                    # ..
-                    return RedirectResponse(
-                        f"/item/rent/details/{id}",
-                        status_code=302,
-                    )
-                return RedirectResponse(
-                    f"/item/rent/details/{id}",
-                    status_code=302,
-                )
-            # ..
-            email = await for_id(session, User, i.owner)
-            file_query = (
-                sqlalchemy_update(Rent)
-                .where(Rent.id == id)
-                .values(
-                    title=title,
-                    description=description,
-                    file=await img.rent_img_creat(
-                        file, email.email, i.rent_belongs, i.id, basewidth
-                    ),
-                    modified_at=datetime.now(),
-                )
-                .execution_options(synchronize_session="fetch")
-            )
-            # ..
-            await session.execute(file_query)
-            await session.commit()
-            # ..
-            await send_mail(f"changes were made at the facility - {i}: {i.title}")
-            # ..
-            return RedirectResponse(
-                f"/item/rent/details/{id}",
-                status_code=302,
-            )
-
-    await engine.dispose()
+    obj = await child_update(
+        request, Rent, id, "service", im_rent
+    )
+    return obj
 
 
 @privileged()

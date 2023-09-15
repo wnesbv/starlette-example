@@ -5,11 +5,10 @@ import os, csv
 from config.settings import BASE_DIR
 
 
-async def export_csv(request, result):
-    user = request.user.email
+async def export_csv(result, prv):
     directory = (
         BASE_DIR
-        / f"static/csv/{user}"
+        / f"static/csv/{prv}"
     )
     os.makedirs(directory, exist_ok=True)
     # ..

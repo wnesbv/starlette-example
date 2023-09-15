@@ -17,7 +17,6 @@ from mail.send import send_mail
 
 from options_select.opt_slc import (
     for_id,
-    owner_prv,
     all_total,
     schedule_sv,
     srv_sch_user,
@@ -25,7 +24,7 @@ from options_select.opt_slc import (
     details_schedule_service,
 )
 
-from auth_privileged.views import get_privileged_user, privileged
+from auth_privileged.opt_slc import get_privileged_user, privileged, owner_prv
 from .models import Service, ScheduleService, MyEnum
 
 

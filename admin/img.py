@@ -8,6 +8,8 @@ from PIL import Image
 from starlette.exceptions import HTTPException
 from config.settings import BASE_DIR
 
+from auth_privileged.opt_slc import get_privileged_user, privileged, owner_prv, get_owner_prv, id_and_owner_prv
+
 
 async def img_creat(file, mdl, email, id_fle, basewidth):
     # ..
@@ -41,12 +43,12 @@ async def img_creat(file, mdl, email, id_fle, basewidth):
 
 
 async def sl_img_creat(
-    request, file, mdl, id_sl, basewidth
+    request, session, file, mdl, id_sl, basewidth
 ):
     # ..
-    user = request.user.email
+    prv = await get_privileged_user(request, session)
     name = datetime.now().strftime("%d-%m-%y-%H-%M")
-    save_path = f"./static/upload/{mdl}/{user}/{id_sl}"
+    save_path = f"./static/upload/{mdl}/{prv}/{id_sl}"
     # ..
     ext = PurePosixPath(file.filename).suffix
     file_path = f"{save_path}/{name}{ext}"

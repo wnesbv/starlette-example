@@ -24,7 +24,7 @@ from admin import img
 from account.models import User
 from mail.verify import verify_mail
 
-from auth_privileged.views import get_privileged_user
+from auth_privileged.opt_slc import get_privileged_user
 
 from .token import mail_verify
 

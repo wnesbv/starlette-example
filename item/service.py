@@ -20,11 +20,13 @@ from .models import Item, Service, ScheduleService
 
 from options_select.opt_slc import (
     for_id,
-    owner_prv,
     service_comment,
     and_owner_request,
 )
-from auth_privileged.views import get_privileged_user, privileged
+from auth_privileged.opt_slc import get_privileged_user, privileged, owner_prv
+
+from .img import im_service
+from .create_update import child_create, child_update
 
 
 templates = Jinja2Templates(directory="templates")
@@ -34,182 +36,26 @@ templates = Jinja2Templates(directory="templates")
 # ...
 async def service_create(request):
     # ..
-    basewidth = 800
-    template = "/service/create.html"
-
-    async with async_session() as session:
-        # ..
-        prv = await get_privileged_user(request, session)
-        # ..
-        if request.method == "GET":
-            # ..
-            obj_item = await owner_prv(session, Item, prv)
-            # ..
-            if obj_item:
-                return templates.TemplateResponse(
-                    template,
-                    {
-                        "request": request,
-                        "obj_item": obj_item,
-                    },
-                )
-            return RedirectResponse("/item/create")
-        # ...
-        if request.method == "POST":
-            # ..
-            form = await request.form()
-            # ..
-            title = form["title"]
-            description = form["description"]
-            file = form["file"]
-            service_belongs = form["service_belongs"]
-            owner = prv.id
-            # ..
-            if file.filename == "":
-
-                new = Service()
-                new.title = title
-                new.description = description
-                new.owner = owner
-                # ..
-                new.service_belongs = int(service_belongs)
-                # ..
-                new.created_at = datetime.now()
-                # ..
-                session.add(new)
-                await session.commit()
-                # ..
-                await send_mail(f"A new object has been created - {new}: {title}")
-                # ..
-                return RedirectResponse(
-                    f"/item/service/details/{ new.id }",
-                    status_code=302,
-                )
-            # ..
-            email = await for_id(session, User, owner)
-            new = Service()
-            new.title = title
-            new.description = description
-            new.owner = owner
-            new.service_belongs = int(service_belongs)
-            new.created_at = datetime.now()
-            # ..
-            session.add(new)
-            await session.flush()
-            new.file = await img.service_img_creat(
-                file, email.email, service_belongs, new.id, basewidth
-            )
-            session.add(new)
-            await session.commit()
-            # ..
-            await send_mail(f"A new object has been created - {new}: {title}")
-            # ..
-            return RedirectResponse(
-                f"/item/service/details/{ new.id }",
-                status_code=302,
-            )
-
-    await engine.dispose()
+    form = await request.form()
+    belongs = form.get("belongs")
+    new = Service()
+    new.service_belongs = belongs
+    # ..
+    obj = await child_create(
+        request, form, belongs, Item, new, "service", "item", im_service
+    )
+    return obj
 
 
 @privileged()
 # ...
 async def service_update(request):
     # ..
-    basewidth = 800
     id = request.path_params["id"]
-    template = "/service/update.html"
-
-    async with async_session() as session:
-        # ..
-        i = await and_owner_request(request, session, Service, id)
-        context = {
-            "request": request,
-            "i": i,
-        }
-        # ...
-        if request.method == "GET":
-            if i:
-                return templates.TemplateResponse(template, context)
-            return PlainTextResponse("You are banned - this is not your account..!")
-        # ...
-        if request.method == "POST":
-            # ..
-            form = await request.form()
-            # ..
-            title = form["title"]
-            file = form["file"]
-            description = form["description"]
-            del_obj = form.get("del_bool")
-            # ..
-            if file.filename == "":
-                query = (
-                    sqlalchemy_update(Service)
-                    .where(Service.id == id)
-                    .values(
-                        title=title,
-                        description=description,
-                        file=i.file,
-                    )
-                    .execution_options(synchronize_session="fetch")
-                )
-                await session.execute(query)
-                await session.commit()
-
-                if del_obj:
-                    if Path(f".{i.file}").exists():
-                        Path.unlink(f".{i.file}")
-
-                    fle_not = (
-                        sqlalchemy_update(Service)
-                        .where(Service.id == id)
-                        .values(file=None, modified_at=datetime.now())
-                        .execution_options(synchronize_session="fetch")
-                    )
-                    await session.execute(fle_not)
-                    await session.commit()
-                    # ..
-                    await send_mail(
-                        f"changes were made at the facility - {i}: {i.title}"
-                    )
-                    # ..
-                    return RedirectResponse(
-                        f"/item/service/details/{id}",
-                        status_code=302,
-                    )
-                return RedirectResponse(
-                    f"/item/service/details/{id}",
-                    status_code=302,
-                )
-            # ..
-            email = await for_id(session, User, i.owner)
-            file_query = (
-                sqlalchemy_update(Service)
-                .where(Service.id == id)
-                .values(
-                    title=title,
-                    description=description,
-                    file=await img.service_img_creat(
-                        file, email, i.service_belongs, i.id, basewidth
-                    ),
-                    modified_at=datetime.now(),
-                )
-                .execution_options(synchronize_session="fetch")
-            )
-            # ..
-            await session.execute(file_query)
-            await session.commit()
-            # ..
-            await send_mail(
-                f"changes were made at the facility - {i}: {i.title}"
-            )
-            # ..
-            return RedirectResponse(
-                f"/item/service/details/{id}",
-                status_code=302,
-            )
-
-    await engine.dispose()
+    obj = await child_update(
+        request, Service, id, "service", im_service
+    )
+    return obj
 
 
 @privileged()

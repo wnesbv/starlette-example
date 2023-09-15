@@ -52,14 +52,6 @@ async def owner_request(request, session, model):
     result = stmt.scalars().all()
     return result
 
-async def owner_prv(session, model, prv):
-    stmt = await session.execute(
-        select(model).where(model.owner == prv.id)
-    )
-    result = stmt.scalars().all()
-    return result
-
-
 # ..
 async def in_person_participant(request, session, id):
     stmt = await session.execute(

@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile, csv, uuid
 
 
-async def import_csv(request, model, session):
+async def import_csv(request, session, model, prv):
     # ..
     form = await request.form()
     # ..
@@ -26,13 +26,12 @@ async def import_csv(request, model, session):
                     **{
                         "title": i["title"],
                         "description": i["description"],
-                        "owner": request.user.user_id,
+                        "owner": prv.id,
                         "created_at": datetime.now(),
                     }
                 )
                 for i in csv.DictReader(csvfile)
             ]
         )
-
         csvfile.close()
         Path.unlink(f"{temp.name}")
