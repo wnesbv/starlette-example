@@ -19,10 +19,11 @@ from db_config.storage_config import engine, async_session
 from account.models import User
 from item.models import Service, ScheduleService, MyEnum
 
+from options_select.opt_slc import for_id
+
 from .opt_slc import (
     admin,
     get_admin_user,
-    in_schedule_sv,
     all_service,
     all_rent,
     all_schedule,
@@ -94,7 +95,8 @@ async def srv_list(request):
         if obj:
             # ..
             stmt = await session.execute(
-                select(ScheduleService).where(ScheduleService.sch_s_service_id == id)
+                select(ScheduleService)
+                .where(ScheduleService.sch_s_service_id == id)
             )
             obj_list = stmt.scalars().all()
             # ..
@@ -196,7 +198,7 @@ async def srv_id_sch_id(request):
                     json=sch_json, table_attributes=table_attributes
                 )
                 # ..
-                i = await in_schedule_sv(session, id)
+                i = await for_id(session, ScheduleService, id)
                 context = {
                     "request": request,
                     "sch_json": sch_json,
@@ -220,7 +222,7 @@ async def details(request):
             # ..
             if obj:
                 # ..
-                i = await in_schedule_sv(session, id)
+                i = await for_id(session, ScheduleService, id)
                 context = {
                     "request": request,
                     "i": i,
@@ -287,7 +289,7 @@ async def sch_create(request):
             await session.commit()
             # ..
             response = RedirectResponse(
-                f"/admin/schedule-service/details/{ new.id }",
+                f"/admin/scheduleservice/details/{ new.id }",
                 status_code=302,
             )
             return response
@@ -305,7 +307,8 @@ async def sch_update(request):
         # ..
         obj = await get_admin_user(request, session)
         # ..
-        i = await in_schedule_sv(session, id)
+        i = await for_id(session, ScheduleService, id)
+        # ..
         objects = list(MyEnum)
         context = {
             "request": request,
@@ -352,7 +355,7 @@ async def sch_update(request):
             await session.commit()
             # ..
             response = RedirectResponse(
-                f"/admin/schedule-service/details/{ i.id }",
+                f"/admin/scheduleservice/details/{ i.id }",
                 status_code=302,
             )
             return response
@@ -370,7 +373,7 @@ async def sch_delete(request):
         if request.method == "GET":
             # ..
             obj = await get_admin_user(request, session)
-            i = await in_schedule_sv(session, id)
+            i = await for_id(session, ScheduleService, id)
             # ..
             if obj:
                 return templates.TemplateResponse(
@@ -410,7 +413,7 @@ async def delete_service_csv(request):
                     f.unlink() for f in Path(directory).glob("*") if f.is_file()
                 ]
                 response = RedirectResponse(
-                    "/admin/schedule-service/list",
+                    "/admin/scheduleservice/list",
                     status_code=302,
                 )
                 return response

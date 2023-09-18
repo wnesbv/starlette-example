@@ -128,26 +128,6 @@ async def in_rent(session, id):
     return result
 
 
-async def in_schedule_r(session, id):
-    stmt = await session.execute(
-        select(ScheduleRent).where(
-            ScheduleRent.id == id,
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
-async def in_schedule_sv(session, id):
-    stmt = await session.execute(
-        select(ScheduleService).where(
-            ScheduleService.id == id,
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
 async def details_schedule_service(session, service):
     stmt = await session.execute(
         select(ScheduleService)

@@ -43,7 +43,10 @@
                 <sup class="float-start">title:</sup>
                 <p>{{ i.title }}</p>
             </li>
-
+            <li class="list-group-item pt-3">
+                <sup class="float-start">description:</sup>
+                <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+            </li>
             <li class="list-group-item pt-3">
                 <sup class="float-start">type_on:</sup>
                 {% if i.type_on %}
@@ -62,15 +65,11 @@
                 <sup class="float-start">there_is:</sup>
                 <span>{{ i.there_is }}</span>
             </li>
-            <li class="list-group-item pt-3">
-                <sup class="float-start">description:</sup>
-                <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
-            </li>
             {% include "created_modified.html" %}
         </ul>
 
         <div class="card-footer">
-        <a class="btn btn-outline-primary btn-sm" href="/item/schedule-service/details/{{ i.id }}" role="button">
+        <a class="btn btn-outline-primary btn-sm" href="/item/scheduleservice/details/{{ i.id }}" role="button">
             view details &raquo;
         </a>
         </div>

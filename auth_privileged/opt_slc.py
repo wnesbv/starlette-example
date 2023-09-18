@@ -109,3 +109,65 @@ async def owner_prv(session, model, prv):
     )
     result = stmt.scalars().all()
     return result
+
+
+# ..
+async def sch_sv_service_owner_id(request, session, id):
+    prv = await get_privileged_user(request, session)
+    stmt = await session.execute(
+        select(ScheduleService)
+        .where(
+            and_(
+                ScheduleService.sch_s_service_id == id,
+                ScheduleService.owner == prv.id,
+            )
+        )
+        .order_by(ScheduleService.id.desc())
+    )
+    result = stmt.scalars().all()
+    return result
+
+async def sch_sv_id(request, session, id):
+    prv = await get_privileged_user(request, session)
+    stmt = await session.execute(
+        select(ScheduleService.id)
+        .where(
+            and_(
+                ScheduleService.sch_s_service_id == id,
+                ScheduleService.owner == prv.id,
+            )
+        )
+        .order_by(ScheduleService.id.desc())
+    )
+    result = stmt.scalars().all()
+    return result
+
+async def sch_sv_user(request, session, id):
+    prv = await get_privileged_user(request, session)
+    stmt = await session.execute(
+        select(ScheduleService).where(
+            and_(
+                ScheduleService.sch_s_service_id == id,
+                ScheduleService.owner == prv.id,
+            )
+        )
+    )
+    result = stmt.scalars().first()
+    return result
+# ..
+
+
+async def dump_schedule_service(request, session, id):
+    prv = await get_privileged_user(request, session)
+    stmt = await session.execute(
+        select(DumpService)
+        .where(
+            and_(
+                DumpService.dump_s_service_id == id,
+                DumpService.owner == prv.id,
+            )
+        )
+        .order_by(DumpService.id.desc())
+    )
+    result = stmt.scalars().all()
+    return result

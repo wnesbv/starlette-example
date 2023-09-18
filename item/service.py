@@ -26,7 +26,7 @@ from options_select.opt_slc import (
 from auth_privileged.opt_slc import get_privileged_user, privileged, owner_prv
 
 from .img import im_service
-from .create_update import child_create, child_update
+from .create_update import child_img_create, child_img_update
 
 
 templates = Jinja2Templates(directory="templates")
@@ -41,7 +41,7 @@ async def service_create(request):
     new = Service()
     new.service_belongs = belongs
     # ..
-    obj = await child_create(
+    obj = await child_img_create(
         request, form, belongs, Item, new, "service", "item", im_service
     )
     return obj
@@ -52,7 +52,7 @@ async def service_create(request):
 async def service_update(request):
     # ..
     id = request.path_params["id"]
-    obj = await child_update(
+    obj = await child_img_update(
         request, Service, id, "service", im_service
     )
     return obj

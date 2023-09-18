@@ -2,9 +2,9 @@ from datetime import datetime
 
 import json
 
-from sqlalchemy import update as sqlalchemy_update, delete
+from sqlalchemy import update as sqlalchemy_update, delete, and_
+from sqlalchemy.future import select
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
@@ -18,13 +18,18 @@ from mail.send import send_mail
 from options_select.opt_slc import (
     for_id,
     all_total,
-    schedule_sv,
-    srv_sch_user,
     and_owner_request,
-    details_schedule_service,
 )
 
-from auth_privileged.opt_slc import get_privileged_user, privileged, owner_prv
+from auth_privileged.opt_slc import (
+    privileged,
+    get_owner_prv,
+    id_and_owner_prv,
+    get_privileged_user,
+    sch_sv_service_owner_id,
+)
+
+from .create_update import child_create, child_update
 from .models import Service, ScheduleService, MyEnum
 
 
@@ -35,12 +40,19 @@ templates = Jinja2Templates(directory="templates")
 # ...
 async def list_service(request):
     # ..
-    template = "/schedule/list_service.html"
+    template = "/scheduleservice/list_service.html"
 
     async with async_session() as session:
         # ..
         obj_count = await all_total(session, Service)
-        obj_list = await srv_sch_user(request, session)
+        prv = await get_privileged_user(request, session)
+        stmt = await session.execute(
+            select(Service)
+            .join(ScheduleService.sch_s_service)
+            .where(ScheduleService.owner == prv.id)
+            .order_by(ScheduleService.id.desc())
+        )
+        obj_list = stmt.scalars().unique()
         # ..
         context = {
             "request": request,
@@ -56,11 +68,11 @@ async def list_service(request):
 async def list_service_id(request):
     # ..
     id = request.path_params["id"]
-    template = "/schedule/list_service_id.html"
+    template = "/scheduleservice/list_service_id.html"
 
     async with async_session() as session:
         # ..
-        obj_list = await schedule_sv(request, session, id)
+        obj_list = await sch_sv_service_owner_id(request, session, id)
         # ..
         context = {
             "request": request,
@@ -76,15 +88,15 @@ async def details_service(request):
     # ..
     id = request.path_params["id"]
     service = request.path_params["service"]
-    template = "/schedule/details_service.html"
+    template = "/scheduleservice/details_service.html"
 
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            i = await and_owner_request(request, session, ScheduleService, id)
+            i = await id_and_owner_prv(request, session, ScheduleService, id)
             if i:
                 # ..
-                obj_list = await details_schedule_service(request, session, service)
+                obj_list = sch_sv_service_owner_id(request, session, service)
                 # ..
                 obj = [
                     {
@@ -119,12 +131,12 @@ async def details_service(request):
 async def details(request):
     # ..
     id = request.path_params["id"]
-    template = "/schedule/details.html"
+    template = "/scheduleservice/details.html"
 
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            obj = await and_owner_request(request, session, ScheduleService, id)
+            obj = await id_and_owner_prv(request, session, ScheduleService, id)
             if obj:
                 # ..
                 i = await for_id(session, ScheduleService, id)
@@ -141,68 +153,32 @@ async def details(request):
 # ...
 async def create_service(request):
     # ..
-    template = "/schedule/create_service.html"
-
-    async with async_session() as session:
-        # ..
-        prv = await get_privileged_user(request, session)
-        # ..
-        if request.method == "GET":
-            # ..
-            obj_service = await owner_prv(session, Service, prv)
-            objects = list(MyEnum)
-            # ..
-            if obj_service:
-                return templates.TemplateResponse(
-                    template,
-                    {
-                        "request": request,
-                        "obj_service": obj_service,
-                        "objects": objects,
-                    },
-                )
-            return RedirectResponse("/item/service/create")
-        # ...
-        if request.method == "POST":
-            # ..
-            form = await request.form()
-            # ..
-            str_date = form["number_on"]
-            str_there_is = form["there_is"]
-            # ..
-            name = form["name"]
-            title = form["title"]
-            description = form["description"]
-            type_on = form["type_on"]
-            sch_s_service_id = form["sch_s_service_id"]
-            # ..
-            owner = prv.id
-            # ..
-            number_on = datetime.strptime(str_date, settings.DATE)
-            there_is = datetime.strptime(str_there_is, settings.DATE_T)
-            # ...
-            new = ScheduleService()
-            new.name = name
-            new.title = title
-            new.description = description
-            new.type_on = type_on
-            new.number_on = number_on
-            new.there_is = there_is
-            new.owner = owner
-            new.sch_s_service_id = int(sch_s_service_id)
-            new.created_at = datetime.now()
-            # ..
-            session.add(new)
-            await session.commit()
-            # ..
-            await send_mail(f"A new object has been created - {new}: {name}")
-            # ..
-            response = RedirectResponse(
-                f"/item/schedule-service/details/{ new.id }",
-                status_code=302,
-            )
-            return response
-    await engine.dispose()
+    objects = list(MyEnum)
+    context = {
+        "objects": objects,
+    }
+    # ..
+    form = await request.form()
+    # ..
+    str_number = form.get("number_on")
+    str_there = form.get("there_is")
+    name = form.get("name")
+    type_on = form.get("type_on")
+    sch_s_service_id = form.get("sch_s_service_id")
+    # ..
+    new = ScheduleService()
+    new.name = name
+    new.type_on = type_on
+    new.sch_s_service_id = sch_s_service_id
+    # ..
+    if str_number and str_there is not None:
+        new.number_on = datetime.strptime(str_number, settings.DATE)
+        new.there_is = datetime.strptime(str_there, settings.DATE_T)
+    # ..
+    obj = await child_create(
+        request, context, form, Service, new, "scheduleservice", "service"
+    )
+    return obj
 
 
 @privileged()
@@ -210,63 +186,30 @@ async def create_service(request):
 async def update_service(request):
     # ..
     id = request.path_params["id"]
-    template = "/schedule/update_service.html"
-
-    async with async_session() as session:
-        # ..
-        i = await and_owner_request(request, session, ScheduleService, id)
-        objects = list(MyEnum)
-        context = {
-            "request": request,
-            "i": i,
-            "objects": objects,
+    # ..
+    context = {}
+    # ..
+    form = await request.form()
+    # ..
+    number_on = form.get("number_on")
+    there_is = form.get("there_is")
+    title = form.get("title")
+    description = form.get("description")
+    type_on = form.get("type_on")
+    # ..
+    if number_on and there_is is not None:
+        form = {
+            "number_on": datetime.strptime(number_on, settings.DATE_T),
+            "there_is": datetime.strptime(there_is, settings.DATE_T),
+            "title": title,
+            "description": description,
+            "type_on": type_on,
         }
-        # ...
-        if request.method == "GET":
-            if i:
-                return templates.TemplateResponse(template, context)
-            return PlainTextResponse("You are banned - this is not your account..!")
-        # ...
-        if request.method == "POST":
-            # ..
-            form = await request.form()
-            # ..
-            str_date = form["number_on"]
-            str_there_is = form["there_is"]
-            # ..
-            name = form["name"]
-            title = form["title"]
-            description = form["description"]
-            type_on = form["type_on"]
-            # ..
-            number_on = datetime.strptime(str_date, settings.DATE)
-            there_is = datetime.strptime(str_there_is, settings.DATE_T)
-            # ..
-            query = (
-                sqlalchemy_update(ScheduleService)
-                .where(ScheduleService.id == id)
-                .values(
-                    name=name,
-                    type_on=type_on,
-                    number_on=number_on,
-                    there_is=there_is,
-                    title=title,
-                    description=description,
-                    modified_at=datetime.now(),
-                )
-                .execution_options(synchronize_session="fetch")
-            )
-            # ..
-            await session.execute(query)
-            await session.commit()
-            # ..
-            await send_mail(f"changes were made at the facility - {i}: {i.name}")
-            # ..
-            return RedirectResponse(
-                f"/item/schedule-service/details/{ i.id }",
-                status_code=302,
-            )
-    await engine.dispose()
+        # ..
+    obj = await child_update(
+        request, context, ScheduleService, id, form, "scheduleservice"
+    )
+    return obj
 
 
 @privileged()
@@ -274,18 +217,18 @@ async def update_service(request):
 async def schedule_delete(request):
     # ..
     id = request.path_params["id"]
-    template = "/schedule/delete.html"
+    template = "/scheduleservice/delete.html"
 
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            detail = await and_owner_request(request, session, ScheduleService, id)
-            if detail:
+            i = await id_and_owner_prv(request, session, ScheduleService, id)
+            if i:
                 return templates.TemplateResponse(
                     template,
                     {
                         "request": request,
-                        "detail": detail,
+                        "i": i,
                     },
                 )
             return PlainTextResponse("You are banned - this is not your account..!")
@@ -297,7 +240,7 @@ async def schedule_delete(request):
             await session.commit()
             # ..
             response = RedirectResponse(
-                "/item/schedule-service/list",
+                "/item/scheduleservice/list",
                 status_code=302,
             )
             return response

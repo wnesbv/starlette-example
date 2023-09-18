@@ -111,11 +111,7 @@
                                 >service list</a
                             >
                         </li>
-                        <li class="nav-item">
-                            <a class="dropdown-item" href="/item/service/create"
-                                >service create</a
-                            >
-                        </li>
+
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -132,12 +128,12 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li class="nav-item">
                             <a class="dropdown-item" href="/item/rent/list"
-                                >rent list</a
+                                >all rent list</a
                             >
                         </li>
                         <li class="nav-item">
-                            <a class="dropdown-item" href="/item/rent/create"
-                                >rent create</a
+                            <a class="dropdown-item" href="/item/rent/list-prv"
+                                >prv rent list</a
                             >
                         </li>
                     </ul>
@@ -157,15 +153,8 @@
                         <li class="nav-item">
                             <a
                                 class="dropdown-item"
-                                href="/item/schedule-rent/list"
+                                href="/item/schedulerent/list"
                                 >rent schedule list</a
-                            >
-                        </li>
-                        <li class="nav-item">
-                            <a
-                                class="dropdown-item"
-                                href="/item/schedule-service/list-service"
-                                >service schedule list</a
                             >
                         </li>
                         <li>
@@ -174,15 +163,8 @@
                         <li class="nav-item">
                             <a
                                 class="dropdown-item"
-                                href="/item/schedule-rent/create"
-                                >rent schedule create</a
-                            >
-                        </li>
-                        <li class="nav-item">
-                            <a
-                                class="dropdown-item"
-                                href="/item/schedule-service/create"
-                                >service schedule create</a
+                                href="/item/scheduleservice/list-service"
+                                >service schedule list</a
                             >
                         </li>
                     </ul>
@@ -219,17 +201,17 @@
                         <li>
                             <a
                                 class="dropdown-item"
-                                href="/api/schedule-rent/list"
+                                href="/api/schedulerent/list"
                             >
-                                schedule-rent-list
+                                schedulerent-list
                             </a>
                         </li>
                         <li>
                             <a
                                 class="dropdown-item"
-                                href="/api/schedule-service/list"
+                                href="/api/scheduleservice/list"
                             >
-                                schedule-service-list
+                                scheduleservice-list
                             </a>
                         </li>
                     </ul>
@@ -323,8 +305,38 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li>
                             <a class="dropdown-item" href="/item/create"
-                                >create item</a
+                                >item create</a
                             >
+                        </li>
+                        <li class="nav-item">
+                            <a class="dropdown-item" href="/item/rent/create"
+                                >rent create</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a class="dropdown-item" href="/item/service/create"
+                                >service create</a
+                            >
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="dropdown-item"
+                                href="/item/schedulerent/create"
+                                >create schedule rent</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="dropdown-item"
+                                href="/item/scheduleservice/create"
+                                >create schedule service</a
+                            >
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider" />
                         </li>
                         <li>
                             <a class="dropdown-item" href="/chat/group/create/"

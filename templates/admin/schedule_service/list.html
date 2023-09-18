@@ -6,7 +6,7 @@
 
 <h1 class="lead my-3">admin all ScheduleService..</h1>
 
-<a class="btn btn-outline-primary btn-sm" href="/admin/schedule-service/all-user-sch-list" role="button">all user sch list &raquo;</a>
+<a class="btn btn-outline-primary btn-sm" href="/admin/scheduleservice/all-user-sch-list" role="button">all user sch list &raquo;</a>
 
 <div class="flex_start">
     {% if obj_list %}
@@ -57,14 +57,14 @@
         </ul>
 
         <div class="card-footer">
-        <a class="btn btn-outline-primary btn-sm" href="/admin/schedule-service/details/{{ i.id }}" role="button">view details &raquo;</a>
+        <a class="btn btn-outline-primary btn-sm" href="/admin/scheduleservice/details/{{ i.id }}" role="button">view details &raquo;</a>
         </div>
 
         <div class="card-footer">
 
-        <a class="btn btn-outline-primary btn-sm" href="/admin/schedule-service/user-sch/{{ i.owner }}" role="button">user all sch &raquo;</a>
-        <a class="btn btn-outline-primary btn-sm" href="/admin/schedule-service/srv-sch/{{ i.sch_s_service_id }}" role="button">service all sch &raquo;</a>
-        <a class="btn btn-outline-primary btn-sm" href="/admin/schedule-service/details/{{ i.sch_s_service_id }}/{{ i.id }}" role="button">srv id sch id &raquo;</a>
+        <a class="btn btn-outline-primary btn-sm" href="/admin/scheduleservice/user-sch/{{ i.owner }}" role="button">user all sch &raquo;</a>
+        <a class="btn btn-outline-primary btn-sm" href="/admin/scheduleservice/srv-sch/{{ i.sch_s_service_id }}" role="button">service all sch &raquo;</a>
+        <a class="btn btn-outline-primary btn-sm" href="/admin/scheduleservice/details/{{ i.sch_s_service_id }}/{{ i.id }}" role="button">srv id sch id &raquo;</a>
 
         </div>
 

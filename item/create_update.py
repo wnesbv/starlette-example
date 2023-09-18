@@ -84,7 +84,7 @@ async def parent_create(request, model, obj, img):
     await engine.dispose()
 
 
-async def child_create(
+async def child_img_create(
     request, form, belongs, model, new, item, re_item, img
 ):
     # ..
@@ -113,7 +113,6 @@ async def child_create(
             # ..
             title = form["title"]
             description = form["description"]
-            owner = prv.id
             file = form["file"]
             # ..
             if file.filename == "":
@@ -133,11 +132,11 @@ async def child_create(
                     status_code=302,
                 )
             # ..
-            email = await for_id(session, User, owner)
+            email = await for_id(session, User, prv.id)
             # ..
             new.title = title
             new.description = description
-            new.owner = owner
+            new.owner = prv.id
             new.created_at = datetime.now()
             # ..
             session.add(new)
@@ -158,7 +157,7 @@ async def child_create(
     await engine.dispose()
 
 
-async def child_update(request, model, id, item, img):
+async def child_img_update(request, model, id, item, img):
     # ..
     basewidth = 800
     template = f"/{item}/update.html"
@@ -248,4 +247,92 @@ async def child_update(request, model, id, item, img):
                 f"/item/{item}/details/{id}",
                 status_code=302,
             )
+    await engine.dispose()
+
+
+
+async def child_create(
+    request, context, form, model, new, item, re_item
+):
+    # ..
+    template = f"/{item}/create.html"
+
+    async with async_session() as session:
+        # ..
+        prv = await get_privileged_user(request, session)
+        # ..
+        if request.method == "GET":
+            # ..
+            obj_list = await owner_prv(session, model, prv)
+            # ..
+            if obj_list:
+                context["request"] = request
+                context["obj_list"] = obj_list
+                return templates.TemplateResponse(
+                    template, context
+                )
+            return RedirectResponse(f"/item/{re_item}/create")
+        # ...
+        if request.method == "POST":
+            # ..
+            form = await request.form()
+            # ..
+            title = form["title"]
+            description = form["description"]
+            # ...
+            new.title = title
+            new.description = description
+            new.owner = prv.id
+            new.created_at = datetime.now()
+            # ..
+            session.add(new)
+            await session.commit()
+            # ..
+            await send_mail(f"A new object has been created - {new}: {title}")
+            # ..
+            response = RedirectResponse(
+                f"/item/{item}/details/{ new.id }",
+                status_code=302,
+            )
+            return response
+    await engine.dispose()
+
+
+async def child_update(request, context, model, id, form, item):
+    # ..
+    template = f"/{item}/update.html"
+
+    async with async_session() as session:
+        # ..
+        i = await id_and_owner_prv(request, session, model, id)
+        # ..
+        if request.method == "GET":
+            if i:
+                context["request"] = request
+                context["i"] = i
+                return templates.TemplateResponse(template, context)
+            return PlainTextResponse("You are banned - this is not your account..!")
+        # ...
+        if request.method == "POST":
+            # ..
+            query = (
+                sqlalchemy_update(model)
+                .where(model.id == id)
+                .values(
+                    **form,
+                    modified_at=datetime.now(),
+                )
+                .execution_options(synchronize_session="fetch")
+            )
+            # ..
+            await session.execute(query)
+            await session.commit()
+            # ..
+            await send_mail(f"changes were made at the facility - {i}: {i.title}")
+            # ..
+            response = RedirectResponse(
+                f"/item/{item}/details/{ id }",
+                status_code=302,
+            )
+            return response
     await engine.dispose()

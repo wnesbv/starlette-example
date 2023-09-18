@@ -45,54 +45,54 @@ routes = [
 
 
     # ..schedule rent
-    Route("/schedule-rent/list", schedule_rent.rent_list),
+    Route("/schedulerent/list", schedule_rent.rent_list),
     Route(
-        "/schedule-rent/details/{id:int}",
+        "/schedulerent/details/{id:int}",
         schedule_rent.rent_details,
         methods=["GET", "POST"],
     ),
-    Route("/schedule-rent/create/", schedule_rent.item_create, methods=["GET", "POST"]),
+    Route("/schedulerent/create/", schedule_rent.rent_create, methods=["GET", "POST"]),
     Route(
-        "/schedule-rent/update/{id:int}",
-        schedule_rent.item_update,
+        "/schedulerent/update/{id:int}",
+        schedule_rent.rent_update,
         methods=["GET", "POST"],
     ),
     Route(
-        "/schedule-rent/delete/{id:int}",
-        schedule_rent.item_delete,
+        "/schedulerent/delete/{id:int}",
+        schedule_rent.rent_delete,
         methods=["GET", "POST"],
     ),
 
     # ..schedule service
-    Route("/schedule-service/list", schedule_service.sch_list),
-    Route("/schedule-service/user-sch/{id:int}", schedule_service.user_list),
-    Route("/schedule-service/srv-sch/{id:int}", schedule_service.srv_list),
+    Route("/scheduleservice/list", schedule_service.sch_list),
+    Route("/scheduleservice/user-sch/{id:int}", schedule_service.user_list),
+    Route("/scheduleservice/srv-sch/{id:int}", schedule_service.srv_list),
 
-    Route("/schedule-service/all-user-sch-list", schedule_service.all_user_sch_list),
+    Route("/scheduleservice/all-user-sch-list", schedule_service.all_user_sch_list),
     # ...
     Route(
-        "/schedule-service/details/{service:int}/{id:int}",
+        "/scheduleservice/details/{service:int}/{id:int}",
         schedule_service.srv_id_sch_id,
         methods=["GET", "POST"],
     ),
     Route(
-        "/schedule-service/details/{id:int}",
+        "/scheduleservice/details/{id:int}",
         schedule_service.details,
         methods=["GET", "POST"],
     ),
     # ...
     Route(
-        "/schedule-service/create/",
+        "/scheduleservice/create/",
         schedule_service.sch_create,
         methods=["GET", "POST"],
     ),
     Route(
-        "/schedule-service/update/{id:int}",
+        "/scheduleservice/update/{id:int}",
         schedule_service.sch_update,
         methods=["GET", "POST"],
     ),
     Route(
-        "/schedule-service/delete/{id:int}",
+        "/scheduleservice/delete/{id:int}",
         schedule_service.sch_delete,
         methods=["GET", "POST"],
     ),

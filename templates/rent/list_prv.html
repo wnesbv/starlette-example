@@ -1,0 +1,58 @@
+
+{% extends "base.html" %}
+{% block title %} prv list rent {% endblock %}
+
+{% block content %}
+
+<h1 class="lead my-3">prv list rent..</h1>
+
+<div class="card">
+    <h2 class="card-body lead">list rent..</h2>
+    <p class="card-footer">This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+
+</div>
+
+<div class="flex_start">
+{% if obj_list %}
+{% for i in obj_list %}
+    <div class="card mt-2 me-1">
+
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item pt-3">
+                <sup class="float-start">id:</sup>
+                <span class="me-3">{{ i.id }}</span>
+            </li>
+            <li class="list-group-item pt-3">
+                <sup class="float-start">owner:</sup>
+                <span>{{ i.owner }}</span>
+            </li>
+            <li class="list-group-item pt-3">
+                <sup class="float-start">rent to item:</sup>
+                {{ i.rent_belongs }}
+            </li>
+        </ul>
+
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">title:</sup>
+                <p>{{ i.title }}</p>
+            </li>
+            <li class="list-group-item">
+                <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+            </li>
+            {% include "created_modified.html" %}
+        </ul>
+
+        <div class="card-footer">
+        <a class="btn btn-outline-primary btn-sm" href="/item/rent/details/{{ i.id }}" role="button">View details &raquo;</a>
+        </div>
+
+    </div>
+{% endfor %}
+
+    {% else %}
+    <span class="mt-5">no information available</span>
+{% endif %}
+</div>
+
+{% endblock %}

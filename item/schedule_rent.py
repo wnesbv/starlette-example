@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 import json
@@ -16,12 +15,15 @@ from db_config.storage_config import engine, async_session
 from mail.send import send_mail
 
 from options_select.opt_slc import (
-    schedule_rent_user,
     and_owner_request,
-    details_schedule_rent,
 )
-from auth_privileged.opt_slc import get_privileged_user, privileged, owner_prv
+from auth_privileged.opt_slc import (
+    privileged,
+    get_owner_prv,
+    id_and_owner_prv,
+)
 
+from .create_update import child_create, child_update
 from .models import Rent, ScheduleRent
 
 
@@ -31,10 +33,12 @@ templates = Jinja2Templates(directory="templates")
 @privileged()
 # ...
 async def list_rent(request):
-    template = "/schedule/list_rent.html"
+    # ..
+    template = "/schedulerent/list.html"
+
     async with async_session() as session:
         # ..
-        obj_list = await schedule_rent_user(request, session)
+        obj_list = await get_owner_prv(request, session, ScheduleRent)
         # ..
         context = {
             "request": request,
@@ -49,15 +53,15 @@ async def list_rent(request):
 async def details_rent(request):
     # ..
     id = request.path_params["id"]
-    template = "/schedule/details_rent.html"
+    template = "/schedulerent/details.html"
 
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            i = await and_owner_request(request, session, ScheduleRent, id)
+            i = await id_and_owner_prv(request, session, ScheduleRent, id)
             if i:
                 # ..
-                obj_list = await details_schedule_rent(request, session)
+                obj_list = await get_owner_prv(request, session, ScheduleRent)
                 # ..
                 obj = [
                     {
@@ -85,63 +89,22 @@ async def details_rent(request):
 @privileged()
 # ...
 async def create_rent(request):
+    context = {}
     # ..
-    template = "/schedule/create_rent.html"
-
-    async with async_session() as session:
-        # ..
-        prv = await get_privileged_user(request, session)
-        # ..
-        if request.method == "GET":
-            # ..
-            obj_rent = await owner_prv(session, Rent, prv)
-            # ..
-            if obj_rent:
-                return templates.TemplateResponse(
-                    template,
-                    {
-                        "request": request,
-                        "obj_rent": obj_rent,
-                    },
-                )
-            return RedirectResponse("/item/rent/create")
-        # ...
-        if request.method == "POST":
-            # ..
-            form = await request.form()
-            # ..
-            str_start = form["start"]
-            str_end = form["end"]
-            # ..
-            title = form["title"]
-            description = form["description"]
-            sch_r_rent_id = form["sch_r_rent_id"]
-            # ..
-            start = datetime.strptime(str_start, settings.DATE_T)
-            end = datetime.strptime(str_end, settings.DATE_T)
-            # ..
-            owner = prv.id
-            # ...
-            new = ScheduleRent()
-            new.start = start
-            new.end = end
-            new.title = title
-            new.description = description
-            new.owner = owner
-            new.sch_r_rent_id = int(sch_r_rent_id)
-            new.created_at = datetime.now()
-            # ..
-            session.add(new)
-            await session.commit()
-            # ..
-            await send_mail(f"A new object has been created - {new}: {title}")
-            # ..
-            response = RedirectResponse(
-                f"/item/schedule-rent/details/{ new.id }",
-                status_code=302,
-            )
-            return response
-    await engine.dispose()
+    form = await request.form()
+    start = form.get("start")
+    end = form.get("end")
+    sch_r_rent_id = form.get("sch_r_rent_id")
+    # ..
+    new = ScheduleRent()
+    new.sch_r_rent_id = sch_r_rent_id
+    # ..
+    if start and end is not None:
+        new.start = datetime.strptime(start, settings.DATE_T)
+        new.end = datetime.strptime(end, settings.DATE_T)
+    # ..
+    obj = await child_create(request, context, form, Rent, new, "schedulerent", "rent")
+    return obj
 
 
 @privileged()
@@ -149,59 +112,26 @@ async def create_rent(request):
 async def update_rent(request):
     # ..
     id = request.path_params["id"]
-    template = "/schedule/update_rent.html"
-
-    async with async_session() as session:
-        # ..
-        detail = await and_owner_request(request, session, ScheduleRent, id)
-        # ..
-        context = {
-            "request": request,
-            "detail": detail,
+    # ..
+    context = {}
+    # ..
+    form = await request.form()
+    # ..
+    start = form.get("start")
+    end = form.get("end")
+    title = form.get("title")
+    description = form.get("description")
+    # ..
+    if start and end is not None:
+        form = {
+        "start": datetime.strptime(start, settings.DATE_T),
+        "end": datetime.strptime(end, settings.DATE_T),
+        "title": title,
+        "description": description,
         }
-        # ...
-        if request.method == "GET":
-            if detail:
-                return templates.TemplateResponse(template, context)
-            return PlainTextResponse("You are banned - this is not your account..!")
-        # ...
-        if request.method == "POST":
-            form = await request.form()
-            # ..
-            str_start = form["start"]
-            str_end = form["end"]
-            # ..
-            title = form["title"]
-            description = form["description"]
-            # ..
-            start = datetime.strptime(str_start, settings.DATE_T)
-            end = datetime.strptime(str_end, settings.DATE_T)
-            # ..
-            query = (
-                sqlalchemy_update(ScheduleRent)
-                .where(ScheduleRent.id == id)
-                .values(
-                    start=start,
-                    end=end,
-                    title=title,
-                    description=description,
-                )
-                .execution_options(synchronize_session="fetch")
-            )
-            # ..
-            await session.execute(query)
-            await session.commit()
-            # ..
-            await send_mail(
-                f"changes were made at the facility - {detail}: {detail.title}"
-            )
-            # ..
-            response = RedirectResponse(
-                f"/item/schedule-rent/details/{detail.id}",
-                status_code=302,
-            )
-            return response
-    await engine.dispose()
+        # ..
+    obj = await child_update(request, context, ScheduleRent, id, form, "schedulerent")
+    return obj
 
 
 @privileged()
@@ -209,18 +139,18 @@ async def update_rent(request):
 async def schedule_delete(request):
     # ..
     id = request.path_params["id"]
-    template = "/schedule/delete.html"
+    template = "/schedulerent/delete.html"
 
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            detail = await and_owner_request(request, session, ScheduleRent, id)
-            if detail:
+            i = await id_and_owner_prv(request, session, ScheduleRent, id)
+            if i:
                 return templates.TemplateResponse(
                     template,
                     {
                         "request": request,
-                        "detail": detail,
+                        "i": i,
                     },
                 )
             return PlainTextResponse("You are banned - this is not your account..!")
@@ -233,7 +163,7 @@ async def schedule_delete(request):
             await session.commit()
             # ..
             response = RedirectResponse(
-                "/item/schedule-rent/list",
+                "/item/schedulerent/list",
                 status_code=302,
             )
             return response

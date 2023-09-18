@@ -14,18 +14,29 @@ from admin import img
 from mail.send import send_mail
 from account.models import User
 
-from options_select.opt_slc import for_id, item_comment, and_owner_request, owner_request
+from options_select.opt_slc import (
+    for_id,
+    item_comment,
+    and_owner_request,
+    owner_request,
+)
 
 from options_select.csv_import import import_csv
 from options_select.csv_export import export_csv
 
-from auth_privileged.opt_slc import get_privileged_user, privileged, owner_prv, get_owner_prv, id_and_owner_prv
+from auth_privileged.opt_slc import (
+    get_privileged_user,
+    privileged,
+    owner_prv,
+    get_owner_prv,
+    id_and_owner_prv,
+)
 
 from .models import Item, Service, Rent
 from config.settings import BASE_DIR
 
 from .img import im_item
-from .create_update import parent_create, child_create, child_update
+from .create_update import parent_create, child_img_create, child_img_update
 
 
 templates = Jinja2Templates(directory="templates")
@@ -85,9 +96,7 @@ async def import_item_csv(request):
 @privileged()
 # ...
 async def item_create(request):
-    obj = await parent_create(
-        request, Item, "item", im_item
-    )
+    obj = await parent_create(request, Item, "item", im_item)
     return obj
 
 
@@ -96,9 +105,7 @@ async def item_create(request):
 async def item_update(request):
     # ..
     id = request.path_params["id"]
-    obj = await child_update(
-        request, Item, id, "item", im_item
-    )
+    obj = await child_img_update(request, Item, id, "item", im_item)
     return obj
 
 

@@ -56,6 +56,7 @@ routes = [
     Route("/delete/{id:int}", item.item_delete, methods=["GET", "POST"]),
     # ..
     Route("/rent/list", rent.rent_list),
+    Route("/rent/list-prv", rent.rent_list_prv),
     Route("/rent/details/{id:int}", rent.rent_details),
     Route("/rent/create", rent.rent_create, methods=["GET", "POST"]),
     Route("/rent/update/{id:int}", rent.rent_update, methods=["GET", "POST"]),
@@ -67,48 +68,48 @@ routes = [
     Route("/service/update/{id:int}", service.service_update, methods=["GET", "POST"]),
     Route("/service/delete/{id:int}", service.service_delete, methods=["GET", "POST"]),
     # ..
-    Route("/schedule-rent/list", schedule_rent.list_rent),
+    Route("/schedulerent/list", schedule_rent.list_rent),
     Route(
-        "/schedule-rent/details/{id:int}",
+        "/schedulerent/details/{id:int}",
         schedule_rent.details_rent,
         methods=["GET", "POST"],
     ),
-    Route("/schedule-rent/create/", schedule_rent.create_rent, methods=["GET", "POST"]),
+    Route("/schedulerent/create/", schedule_rent.create_rent, methods=["GET", "POST"]),
     Route(
-        "/schedule-rent/update/{id:int}",
+        "/schedulerent/update/{id:int}",
         schedule_rent.update_rent,
         methods=["GET", "POST"],
     ),
     Route(
-        "/schedule-rent/delete/{id:int}", schedule_rent.schedule_delete, methods=["GET", "POST"]
+        "/schedulerent/delete/{id:int}", schedule_rent.schedule_delete, methods=["GET", "POST"]
     ),
     # ..
-    Route("/schedule-service/list-service", schedule_service.list_service),
-    Route("/schedule-service/list/{id:int}", schedule_service.list_service_id),
+    Route("/scheduleservice/list-service", schedule_service.list_service),
+    Route("/scheduleservice/list/{id:int}", schedule_service.list_service_id),
     # ...
     Route(
-        "/schedule-service/details/{service:int}/{id:int}",
+        "/scheduleservice/details/{service:int}/{id:int}",
         schedule_service.details_service,
         methods=["GET", "POST"],
     ),
     Route(
-        "/schedule-service/details/{id:int}",
+        "/scheduleservice/details/{id:int}",
         schedule_service.details,
         methods=["GET", "POST"],
     ),
     # ...
     Route(
-        "/schedule-service/create",
+        "/scheduleservice/create",
         schedule_service.create_service,
         methods=["GET", "POST"],
     ),
     Route(
-        "/schedule-service/update/{id:int}",
+        "/scheduleservice/update/{id:int}",
         schedule_service.update_service,
         methods=["GET", "POST"],
     ),
     Route(
-        "/schedule-service/delete/{id:int}",
+        "/scheduleservice/delete/{id:int}",
         schedule_service.schedule_delete,
         methods=["GET", "POST"],
     ),

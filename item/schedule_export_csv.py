@@ -1,4 +1,3 @@
-
 from pathlib import Path
 from datetime import datetime
 
@@ -10,7 +9,6 @@ from sqlalchemy.future import select
 
 from aiocsv import AsyncWriter
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import (
     PlainTextResponse,
@@ -20,14 +18,15 @@ from starlette.responses import (
 from config.settings import BASE_DIR
 
 from db_config.storage_config import engine, async_session
-from options_select.opt_slc import (
-    for_id,
-    and_owner_request,
+from options_select.opt_slc import for_id, and_owner_request
+
+from auth_privileged.opt_slc import (
+    privileged,
+    get_privileged_user,
+    sch_sv_service_owner_id,
     sch_sv_user,
-    schedule_sv,
     dump_schedule_service,
 )
-from auth_privileged.opt_slc import get_privileged_user, privileged
 from .models import DumpService
 
 
@@ -42,28 +41,28 @@ async def export_csv(request):
     # ..
     file_time = datetime.now()
     directory = (
-        BASE_DIR
-        / f"static/service/{file_time.strftime('%Y-%m-%d-%H-%M-%S')}.csv"
+        BASE_DIR / f"static/service/{file_time.strftime('%Y-%m-%d-%H-%M-%S')}.csv"
     )
     filename = f"{file_time.strftime('%Y-%m-%d-%H-%M-%S')}.csv"
 
     async with async_session() as session:
-
+        prv = await get_privileged_user(request, session)
         if request.method == "GET":
-            #..
+            # ..
             detail = await sch_sv_user(request, session, id)
-            #..
+            # ..
             if detail:
                 # ..
-                records = await schedule_sv(request, session, id)
+                records = await sch_sv_service_owner_id(request, session, id)
                 # ..
                 async with aiofiles.open(
-                    directory, mode="w",
+                    directory,
+                    mode="w",
                     encoding="utf-8",
                 ) as afp:
-                    #..
+                    # ..
                     writer = AsyncWriter(afp)
-                    #..
+                    # ..
                     await writer.writerow(
                         [
                             "id",
@@ -94,24 +93,22 @@ async def export_csv(request):
                             ]
                         )
                         # ..
-                    #..
+                    # ..
                     title = file_time
                     query = insert(DumpService).values(
                         title=title,
-                        owner=request.user.user_id,
+                        owner=prv.id,
                         dump_s_service_id=id,
                     )
                     await session.execute(query)
                     await session.commit()
-                    #..
+                    # ..
                     response = RedirectResponse(
                         f"/static/service/{filename}",
                         status_code=302,
                     )
                     return response
-            return PlainTextResponse(
-                "You are banned - this is not your account..!"
-            )
+            return PlainTextResponse("You are banned - this is not your account..!")
     await engine.dispose()
 
 
@@ -123,20 +120,15 @@ async def dump_csv(request):
     template = "/schedule/dump_csv.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
-            #..
+            # ..
             obj_list = await dump_schedule_service(request, session, id)
-            #..
+            # ..
             if not obj_list:
-                return PlainTextResponse(
-                    "no information available..!"
-                )
-                #..
+                return PlainTextResponse("no information available..!")
+                # ..
             context = {"request": request, "obj_list": obj_list}
-            return templates.TemplateResponse(
-                template, context
-            )
+            return templates.TemplateResponse(template, context)
     await engine.dispose()
 
 
@@ -148,38 +140,30 @@ async def delete_user_csv(request):
     template = "/schedule/delete_user_csv.html"
 
     async with async_session() as session:
-
         if request.method == "GET":
-            #..
+            # ..
             detail = await and_owner_request(request, session, DumpService, id)
-            #..
+            # ..
             if detail:
                 context = {"request": request}
-                return templates.TemplateResponse(
-                    template, context
-                )
-            return PlainTextResponse(
-                "You are banned - this is not your account..!"
-            )
+                return templates.TemplateResponse(template, context)
+            return PlainTextResponse("You are banned - this is not your account..!")
         # ...
         if request.method == "POST":
-            #..
+            # ..
             result = await for_id(session, DumpService, id)
             root_directory = (
                 BASE_DIR
                 / f"static/service/{result.title.strftime('%Y-%m-%d-%H-%M-%S')}.csv"
             )
             await aiofiles.os.remove(root_directory)
-            #..
-            query = (
-                delete(DumpService)
-                .where(DumpService.id == id)
-            )
+            # ..
+            query = delete(DumpService).where(DumpService.id == id)
             await session.execute(query)
             await session.commit()
-            #..
+            # ..
             response = RedirectResponse(
-                "/item/schedule-service/list_service",
+                "/item/scheduleservice/list_service",
                 status_code=303,
             )
             return response

@@ -14,9 +14,7 @@ from config.settings import BASE_DIR
 from db_config.settings import settings
 from db_config.storage_config import engine, async_session
 
-from options_select.opt_slc import sch_sv_user, sch_sv_id
-
-from auth_privileged.opt_slc import get_privileged_user, privileged
+from auth_privileged.opt_slc import privileged, get_privileged_user, sch_sv_user, sch_sv_id
 from .models import ScheduleService
 
 
@@ -31,7 +29,7 @@ templates = Jinja2Templates(directory="templates")
 async def import_sch_csv(request):
     # ..
     id = request.path_params["id"]
-    template = "/item/schedule/import_csv.html"
+    template = "/item/scheduleservice/import_csv.html"
 
     async with async_session() as session:
 
@@ -96,7 +94,7 @@ async def import_sch_csv(request):
                 await session.commit()
                 # ..
                 response = RedirectResponse(
-                    "/item/schedule-service/list_service",
+                    "/item/scheduleservice/list_service",
                     status_code=302,
                 )
                 return response

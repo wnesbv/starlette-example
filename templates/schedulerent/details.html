@@ -38,19 +38,16 @@
     </div>
 </div>
 
-
-{% if request.user.is_authenticated %}
-    <div class="card">
-        <div class="card-header">
-            <a class="btn btn-outline-primary btn-sm me-2" href="/item/schedule-rent/update/{{ i.id }}" role="button">
-                <i class="bi bi-pencil"></i> &raquo;
-            </a>
-            <a class="btn btn-outline-danger btn-sm" href="/item/schedule-rent/delete/{{ i.id }}" role="button">
-                <i class="bi bi-trash3"></i> &raquo;
-            </a>
-        </div>
+<div class="card">
+    <div class="card-header">
+        <a class="btn btn-outline-primary btn-sm me-2" href="/item/schedulerent/update/{{ i.id }}" role="button">
+            <i class="bi bi-pencil"></i> &raquo;
+        </a>
+        <a class="btn btn-outline-danger btn-sm" href="/item/schedulerent/delete/{{ i.id }}" role="button">
+            <i class="bi bi-trash3"></i> &raquo;
+        </a>
     </div>
-{% endif %}
+</div>
 
 {% endblock %}
 

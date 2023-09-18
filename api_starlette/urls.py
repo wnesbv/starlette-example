@@ -18,6 +18,6 @@ routes = [
     Route("/item-update/{id:int}", item_update, methods=["GET", "POST"],),
     Route("/item-details/{id:int}", item_details),
     # ..
-    Route("/schedule-rent/list", schedule_rent_list),
-    Route("/schedule-service/list", schedule_service_list),
+    Route("/schedulerent/list", schedule_rent_list),
+    Route("/scheduleservice/list", schedule_service_list),
 ]

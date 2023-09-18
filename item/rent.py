@@ -18,12 +18,11 @@ from account.models import User
 from options_select.opt_slc import (
     for_id,
     rent_comment,
-    and_owner_request,
 )
 
-from auth_privileged.opt_slc import get_privileged_user, privileged, owner_prv
+from auth_privileged.opt_slc import privileged, get_privileged_user, id_and_owner_prv, get_owner_prv
 
-from .create_update import child_create, child_update
+from .create_update import child_img_create, child_img_update
 
 from .img import im_rent
 from .models import Item, Rent, ScheduleRent
@@ -42,7 +41,7 @@ async def rent_create(request):
     new = Rent()
     new.rent_belongs = belongs
     # ..
-    obj = await child_create(
+    obj = await child_img_create(
         request, form, belongs, Item, new, "rent", "item", im_rent
     )
     return obj
@@ -53,7 +52,7 @@ async def rent_create(request):
 async def rent_update(request):
     # ..
     id = request.path_params["id"]
-    obj = await child_update(
+    obj = await child_img_update(
         request, Rent, id, "service", im_rent
     )
     return obj
@@ -69,7 +68,7 @@ async def rent_delete(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            i = await and_owner_request(request, session, Rent, id)
+            i = await id_and_owner_prv(request, session, Rent, id)
             # ..
             if i:
                 return templates.TemplateResponse(
@@ -80,7 +79,7 @@ async def rent_delete(request):
         # ...
         if request.method == "POST":
             # ..
-            i = await and_owner_request(request, session, Rent, id)
+            i = await id_and_owner_prv(request, session, Rent, id)
             email = await for_id(session, User, i.owner)
             # ..
             await img.del_rent(email.email, i.rent_belongs, id)
@@ -104,6 +103,22 @@ async def rent_list(request):
         # ..
         stmt = await session.execute(select(Rent).order_by(Rent.created_at.desc()))
         obj_list = stmt.scalars().all()
+        # ..
+        context = {
+            "request": request,
+            "obj_list": obj_list,
+        }
+        return templates.TemplateResponse(template, context)
+    await engine.dispose()
+
+
+async def rent_list_prv(request):
+    # ..
+    template = "/rent/list_prv.html"
+
+    async with async_session() as session:
+        # ..
+        obj_list = await get_owner_prv(request, session, Rent)
         # ..
         context = {
             "request": request,
