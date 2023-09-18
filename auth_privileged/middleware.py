@@ -6,7 +6,6 @@ from starlette.authentication import (
     BaseUser,
 )
 
-from db_config.settings import settings
 from .auth import AuthenticationBackend
 
 
@@ -51,7 +50,7 @@ class PrivilegedBackend(AuthenticationBackend):
         )
 
         return (
-            AuthCredentials(),
+            AuthCredentials("auth_prv"),
             PrivilegedUser(
                 token=token,
                 payload=payload,

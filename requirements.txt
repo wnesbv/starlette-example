@@ -16,3 +16,4 @@ whitenoise
 json2html
 aiocsv
 pydantic
+websockets

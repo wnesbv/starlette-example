@@ -8,17 +8,23 @@ from starlette.endpoints import HTTPEndpoint
 from starlette.responses import JSONResponse
 from starlette.responses import HTMLResponse
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 
 from starlette.endpoints import WebSocketEndpoint
 from channel_box import Channel, ChannelBox
 
-from db_config.settings import settings
 from db_config.storage_config import engine, async_session
 
 from channel.models import GroupChat, MessageChat, OneChat
 from participant.models import PersonParticipant
+
+from auth_privileged.opt_slc import (
+    get_privileged_user,
+    privileged,
+    owner_prv,
+    get_owner_prv,
+    id_and_owner_prv,
+)
 
 from .img import update_file
 
@@ -166,15 +172,17 @@ class ChannelTwo(WebSocketEndpoint):
         self.group_name = None
 
     async def on_connect(self, websocket):
-        self.group_name="MySimpleChat"
+        self.group_name="all chat"
 
-        if self.group_name:
+        if self.group_name and websocket["user"] or websocket["prv"]:
 
             self.channel = Channel(websocket, expires=60*60, encoding="json")
             await ChannelBox.channel_add(self.group_name, self.channel)
 
             print(" add channel..!", self.channel)
             print(" sec-websocket-key..", websocket.headers["sec-websocket-key"])
+            print(" websocket..!", dict(websocket))
+            print(" prv..!", websocket["prv"])
         # ..
         await websocket.accept()
         # ..
@@ -189,7 +197,10 @@ class ChannelTwo(WebSocketEndpoint):
         )
 
         # ..
-        self.is_who[self.group_name].add(str(websocket.user.email))
+        if websocket["user"].is_authenticated:
+            self.is_who[self.group_name].add(str(websocket.user.email))
+        if websocket["prv"].is_authenticated:
+            self.is_who[self.group_name].add(str(websocket["prv"].prv_key))
         print(" add is_who..!", self.is_who)
         payload = {
             "message": is_user,
@@ -203,14 +214,22 @@ class ChannelTwo(WebSocketEndpoint):
 
         await ChannelBox.channel_remove(self.group_name, self.channel)
         print("on_disconnect", self.channel)
-        self.is_who[self.group_name].remove(websocket.user.email)
+
+        if websocket["user"].is_authenticated:
+            self.is_who[self.group_name].remove(websocket.user.email)
+        if websocket["prv"].is_authenticated:
+            self.is_who[self.group_name].remove(websocket["prv"].prv_key)
 
 
     async def on_receive(self, websocket, data):
 
         file = data.get("file")
         message = data.get("message")
-        owner = websocket.user.email
+        if websocket["user"].is_authenticated:
+            owner = websocket.user.email
+        if websocket["prv"].is_authenticated:
+            owner = websocket["prv"].prv_key
+
         print(" file..", file)
         print(" message..", message)
         print(" owner..", owner)
@@ -256,6 +275,7 @@ async def all_chat(request):
         template = "/chat/chat.html"
 
         async with async_session() as session:
+            prv = await get_privileged_user(request, session)
             stmt = await session.execute(
                 select(OneChat)
             )
@@ -265,6 +285,7 @@ async def all_chat(request):
         context = {
             "request": request,
             "result": result,
+            "prv": prv,
         }
         return templates.TemplateResponse(template, context)
 
@@ -272,7 +293,7 @@ async def all_chat(request):
 class Message(HTTPEndpoint):
     async def get(self, request):
         await ChannelBox.group_send(
-            group_name="MySimpleChat",
+            group_name="all chat",
             payload={
                 "username": "Message HTTPEndpoint",
                 "message": "hello from Message",
