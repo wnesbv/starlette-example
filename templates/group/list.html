@@ -6,13 +6,9 @@
 
 <h1 class="lead my-3">list group..</h1>
 
-<div class="p-5 bg-light">
+<h2 class="lead">list group.. {{request.auth.scopes}}</h2>
 
-    <h2 class="lead">list group..</h2>
-
-    <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content.</p>
-
-</div>
+<p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content.</p>
 
 <div class="flex_start">
     {% if obj_list %}
@@ -31,9 +27,13 @@
         </ul>
 
         <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">{{ i.title }}</li>
             <li class="list-group-item">
-                {{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}
+                <sup class="d-block">title:</sup>
+                {{ i.title }}
+            </li>
+            <li class="list-group-item">
+                <sup>description:</sup>
+                <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
             </li>
             {% include "created_modified.html" %}
         </ul>

@@ -1,15 +1,21 @@
+
 from datetime import datetime
 
 from sqlalchemy import delete
 from sqlalchemy.future import select
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
 from db_config.storage_config import engine, async_session
 
-from options_select.opt_slc import for_id, in_person_participant, person_participant
+from options_select.opt_slc import for_id
+
+from account.views import auth
+
+from auth_privileged.opt_slc import get_privileged_user
+
+from channel.opt_slc import person_participant, all_true, all_false, stop_double
 
 from .models import PersonParticipant
 
@@ -17,7 +23,7 @@ from .models import PersonParticipant
 templates = Jinja2Templates(directory="templates")
 
 
-
+@auth()
 # ...
 async def participant_create(request):
     # ..
@@ -25,19 +31,27 @@ async def participant_create(request):
     template = "/participant/create.html"
 
     async with async_session() as session:
-        # ...
+        # ..
+        prv = await get_privileged_user(request, session)
+        # ..
         if request.method == "GET":
             # ..
-            double = await in_person_participant(request, session, id)
+            if prv:
+                double = await stop_double(
+                    session, prv.id, id
+                )
+            # ..
+            if request.cookies.get("visited"):
+                double = await stop_double(
+                    session, request.user.user_id, id
+                )
+            # ...
             if not double:
                 return templates.TemplateResponse(
-                    template,
-                    {
-                        "request": request,
-                    },
+                    template, {"request": request},
                 )
             return RedirectResponse(
-                f"/chat/group/{id}",
+                f"/chat/group/{ id }",
                 status_code=302,
             )
         # ...
@@ -45,14 +59,19 @@ async def participant_create(request):
             # ..
             form = await request.form()
             # ..
+            if prv:
+                owner = prv.id
+
+            if request.cookies.get("visited"):
+                owner = request.user.user_id
+            # ..
             group_participant = id
-            owner = request.user.user_id
-            explanations_person = form["explanations_person"]
+            explanatory_note = form["explanatory_note"]
             # ..
             new = PersonParticipant()
             new.owner = owner
             new.group_participant = group_participant
-            new.explanations_person = explanations_person
+            new.explanatory_note = explanatory_note
             new.created_at = datetime.now()
 
             session.add(new)
@@ -66,7 +85,7 @@ async def participant_create(request):
     await engine.dispose()
 
 
-
+@auth()
 # ...
 async def participant_list(request):
     id = request.path_params["id"]
@@ -74,37 +93,46 @@ async def participant_list(request):
 
     async with async_session() as session:
         # ..
-        obj_admin = person_participant(request, session, id)
-        if obj_admin:
-            stmt = await session.execute(
-                select(PersonParticipant).where(
-                    PersonParticipant.group_participant == id
-                )
-            )
-            obj_list = stmt.scalars().all()
-            context = {
-                "request": request,
-                "obj_list": obj_list,
-            }
-            return templates.TemplateResponse(template, context)
-        return PlainTextResponse(
-            "Or, you don't have viewing rights. Or, there are no applications"
-        )
+        prv = await get_privileged_user(request, session)
+        in_true = await all_true(session, id)
+        in_false = await all_false(session, id)
+        # ..
+        context = {"request": request}
+        # ..
+        if prv:
+            obj_prv = await person_participant(session, prv.id)
+            if obj_prv:
+                context["in_true"] = in_true
+                context["in_false"] = in_false
+        # ..
+        if request.cookies.get("visited"):
+            obj_user = await person_participant(session, request.user.user_id)
+            if obj_user:
+                context["in_true"] = in_true
+                context["in_false"] = in_false
+        return templates.TemplateResponse(template, context)
     await engine.dispose()
 
 
-
+@auth()
 # ...
 async def participant_add(request):
+    # ..
     id = request.path_params["id"]
 
     async with async_session() as session:
         # ..
-        obj_admin = person_participant(request, session, id)
-        if obj_admin:
-            detail = await for_id(session, PersonParticipant, id)
+        prv = await get_privileged_user(request, session)
+        # ..
+        if prv:
+            obj_prv = await person_participant(session, prv.id)
+        # ..
+        if request.cookies.get("visited"):
+            obj_user = await person_participant(session, request.user.user_id)
+        if obj_prv or obj_user:
+            i = await for_id(session, PersonParticipant, id)
             # ..
-            detail.permission = True
+            i.permission = True
             await session.commit()
             # ..
             response = RedirectResponse(
@@ -115,7 +143,7 @@ async def participant_add(request):
     await engine.dispose()
 
 
-
+@auth()
 # ...
 async def participant_delete(request):
     # ..
@@ -123,8 +151,14 @@ async def participant_delete(request):
 
     async with async_session() as session:
         # ..
-        obj_admin = person_participant(request, session, id)
-        if obj_admin:
+        prv = await get_privileged_user(request, session)
+        # ..
+        if prv:
+            obj_prv = await person_participant(session, prv.id)
+        # ..
+        if request.cookies.get("visited"):
+            obj_user = await person_participant(session, request.user.user_id)
+        if obj_prv or obj_user:
             # ..
             query = delete(PersonParticipant).where(PersonParticipant.id == id)
             await session.execute(query)

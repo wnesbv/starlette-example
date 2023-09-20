@@ -1,6 +1,7 @@
 
-<script>
+{% if for_prv_accepted or for_user_accepted %}
 
+<script>
 
 let num = document.querySelector("#num");
 let msg = document.querySelector("#msg");
@@ -81,3 +82,4 @@ btnfile.addEventListener("click", (event) => {
 });
 
 </script>
+{% endif %}

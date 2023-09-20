@@ -230,14 +230,13 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li>
                             <span class="dropdown-item">
-                                {% if request.user.email %}
-                                <i class="bi bi-person-check"></i>
-                                {{request.user.email}}
-                                {% endif %}
-                                {% if request.prv.prv_key %}
-                                <i class="bi bi-person-check"></i>
-                                {{ request.prv.prv_key}}
-                                {% endif %}
+                            {% if request.user.email %}
+                            <i class="bi bi-person-check"></i>
+                            <sup>{{request.user.email}}</sup>
+                            {% endif %}
+                            {% if request.prv.prv_key %}
+                            <sup>{{ request.prv.prv_key}}</sup>
+                            {% endif %}
                             </span>
                         </li>
                         <li>
@@ -247,20 +246,19 @@
                             </a>
                         </li>
 
-                        <li>
-                            <hr class="dropdown-divider" />
-                        </li>
-
                         {% if not request.user.email and not request.prv.prv_key %}
-                        <li>
+                        <li class="bg-success-subtle">
                             <a class="dropdown-item" href="/account/login">
                                 <i class="bi bi-person"></i>
                                 <sup class="ms-2">login</sup>
                             </a>
                         </li>
                         {% endif %}
+
+                        <hr class="dropdown-divider" />
+
                         {% if request.user.email %}
-                        <li>
+                        <li class="bg-danger-subtle">
                             <a class="dropdown-item" href="/account/logout">
                                 <i class="bi bi-person"></i>
                                 <sup class="ms-2">logout</sup>
@@ -268,19 +266,15 @@
                         </li>
                         {% endif %}
 
-                        <li>
-                            <hr class="dropdown-divider" />
-                        </li>
-
                         {% if not request.user.email and not request.prv.prv_key %}
-                        <li>
+                        <li class="bg-success-subtle">
                             <a class="dropdown-item" href="/privileged/login">
                                 <sup class="ms-2">privileged login</sup>
                             </a>
                         </li>
                         {% endif %}
                         {% if request.prv.prv_key %}
-                        <li>
+                        <li class="bg-danger-subtle">
                             <a class="dropdown-item" href="/privileged/logout">
                                 <sup class="ms-2">privileged logout</sup>
                             </a>

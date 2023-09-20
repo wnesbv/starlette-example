@@ -3,7 +3,7 @@ from pathlib import Path
 
 import os, jwt, json, string, secrets, functools
 
-from sqlalchemy import and_, or_, not_, true
+from sqlalchemy import and_, or_, not_, true, false
 from sqlalchemy.future import select
 
 from starlette.responses import RedirectResponse, PlainTextResponse

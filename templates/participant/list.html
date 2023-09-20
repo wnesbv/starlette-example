@@ -7,22 +7,25 @@
 <h1 class="lead my-3">list participant..</h1>
 
 <div class="flex_start">
-    {% if obj_list %}
-    {% for i in obj_list %}
+    {% if in_false %}
+    {% for i in in_false %}
     <div class="card mt-2 me-1">
+        <div class="card-header">
+            <h6 class="lead">person participant permission false</h6>
+        </div>
         <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item pt-3">
+            <li class="list-group-item">
                 <sup class="float-start">id:</sup>
                 {{ i.id }}
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item pt-3">
                 <sup class="float-start">participant:</sup>
                 <p>{{ i.owner }}</p>
             </li>
-            <li class="list-group-item">
-                <sup class="float-start">description:</sup>
+            <li class="list-group-item pt-3">
+                <sup class="float-start">explanatory note:</sup>
                 <p>
-                {{ i.explanations_person | striptags() | truncate(190, True, '...', 5) | safe }}
+                {{ i.explanatory_note | striptags() | truncate(190, True, '...', 5) | safe }}
                 </p>
             </li>
         </ul>
@@ -41,11 +44,50 @@
         </div>
 
     </div>
-
     {% endfor %}
 
         {% else %}
-        <span class="mt-5">no participant</span>
+        <span class="mt-2">no participant</span>
+    {% endif %}
+</div>
+
+<div class="flex_start">
+    {% if in_true %}
+    {% for i in in_true %}
+    <div class="card mt-2 me-1">
+        <div class="card-header">
+            <h6 class="lead">person participant permission true</h6>
+        </div>
+        <ul class="card-body list-group list-group-flush">
+            <li class="list-group-item">
+                <sup class="float-start">id:</sup>
+                {{ i.id }}
+            </li>
+            <li class="list-group-item pt-3">
+                <sup class="float-start">participant:</sup>
+                <p>{{ i.owner }}</p>
+            </li>
+            <li class="list-group-item pt-3">
+                <sup class="float-start">explanatory note:</sup>
+                <p>
+                {{ i.explanatory_note | striptags() | truncate(190, True, '...', 5) | safe }}
+                </p>
+            </li>
+        </ul>
+        <ul class="card-footer list-group list-group-flush">
+            {% include "created_modified.html" %}
+        </ul>
+        <div class="card-footer">
+        <a class="btn btn-outline-danger btn-sm" href="/participant/delete/{{ i.id }}" role="button">
+            delete participant &raquo;
+        </a>
+        </div>
+
+    </div>
+    {% endfor %}
+
+        {% else %}
+        <span class="mt-2">no participant</span>
     {% endif %}
 </div>
 

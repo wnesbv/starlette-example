@@ -6,7 +6,7 @@
 
 <h1 class="lead my-3">detail... {{ i.title }}</h1>
 
-<div class="card p-3 mb-3">
+<div class="card">
 
     <ul class="card-header list-group list-group-horizontal">
         <li class="list-group-item pt-3">
@@ -14,57 +14,34 @@
             {{ i.id }}
         </li>
         <li class="list-group-item pt-3">
-            <sup class="float-start">admin group:</sup>
+            <sup class="float-start">owner admin group:</sup>
             {{ i.owner }}
         </li>
     </ul>
 
     <ul class="card-body list-group list-group-flush">
         <li class="list-group-item">
-            <sup class="float-start">title:</sup>
+            <sup class="d-block">title:</sup>
             {{ i.title }}
         </li>
-        <li class="list-group-item">{{ i.description }}</li>
-    </ul>
-
-    <ul class="card-footer">
+        <li class="list-group-item">
+            <sup>description:</sup>
+            <p>{{ i.description }}</p>
+        </li>
         {% include "created_modified.html" %}
     </ul>
 </div>
 
+{% if request.user.is_authenticated or request.prv.is_authenticated %}
 
-{# {% if request.user.is_authenticated and request.user.user_id == i.owner %} #}
-
-<div class="my-3">
-    <div class="card">
-        <div class="card-header">
-            <a
-                class="btn btn-outline-primary btn-sm me-2 border-r"
-                href="/participant/list/{{ i.id }}"
-                role="button"
-            >
-                participant list &raquo;
-            </a>
-            <a
-                class="btn btn-outline-primary btn-sm me-2 border-r"
-                href="/participant/create/{{ i.id }}"
-                role="button"
-            >
-                participant &raquo;
-            </a>
-        </div>
-    </div>
-</div>
-
-<div class="mt-2">
+    {% if request.user.user_id == i.owner or prv.id == i.owner %}
     <div class="card">
         <div class="card-header">
             <a
                 class="btn btn-outline-primary btn-sm me-2 border-r"
                 href="/chat/group/update/{{ i.id }}"
                 role="button"
-            >
-                <i class="bi bi-pencil"></i> &raquo;
+                ><i class="bi bi-pencil"></i> &raquo;
             </a>
             <a
                 class="btn btn-outline-danger btn-sm"
@@ -75,140 +52,189 @@
             </a>
         </div>
     </div>
-</div>
+    {% endif %}
 
 
-<div class="num mt-2 p-2">
-    <sub>in the chat</sub>
-    <p id="num" class="js_chat"></p>
-</div>
+    {% if for_prv_accepted %}
+    <div class="bg-success-subtle my-2 p-2">
+        <sup class="d-block pt-3">participant</sup>
+        <sub>( {{ prv.email }} ) - you are a participant</sub>
+    </div>
+    {% endif %}
+    {% if for_user_accepted %}
+    <div class="bg-success-subtle my-2 p-2">
+        <sup class="d-block pt-3">participant</sup>
+        <sub>( {{ request.user.email }} ) - you are a participant</sub>
+    </div>
+    {% endif %}
+
+
+    {% if for_prv or for_user %}
+    <div class="card">
+    <div class="card-header">
+    <div class="mt-2"><sup>bid</sup></div>
+    <span>your (id) already has a request</span>
+    </div>
+    </div>
+    {% else %}
+    <div class="card">
+    <div class="card-header">
+    <a
+        class="btn btn-outline-primary btn-sm me-2 border-r"
+        href="/participant/create/{{ i.id }}"
+        role="button"
+    >
+        participant create &raquo;
+    </a>
+    </div>
+    </div>
+    {% endif %}
+
+
+    {% if prv.id == i.owner %}
+    <div class="card">
+    <div class="card-header">
+    <a
+        class="btn btn-outline-primary btn-sm me-2 border-r"
+        href="/participant/list/{{ i.id }}"
+        role="button"
+    >
+        participant list &raquo;
+    </a>
+    </div>
+    </div>
+    {% endif %}
+
+    <div class="num mt-2 p-2">
+        <sub>in the chat</sub>
+        <p id="num" class="js_chat"></p>
+    </div>
 
 <div class="chat card mt-2">
 
     <div class="card-header">
-        <h2 class="lead">group channel</h2>
+        <h2 class="lead">group chat messege</h2>
     </div>
 
     <ul class="list-group list-group-flush">
+    {% if group_chat %}
+    {% for i in group_chat %}
 
-        {% if group_chat %}
-        {% for i in group_chat %}
+    <li class="list-group-item">
+    <span {% if i.owner == request.user.user_id %}class="w-75 float-end"{% else %}class="w-75" {% endif %}>
 
-        <li class="list-group-item">
-
-            <span {% if i.owner == request.user.user_id %}class="w-75 float-end"{% else %}class="w-75" {% endif %}>
-
-            {% if i.file %}
-            <figure class="mt-3">
-                <img class="ch_img" src="{{ i.file }}"/>
-                <figcaption>{{ i.owner }}</figcaption>
-            </figure>
-            <time class="mx-2">
-                {{ i.created_at.strftime('%Y-%m-%d%H:%M:%S') }}
-            </time>
-                {% if request.user.is_authenticated %}
-                <a
-                    class="btn btn-outline-primary btn-sm me-2"
-                    href="/chat/update/{{ i.id }}"
-                    role="button"
-                >
-                    <i class="bi bi-pencil"></i> &raquo;
-                </a>
-                <a
-                    class="btn btn-outline-danger btn-sm"
-                    href="/chat/delete/{{ i.id }}"
-                    role="button"
-                >
-                    <i class="bi bi-trash3"></i> &raquo;
-                </a>
-                {% endif %}
-            {% else %}
-
-            <span class="me-2">{{ i.owner }}</span>
-            <span>{{ i.message }}</span>
-            <span class="float-end">
-                <time class="mx-2">
-                    {{ i.created_at.strftime('%Y-%m-%d%H:%M:%S') }}
-                </time>
-
-                {% if request.user.is_authenticated %}
-                <a
-                    class="btn btn-outline-primary btn-sm me-2"
-                    href="/chat/update/{{ i.id }}"
-                    role="button"
-                >
-                    <i class="bi bi-pencil"></i> &raquo;
-                </a>
-                <a
-                    class="btn btn-outline-danger btn-sm"
-                    href="/chat/delete/{{ i.id }}"
-                    role="button"
-                >
-                    <i class="bi bi-trash3"></i> &raquo;
-                </a>
-                {% endif %}
-            </span>
-            {% endif %}
-
-            </span>
-
-        </li>
-
-        {% endfor %}
+        {% if i.file %}
+        <figure class="mt-3">
+            <img class="ch_img" src="{{ i.file }}"/>
+            <figcaption>{{ i.owner }}</figcaption>
+        </figure>
+        <time class="mx-2">
+            {{ i.created_at.strftime('%Y-%m-%d%H:%M:%S') }}
+        </time>
+        {% if request.user.user_id == i.owner or prv.id == i.owner %}
+        <a
+            class="btn btn-outline-primary btn-sm me-2"
+            href="/chat/update/{{ i.id }}"
+            role="button"
+        >
+            <i class="bi bi-pencil"></i> &raquo;
+        </a>
+        <a
+            class="btn btn-outline-danger btn-sm"
+            href="/chat/delete/{{ i.id }}"
+            role="button"
+        >
+            <i class="bi bi-trash3"></i> &raquo;
+        </a>
         {% endif %}
 
+        {% else %}
+
+        <span class="me-2">{{ i.owner }}</span>
+        <span>{{ i.message }}</span>
+
+        <span class="float-end">
+        <time class="mx-2">
+            {{ i.created_at.strftime('%Y-%m-%d%H:%M:%S') }}
+        </time>
+        {% if request.user.user_id == i.owner or prv.id == i.owner %}
+        <a
+            class="btn btn-outline-primary btn-sm me-2"
+            href="/chat/update/{{ i.id }}"
+            role="button"
+        >
+            <i class="bi bi-pencil"></i> &raquo;
+        </a>
+        <a
+            class="btn btn-outline-danger btn-sm"
+            href="/chat/delete/{{ i.id }}"
+            role="button"
+        >
+            <i class="bi bi-trash3"></i> &raquo;
+        </a>
+        </span>
+        {% endif %}
+        {% endif %}
+
+    </span>
+    </li>
+
+    {% endfor %}
+    {% endif %}
     </ul>
 
-    <div class="p-3"> 
-        <div id="msg"></div>
-    </div>
+    <div id="msg"></div>
 
-    <div class="card-body">
-        <div class="card-body mb-3">   
-        <form class="card p-3 mb-1" method="POST">
-            <sup class="mt-2 ms-2">message</sup>
-            <div class="card-body">
-            <textarea
-                class="shadow-sm form-control p-3"
-                id="messageinput"
-                name="message"
-                maxlength="333"
-                spellcheck
-                minlength="7"
-                maxlength="200"
-                required
-            ></textarea>
-            </div>
-            
-            <div class="card-footer">
-            <input id="btnmsg"  type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
-            </div>
+    {% if for_prv_accepted or for_user_accepted %}
+    <div class="card-body mb-3">   
 
-        </form>
-        <form class="card p-2" method="POST" enctype="multipart/form-data">
-            <sup class="mt-2 ms-2">file</sup>
-            <div class="card-body">
-                <input name="file" type="file" id="file-input"  class="form-control">
-            </div>
+    <form class="card" method="POST">
+        
+        <div class="card-body">
+        <sup>message</sup>
+        <textarea
+            class="shadow-sm form-control p-3"
+            id="messageinput"
+            name="message"
+            maxlength="333"
+            spellcheck
+            minlength="7"
+            maxlength="200"
+            required
+        ></textarea>
+        </div>
+        
+        <div class="card-footer">
+        <input id="btnmsg"  type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
+        </div>
+    </form>
 
-            <div class="card-footer">
-            <input id="file-submit" type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
-            </div>
-            
-        </form>
+    <form class="card" method="POST" enctype="multipart/form-data">
+        
+        <div class="card-body">
+            <input name="file" type="file" id="file-input"  class="form-control">
         </div>
 
-        <div id="target"></div>
+        <div class="card-footer">
+        <input id="file-submit" type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
+        </div>
 
+    </form>
     </div>
+    {% endif %}
+
+    <div id="target"></div>
+    {% endif %}
 </div>
 
 
 {% endblock %}
 
+
 {% block js_chat %}
 {% include "group/js_chat.html" %}
 {% endblock %}
+
 
 {% block scroll_bottom  %}
 {% endblock %}

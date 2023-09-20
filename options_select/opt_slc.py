@@ -3,7 +3,7 @@ from pathlib import Path
 
 import random, shutil
 
-from sqlalchemy import func, and_, or_, not_
+from sqlalchemy import func, and_, or_, not_, true, false
 from sqlalchemy.future import select
 
 from account.models import User
@@ -53,33 +53,17 @@ async def owner_request(request, session, model):
     return result
 
 
-# ..
-async def in_person_participant(request, session, id):
+async def in_user_accepted(request, session, id):
     stmt = await session.execute(
         select(PersonParticipant).where(
             and_(
                 PersonParticipant.id == id,
                 PersonParticipant.owner == request.user.user_id,
+                PersonParticipant.permission, true(),
             )
         )
     )
     result = stmt.scalars().all()
-    return result
-
-
-# ..
-async def person_participant(request, session, id):
-    stmt = await session.execute(
-        select(PersonParticipant)
-        .join(GroupChat)
-        .where(
-            and_(
-                PersonParticipant.group_participant == id,
-                GroupChat.owner == request.user.user_id,
-            )
-        )
-    )
-    result = stmt.scalars().first()
     return result
 
 

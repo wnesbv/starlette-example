@@ -1,16 +1,18 @@
 
 from datetime import datetime
+
 import json
+
 from collections import defaultdict
+
 from sqlalchemy.future import select
 
 from starlette.endpoints import HTTPEndpoint
 from starlette.responses import JSONResponse
 from starlette.responses import HTMLResponse
-
 from starlette.templating import Jinja2Templates
-
 from starlette.endpoints import WebSocketEndpoint
+
 from channel_box import Channel, ChannelBox
 
 from db_config.storage_config import engine, async_session
@@ -27,6 +29,7 @@ from auth_privileged.opt_slc import (
 )
 
 from .img import update_file
+from .opt_slc import prv_true, user_true, prv_admin_true, user_admin_true
 
 
 templates = Jinja2Templates(directory="templates")
@@ -34,7 +37,6 @@ templates = Jinja2Templates(directory="templates")
 
 # ..One
 class ChannelOne(WebSocketEndpoint):
-
     is_who = defaultdict(set)
 
     def __init__(self, *args, **kwargs):
@@ -46,82 +48,81 @@ class ChannelOne(WebSocketEndpoint):
         self.group_name = None
 
     async def on_connect(self, websocket):
-
         self.group_name = websocket.path_params["id"]
         # print(" group_name..!", self.group_name)
         # print(" websocket dict..", dict(websocket))
 
-        if self.group_name:
-            self.channel = Channel(websocket, expires=60*60, encoding="json")
+        if (
+            self.group_name
+            and websocket["user"].is_authenticated
+            or websocket["prv"].is_authenticated
+        ):
+            self.channel = Channel(websocket, expires=60 * 60, encoding="json")
             status = await ChannelBox.channel_add(self.group_name, self.channel)
             print(" status..", status)
-
-        # ..
-        await websocket.accept()
-        # ..
-
-        print(" add channel..!", self.channel)
-        print(" sec-websocket-key..", websocket.headers["sec-websocket-key"])
-
-        # ..
-        groups = await ChannelBox.groups()
-
-        is_user = len(groups.get(self.group_name))
-        print(
-            " groups..", f"{groups}"
-        )
-        print(
-            " len..", is_user
-        )
-
-        # ..
-        self.is_who[self.group_name].add(str(websocket.user.email))
-        print(" add is_who..!", self.is_who)
-        payload = {
-            "message": is_user,
-            "owner": list(self.is_who.get(self.group_name)),
-            "created_at": datetime.now().strftime("%H:%M:%S"),
-        }
-        await ChannelBox.group_send(self.group_name, payload, history=False)
-
+            # ..
+            await websocket.accept()
+            # ..
+            print(" add channel..!", self.channel)
+            print(" sec-websocket-key..", websocket.headers["sec-websocket-key"])
+            # ..
+            groups = await ChannelBox.groups()
+            # ..
+            is_user = len(groups.get(self.group_name))
+            print(" groups..", f"{groups}")
+            print(" len..", is_user)
+            # ..
+            if websocket["user"].is_authenticated:
+                self.is_who[self.group_name].add(str(websocket.user.email))
+            if websocket["prv"].is_authenticated:
+                self.is_who[self.group_name].add(str(websocket["prv"].prv_key))
+            # ..
+            print(" add is_who..!", self.is_who)
+            # ..
+            payload = {
+                "message": is_user,
+                "owner": list(self.is_who.get(self.group_name)),
+                "created_at": datetime.now().strftime("%H:%M:%S"),
+            }
+            await ChannelBox.group_send(self.group_name, payload, history=False)
 
     async def on_disconnect(self, websocket, close_code):
-
         await ChannelBox.channel_remove(self.group_name, self.channel)
         print(" on_disconnect..", self.channel)
-        self.is_who[self.group_name].remove(websocket.user.email)
+        if websocket["user"].is_authenticated:
+            self.is_who[self.group_name].remove(websocket.user.email)
+        if websocket["prv"].is_authenticated:
+            self.is_who[self.group_name].remove(websocket["prv"].prv_key)
 
 
     async def on_receive(self, websocket, data):
-
+        # ..
         file = data.get("file")
         message = data.get("message")
+        # ..
         print(" message..", message)
-        name = websocket.user.user_id
-        owner = websocket.user.email
-        #now_time = datetime.now().strftime(settings.TIME_FORMAT)
+        # ..
+        if websocket["user"].is_authenticated:
+            name = websocket.user.user_id
+            owner = websocket.user.email
+            print(" name..", name)
+        if websocket["prv"].is_authenticated:
+            owner = websocket["prv"].prv_key
+
+        # now_time = datetime.now().strftime(settings.TIME_FORMAT)
 
         async with async_session() as session:
             # ..
-            stmt = await session.execute(
-                select(PersonParticipant).where(
-                    PersonParticipant.owner == name,
-                    PersonParticipant.group_participant == self.group_name,
-                )
-            )
-            obj_true = stmt.scalars().first()
+            if websocket["prv"].is_authenticated:
+                # ..
+                obj_true = await prv_true(self, websocket, session)
+                obj_admin = await prv_admin_true(self, websocket, session)
             # ..
-            stmt_admin = await session.execute(
-                select(MessageChat)
-                .join(GroupChat)
-                .where(
-                    MessageChat.id_group == self.group_name,
-                    GroupChat.owner == name,
-                )
-            )
-            obj_admin = stmt_admin.scalars().first()
-            # ..
-
+            if websocket["user"].is_authenticated:
+                # ..
+                obj_true = await user_true(self, websocket, session)
+                obj_admin = await user_admin_true(self, websocket, session)
+            # ...
             if message:
                 if obj_true or obj_admin:
                     payload = {
@@ -160,7 +161,6 @@ class ChannelOne(WebSocketEndpoint):
 
 # ..Two
 class ChannelTwo(WebSocketEndpoint):
-
     is_who = defaultdict(set)
 
     def __init__(self, *args, **kwargs):
@@ -172,46 +172,45 @@ class ChannelTwo(WebSocketEndpoint):
         self.group_name = None
 
     async def on_connect(self, websocket):
-        self.group_name="all chat"
-
-        if self.group_name and websocket["user"] or websocket["prv"]:
-
-            self.channel = Channel(websocket, expires=60*60, encoding="json")
+        self.group_name = "all chat"
+        # ..
+        if (
+            self.group_name
+            and websocket["user"].is_authenticated
+            or websocket["prv"].is_authenticated
+        ):
+            self.channel = Channel(websocket, expires=60 * 60, encoding="json")
             await ChannelBox.channel_add(self.group_name, self.channel)
 
             print(" add channel..!", self.channel)
             print(" sec-websocket-key..", websocket.headers["sec-websocket-key"])
             print(" websocket..!", dict(websocket))
             print(" prv..!", websocket["prv"])
-        # ..
-        await websocket.accept()
-        # ..
-        groups = await ChannelBox.groups()
-
-        is_user = len(groups.get(self.group_name))
-        print(
-            " groups..", f"{groups}"
-        )
-        print(
-            " len..", is_user
-        )
-
-        # ..
-        if websocket["user"].is_authenticated:
-            self.is_who[self.group_name].add(str(websocket.user.email))
-        if websocket["prv"].is_authenticated:
-            self.is_who[self.group_name].add(str(websocket["prv"].prv_key))
-        print(" add is_who..!", self.is_who)
-        payload = {
-            "message": is_user,
-            "owner": list(self.is_who.get(self.group_name)),
-            "created_at": datetime.now().strftime("%H:%M:%S"),
-        }
-        await ChannelBox.group_send(self.group_name, payload, history=False)
-
+            # ..
+            await websocket.accept()
+            # ..
+            groups = await ChannelBox.groups()
+            # ..
+            is_user = len(groups.get(self.group_name))
+            # ..
+            print(" groups..", f"{groups}")
+            print(" len..", is_user)
+            # ..
+            if websocket["user"].is_authenticated:
+                self.is_who[self.group_name].add(str(websocket.user.email))
+            if websocket["prv"].is_authenticated:
+                self.is_who[self.group_name].add(str(websocket["prv"].prv_key))
+            # ..
+            print(" add is_who..!", self.is_who)
+            # ..
+            payload = {
+                "message": is_user,
+                "owner": list(self.is_who.get(self.group_name)),
+                "created_at": datetime.now().strftime("%H:%M:%S"),
+            }
+            await ChannelBox.group_send(self.group_name, payload, history=False)
 
     async def on_disconnect(self, websocket, close_code):
-
         await ChannelBox.channel_remove(self.group_name, self.channel)
         print("on_disconnect", self.channel)
 
@@ -220,16 +219,16 @@ class ChannelTwo(WebSocketEndpoint):
         if websocket["prv"].is_authenticated:
             self.is_who[self.group_name].remove(websocket["prv"].prv_key)
 
-
     async def on_receive(self, websocket, data):
-
+        # ..
         file = data.get("file")
         message = data.get("message")
+        # ..
         if websocket["user"].is_authenticated:
             owner = websocket.user.email
         if websocket["prv"].is_authenticated:
             owner = websocket["prv"].prv_key
-
+        # ..
         print(" file..", file)
         print(" message..", message)
         print(" owner..", owner)
@@ -267,18 +266,13 @@ class ChannelTwo(WebSocketEndpoint):
 
 
 # ..
-
-# ..
 async def all_chat(request):
-
     if request.method == "GET":
         template = "/chat/chat.html"
 
         async with async_session() as session:
             prv = await get_privileged_user(request, session)
-            stmt = await session.execute(
-                select(OneChat)
-            )
+            stmt = await session.execute(select(OneChat))
             result = stmt.scalars().all()
         await engine.dispose()
 

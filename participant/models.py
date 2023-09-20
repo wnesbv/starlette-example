@@ -15,7 +15,7 @@ class PersonParticipant(Base):
     __tablename__ = "participant"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    explanations_person: Mapped[str] = mapped_column(Text, nullable=True)
+    explanatory_note: Mapped[str] = mapped_column(Text, nullable=True)
     permission: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
