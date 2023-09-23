@@ -8,8 +8,9 @@ from auth_privileged.models import Privileged
 
 from comment.models import Comment
 
+from collocutor.models import PersonCollocutor
 from participant.models import PersonParticipant
-from channel.models import GroupChat, MessageChat
+from channel.models import GroupChat, MessageGroup, OneOneChat
 from item.models import (
     Item,
     Rent,
@@ -72,30 +73,52 @@ async def on_app_startup() -> None:
                         prv_key=get_random_string(),
                         prv_in=1,
                     ),
-                    MessageChat(
-                        message="message",
-                        owner=1,
-                        id_group=1,
-                        created_at=datetime.now(),
-                    ),
                     GroupChat(
                         title="chat group (one)",
                         description="description group (one) owner: one@example.com",
                         owner=1,
                         created_at=datetime.now(),
                     ),
+                    MessageGroup(
+                        message="message",
+                        owner=1,
+                        id_group=1,
+                        created_at=datetime.now(),
+                    ),
                     PersonParticipant(
                         explanatory_note="gr-1 admin - explanatory note",
                         permission=1,
                         owner=1,
-                        group_participant=1,
+                        community=1,
                         created_at=datetime.now(),
                     ),
                     PersonParticipant(
                         explanatory_note="gr-1 three - explanatory note",
                         permission=0,
                         owner=3,
-                        group_participant=1,
+                        community=1,
+                        created_at=datetime.now(),
+                    ),
+                    PersonCollocutor(
+                        ref_num="1-2",
+                        explanatory_note="user-1 - explanatory note",
+                        permission=1,
+                        owner=1,
+                        community=2,
+                        created_at=datetime.now(),
+                    ),
+                    PersonCollocutor(
+                        ref_num="2-1",
+                        explanatory_note="user-2 - explanatory note",
+                        permission=1,
+                        owner=2,
+                        community=1,
+                        created_at=datetime.now(),
+                    ),
+                    OneOneChat(
+                        message="OneOneChat message",
+                        owner=1,
+                        one_one=1,
                         created_at=datetime.now(),
                     ),
                     Item(

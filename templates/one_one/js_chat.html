@@ -1,7 +1,6 @@
-
 {% if request.user.is_authenticated or request.prv.is_authenticated %}
+{% if user %}
 <script>
-
 
 let num = document.querySelector("#num");
 let msg = document.querySelector("#msg");
@@ -13,7 +12,7 @@ let btnfile = document.querySelector("#file-submit");
 let inputfile = document.querySelector("#file-input");
 
 let ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-let websocket_str = `${ws_scheme}://${window.location.host}/chat/two_ws`;
+let websocket_str = `${ws_scheme}://${window.location.host}/chat/one_one_ws/{{ ref_num }}`;
 let ws = new WebSocket(websocket_str);
 
 
@@ -21,7 +20,6 @@ ws.onmessage = function (event) {
 
     let data = JSON.parse(event.data);
 
-    let { file } = data;
     let { message } = data;
     let { owner } = data;
 
@@ -55,8 +53,6 @@ ws.onmessage = function (event) {
                 "</span></div>";
         }
     }
-    console.log("file..", data.file);
-    console.log("message..", data.message);
     console.log("data num..", num.innerHTML);
     console.log("data msg..", msg.innerHTML);
 };
@@ -85,4 +81,5 @@ btnfile.addEventListener("click", (event) => {
 });
 
 </script>
+{% endif %}
 {% endif %}

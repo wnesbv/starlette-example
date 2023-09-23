@@ -11,7 +11,6 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 from db_config.storage_config import engine, async_session
 
 from admin import img
-from mail.send import send_mail
 from account.models import User
 
 from options_select.opt_slc import (

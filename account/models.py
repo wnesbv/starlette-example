@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import Column, Boolean, String, DateTime
+from sqlalchemy import Boolean, String, DateTime
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -52,19 +52,23 @@ class User(Base):
         back_populates="group_admin",
         cascade="all, delete-orphan"
     )
-    user_chat: Mapped[list["MessageChat"]] = relationship(
+    user_chat: Mapped[list["MessageGroup"]] = relationship(
         back_populates="chat_user",
         cascade="all, delete-orphan"
     )
     one_chat: Mapped[list["OneChat"]] = relationship(
         back_populates="chat_one",
+    )
+    user_one_one: Mapped[list["OneOneChat"]] = relationship(
+        back_populates="one_one_user",
         cascade="all, delete-orphan"
     )
+    #...
     user_participant: Mapped[list["PersonParticipant"]] = relationship(
         back_populates="participant_user",
         cascade="all, delete-orphan"
     )
-    # ...
+    #...
     user_rrf: Mapped[list["ReserveRentFor"]] = relationship(
         back_populates="rrf_user",
         cascade="all, delete-orphan"

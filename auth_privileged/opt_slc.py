@@ -14,7 +14,7 @@ from db_config.storage_config import engine, async_session
 from account.models import User
 from comment.models import Comment
 from participant.models import PersonParticipant
-from channel.models import GroupChat, MessageChat
+from channel.models import GroupChat, MessageGroup
 from item.models import Item, Rent, Service, ScheduleRent, ScheduleService, DumpService
 
 from .models import Privileged

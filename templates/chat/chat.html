@@ -6,10 +6,10 @@
 
 <h1 class="lead my-3">all chat.. 
 {% if request.user.email %}
-user: {{ request.user }}
+<small>user: {{ request.user }}</small>
 {% endif %}
 {% if request.prv.prv_key %}
-privileged:  {{ prv.email }} - {{request.state.db}}
+<small>privileged:  {{ prv.email }}</small>
 {% endif %}
 </h1>
 
@@ -20,14 +20,7 @@ privileged:  {{ prv.email }} - {{request.state.db}}
 
 <div class="chat card mt-2">
     <div class="card-header">
-        <h5 class="mt-2">MyChat group (open in different browsers)</h5>
-        <ul>
-            <li><a href="/chat/text" target="_blank">Send message from another view</a></li>
-            <li><a href="/chat/channels" target="_blank">Show groups</a></li>
-            <li><a href="/chat/channels-flush" target="_blank">Flush groups</a></li>
-            <li><a href="/chat/history" target="_blank">Show history</a></li>
-            <li><a href="/chat/history-flush" target="_blank">Flush history</a></li>
-        </ul>
+    <h2 class="lead mt-2">all chat group</h2>
     </div>
 
     {% for i in result %}
@@ -44,35 +37,36 @@ privileged:  {{ prv.email }} - {{request.state.db}}
         <div id="msg"></div>
     </div>
 
-    <div class="card-body mb-3">   
-        <form class="card p-2 mb-1" method="POST">
-            <sup class="mt-2 ms-2">message</sup>
-            <div class="card-body">
-                <input name="message" type="text" id="messageinput" class="form-control" value="Lorem ipsum">
-            </div>
+{% if request.user.is_authenticated or request.prv.is_authenticated %}
+<div class="card-body mb-3">   
+    <form class="card p-2 mb-1" method="POST">
+        <sup class="mt-2 ms-2">message</sup>
+        <div class="card-body">
+            <input name="message" type="text" id="messageinput" class="form-control" value="Lorem ipsum">
+        </div>
 
-            <div class="card-footer">
-                <input id="btnmsg"  type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
-            </div>
+        <div class="card-footer">
+            <input id="btnmsg"  type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
+        </div>
 
-        </form>
-        <form class="card p-2" method="POST" enctype="multipart/form-data">
-            <sup class="mt-2 ms-2">file</sup>
-            <div class="card-body">
-                <input name="file" type="file" id="file-input"  class="form-control">
-            </div>
+    </form>
+    <form class="card p-2" method="POST" enctype="multipart/form-data">
+        <sup class="mt-2 ms-2">file</sup>
+        <div class="card-body">
+            <input name="file" type="file" id="file-input"  class="form-control">
+        </div>
 
-            <div class="card-footer">
-                <input id="file-submit" type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
-            </div>
-            
-        </form>
+        <div class="card-footer">
+            <input id="file-submit" type="button" value="send" class="btn btn-sm btn-outline-primary my-2">
+        </div>
+        
+    </form>
 
-        <div id="target"></div>
-    </div>
-    
+    <div id="target"></div>
 </div>
+{% endif %}
 
+</div>
 
 {% endblock %}
 

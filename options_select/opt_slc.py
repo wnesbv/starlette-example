@@ -9,7 +9,7 @@ from sqlalchemy.future import select
 from account.models import User
 from comment.models import Comment
 from participant.models import PersonParticipant
-from channel.models import GroupChat, MessageChat
+from channel.models import GroupChat, MessageGroup
 from item.models import Item, Rent, Service, ScheduleRent, ScheduleService, DumpService
 
 from make_an_appointment.models import ReserveRentFor, ReserveServicerFor
@@ -101,7 +101,10 @@ async def service_comment(session, id):
 # ...tm
 async def period_item(time_start, time_end, session):
     # ..
-    stmt = await session.execute(select(Item.id).join(ReserveRentFor.rrf_item))
+    stmt = await session.execute(
+        select(Item.id)
+        .join(ReserveRentFor.rrf_item)
+    )
     result = stmt.scalars().all()
     # ..
     i = await session.execute(select(ReserveRentFor.time_start))

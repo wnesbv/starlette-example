@@ -3,7 +3,6 @@ import uvicorn
 
 from sqlalchemy.future import select
 
-from starlette.requests import cookie_parser
 from starlette.middleware import Middleware
 from starlette.applications import Starlette
 from starlette.middleware.authentication import AuthenticationMiddleware
@@ -26,7 +25,7 @@ from auth_privileged.auth import PrivilegedMiddleware
 
 
 # ...
-# from db_startup.db import on_app_startup
+#from db_startup.db import on_app_startup
 # ...
 
 
@@ -55,7 +54,7 @@ app = Starlette(
     debug=settings.DEBUG,
     routes=routes,
     # ...
-    # on_startup=[on_app_startup],
+    #on_startup=[on_app_startup],
     # on_shutdown=[on_app_shutdown],
     # ...
     middleware=middleware,

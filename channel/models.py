@@ -20,28 +20,28 @@ class GroupChat(Base):
     file: Mapped[str] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-
     # ...
     owner: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-
     # ...
     group_admin: Mapped[list["User"]] = relationship(
         back_populates="user_group",
     )
-    group_chat: Mapped[list["MessageChat"]] = relationship(
+    group_chat: Mapped[list["MessageGroup"]] = relationship(
         back_populates="chat_group",
+        cascade="all, delete-orphan"
     )
     group_request: Mapped[list["PersonParticipant"]] = relationship(
         back_populates="request_group",
+        cascade="all, delete-orphan"
     )
 
     def __str__(self):
         return str(self.id)
 
 
-class MessageChat(Base):
+class MessageGroup(Base):
 
     __tablename__ = "message_ch"
 
@@ -50,7 +50,6 @@ class MessageChat(Base):
     file: Mapped[str] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-
     # ...
     owner: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False
@@ -58,7 +57,6 @@ class MessageChat(Base):
     id_group: Mapped[int] = mapped_column(
         ForeignKey("groups_ch.id", ondelete="CASCADE"), nullable=False
     )
-
     # ...
     chat_user: Mapped[list["User"]] = relationship(
         back_populates="user_chat",
@@ -80,14 +78,41 @@ class OneChat(Base):
     file: Mapped[str] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-
     # ...
     owner: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+        ForeignKey("users.id"), nullable=True
     )
     # ...
     chat_one: Mapped[list["User"]] = relationship(
         back_populates="one_chat",
+    )
+
+    def __str__(self):
+        return str(self.id)
+
+
+class OneOneChat(Base):
+
+    __tablename__ = "one_one_ch"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    message: Mapped[str] = mapped_column(Text, nullable=True)
+    file: Mapped[str] = mapped_column(String(100), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    #...
+    owner: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    one_one: Mapped[int] = mapped_column(
+        ForeignKey("collocutor.id", ondelete="CASCADE"), nullable=False
+    )
+    #...
+    one_one_user: Mapped[list["User"]] = relationship(
+        back_populates="user_one_one",
+    )
+    one_collocutor: Mapped[list["PersonCollocutor"]] = relationship(
+        back_populates="collocutor_one",
     )
 
     def __str__(self):

@@ -17,7 +17,7 @@ from auth_privileged.opt_slc import (
 )
 from account.views import auth
 
-from .models import MessageChat, GroupChat
+from .models import MessageGroup, GroupChat
 from .opt_slc import in_obj_participant, in_obj_accepted
 
 
@@ -53,7 +53,7 @@ async def group_details(request):
             i = await for_id(session, GroupChat, id)
             prv = await get_privileged_user(request, session)
             stmt_chat = await session.execute(
-                select(MessageChat).where(MessageChat.id_group == id)
+                select(MessageGroup).where(MessageGroup.id_group == id)
             )
             group_chat = stmt_chat.scalars().all()
             # ..
@@ -122,7 +122,7 @@ async def group_create(request):
             session.add(new)
             await session.commit()
             # ..
-            query = insert(MessageChat).values(
+            query = insert(MessageGroup).values(
                 owner=owner,
                 id_group=new.id,
                 message=f"New message admin group-{owner}..!",

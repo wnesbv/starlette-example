@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 import json
@@ -7,9 +6,6 @@ from collections import defaultdict
 
 from sqlalchemy.future import select
 
-from starlette.endpoints import HTTPEndpoint
-from starlette.responses import JSONResponse
-from starlette.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
 from starlette.endpoints import WebSocketEndpoint
 
@@ -17,19 +13,22 @@ from channel_box import Channel, ChannelBox
 
 from db_config.storage_config import engine, async_session
 
-from channel.models import GroupChat, MessageChat, OneChat
-from participant.models import PersonParticipant
+from channel.models import MessageGroup, OneChat, OneOneChat
 
-from auth_privileged.opt_slc import (
-    get_privileged_user,
-    privileged,
-    owner_prv,
-    get_owner_prv,
-    id_and_owner_prv,
-)
+from auth_privileged.opt_slc import get_privileged_user
 
 from .img import update_file
-from .opt_slc import prv_true, user_true, prv_admin_true, user_admin_true
+from .opt_slc import (
+    prv_true,
+    user_true,
+    prv_admin_true,
+    user_admin_true,
+    prv_owner,
+    user_owner,
+    prv_community,
+    user_community,
+    group_ref_num,
+)
 
 
 templates = Jinja2Templates(directory="templates")
@@ -94,7 +93,6 @@ class ChannelOne(WebSocketEndpoint):
         if websocket["prv"].is_authenticated:
             self.is_who[self.group_name].remove(websocket["prv"].prv_key)
 
-
     async def on_receive(self, websocket, data):
         # ..
         file = data.get("file")
@@ -132,7 +130,7 @@ class ChannelOne(WebSocketEndpoint):
 
                     await ChannelBox.group_send(self.group_name, payload, history=True)
                     # ..
-                    new = MessageChat()
+                    new = MessageGroup()
                     new.owner = owner
                     new.message = message
                     new.id_group = int(self.group_name)
@@ -148,10 +146,136 @@ class ChannelOne(WebSocketEndpoint):
                     }
                     await ChannelBox.group_send(self.group_name, payload, history=True)
                     # ..
-                    new = MessageChat()
+                    new = MessageGroup()
                     new.file = update_file(self.group_name, file)
                     new.owner = owner
                     new.id_group = int(self.group_name)
+                    new.created_at = datetime.now()
+                    # ..
+                    session.add(new)
+                    await session.commit()
+        await engine.dispose()
+
+
+# ..One to One
+class OneToOneChat(WebSocketEndpoint):
+    is_who = defaultdict(set)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.expires = 16000
+        self.encoding = "json"
+        self.channel = None
+        self.group_name = None
+
+    async def on_connect(self, websocket):
+        # ..
+        self.group_name = websocket.path_params["ref_num"]
+        # ..
+        if websocket["user"].is_authenticated:
+            self.is_who[self.group_name].add(str(websocket.user.email))
+        if websocket["prv"].is_authenticated:
+            self.is_who[self.group_name].add(str(websocket["prv"].prv_key))
+        # ..
+        if self.group_name:
+            self.channel = Channel(websocket, expires=60 * 60, encoding="json")
+            status = await ChannelBox.channel_add(self.group_name, self.channel)
+            print(" status..", status)
+            print(" group_name..", self.group_name)
+            # print(" websocket..", dict(websocket))
+            # ..
+            await websocket.accept()
+            # ..
+            print(" add channel..!", self.channel)
+            print(" sec-websocket-key..", websocket.headers["sec-websocket-key"])
+            # ..
+            groups = await ChannelBox.groups()
+            # ..
+            is_user = len(groups.get(self.group_name))
+            print(" groups..", f"{groups}")
+            print(" len..", is_user)
+            # ..
+            if websocket["user"].is_authenticated:
+                self.is_who[self.group_name].add(str(websocket.user.email))
+            if websocket["prv"].is_authenticated:
+                self.is_who[self.group_name].add(str(websocket["prv"].prv_key))
+            # ..
+            print(" add is_who..!", self.is_who)
+            # ..
+            payload = {
+                "message": is_user,
+                "owner": list(self.is_who.get(self.group_name)),
+                "created_at": datetime.now().strftime("%H:%M:%S"),
+            }
+            await ChannelBox.group_send(self.group_name, payload, history=False)
+
+    async def on_disconnect(self, websocket, close_code):
+        await ChannelBox.channel_remove(self.group_name, self.channel)
+        print(" on_disconnect..", self.channel)
+        if websocket["user"].is_authenticated:
+            self.is_who[self.group_name].remove(websocket.user.email)
+        if websocket["prv"].is_authenticated:
+            self.is_who[self.group_name].remove(websocket["prv"].prv_key)
+
+    async def on_receive(self, websocket, data):
+        # ..
+        file = data.get("file")
+        message = data.get("message")
+        # ..
+        print(" message..", message)
+        # ..
+        if websocket["user"].is_authenticated:
+            name = websocket.user.user_id
+            owner = websocket.user.email
+            print(" name..", name)
+        if websocket["prv"].is_authenticated:
+            owner = websocket["prv"].prv_key
+
+        async with async_session() as session:
+            # ..
+            one_one = await group_ref_num(self, session)
+            # ..
+            if websocket["prv"].is_authenticated:
+                # ..
+                obj_owner = await prv_owner(self, websocket, session)
+                obj_community = await prv_community(self, websocket, session)
+            # ..
+            if websocket["user"].is_authenticated:
+                # ..
+                obj_owner = await user_owner(self, websocket, session)
+                obj_community = await user_community(self, websocket, session)
+            # ...
+            if message:
+                if obj_owner or obj_community:
+                    payload = {
+                        "owner": owner,
+                        "message": message,
+                    }
+                    print(" payload..", payload)
+                    # ..
+                    await ChannelBox.group_send(self.group_name, payload, history=True)
+                    # ..
+                    new = OneOneChat()
+                    new.owner = owner
+                    new.message = message
+                    new.one_one = one_one.id
+                    new.created_at = datetime.now()
+                    # ..
+                    session.add(new)
+                    await session.commit()
+            if file:
+                if obj_true:
+                    payload = {
+                        "file": file,
+                        "owner": owner,
+                    }
+                    await ChannelBox.group_send(self.group_name, payload, history=True)
+                    # ..
+                    new = OneOneChat()
+                    new.file = update_file(self.group_name, file)
+                    new.owner = owner
+                    new.one_one = one_one.id
                     new.created_at = datetime.now()
                     # ..
                     session.add(new)
@@ -183,7 +307,7 @@ class ChannelTwo(WebSocketEndpoint):
             await ChannelBox.channel_add(self.group_name, self.channel)
 
             print(" add channel..!", self.channel)
-            print(" sec-websocket-key..", websocket.headers["sec-websocket-key"])
+            print(" sec-key..", websocket.headers["sec-websocket-key"])
             print(" websocket..!", dict(websocket))
             print(" prv..!", websocket["prv"])
             # ..
@@ -224,17 +348,18 @@ class ChannelTwo(WebSocketEndpoint):
         file = data.get("file")
         message = data.get("message")
         # ..
-        if websocket["user"].is_authenticated:
-            owner = websocket.user.email
-        if websocket["prv"].is_authenticated:
-            owner = websocket["prv"].prv_key
-        # ..
-        print(" file..", file)
-        print(" message..", message)
-        print(" owner..", owner)
-
         async with async_session() as session:
+            prv = await get_privileged_user(websocket, session)
             if message:
+                if websocket["user"].is_authenticated:
+                    owner = websocket.user.email
+                if websocket["prv"].is_authenticated:
+                    owner = prv.email
+                # ..
+                print(" file..", file)
+                print(" message..", message)
+                print(" owner..", owner)
+                # ..
                 payload = {
                     "message": message,
                     "owner": owner,
@@ -263,59 +388,3 @@ class ChannelTwo(WebSocketEndpoint):
                 session.add(new)
                 await session.commit()
         await engine.dispose()
-
-
-# ..
-async def all_chat(request):
-    if request.method == "GET":
-        template = "/chat/chat.html"
-
-        async with async_session() as session:
-            prv = await get_privileged_user(request, session)
-            stmt = await session.execute(select(OneChat))
-            result = stmt.scalars().all()
-        await engine.dispose()
-
-        context = {
-            "request": request,
-            "result": result,
-            "prv": prv,
-        }
-        return templates.TemplateResponse(template, context)
-
-
-class Message(HTTPEndpoint):
-    async def get(self, request):
-        await ChannelBox.group_send(
-            group_name="all chat",
-            payload={
-                "username": "Message HTTPEndpoint",
-                "message": "hello from Message",
-            },
-            history=True,
-        )
-        return JSONResponse({"message": "success"})
-
-
-class Groups(HTTPEndpoint):
-    async def get(self, request):
-        groups = await ChannelBox.groups()
-        return HTMLResponse(f"{groups}")
-
-
-class GroupsFlush(HTTPEndpoint):
-    async def get(self, request):
-        await ChannelBox.groups_flush()
-        return JSONResponse({"flush": "success"})
-
-
-class History(HTTPEndpoint):
-    async def get(self, request):
-        history = await ChannelBox.history()
-        return HTMLResponse(f"{history}")
-
-
-class HistoryFlush(HTTPEndpoint):
-    async def get(self, request):
-        await ChannelBox.history_flush()
-        return JSONResponse({"flush": "success"})

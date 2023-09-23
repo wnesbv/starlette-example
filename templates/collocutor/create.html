@@ -1,0 +1,43 @@
+
+{% extends "base.html" %}
+{% block title %} new collocutor {% endblock %}
+
+{% block content %}
+
+<h1 class="lead my-3">new collocutor</h1>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="lead">new collocutor</h3>
+    </div>
+
+    <form method="POST">
+    <div class="card-header">
+        <select
+            name="community"
+            class="form-control shadow-sm">
+            <option value="">user select</option>
+
+            {% for i in obj_list %}
+                <option value="{{ i.id }}">
+                    id: {{ i.id }} email: {{ i.email }}
+                </option>
+            {% endfor %}
+
+        </select>
+    </div>
+    <div class="card-body my-3">
+    <sup>explanatory note</sup>
+    <textarea class="form-control" name="explanatory_note" maxlength="333" required spellcheck></textarea>
+    </div>
+
+    <div class="card-footer">
+        <button type="submit" class="btn btn-outline-primary btn-sm">
+            submit
+        </button>
+    </div>
+    </form>
+
+</div>
+
+{% endblock %}

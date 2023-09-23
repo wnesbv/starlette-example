@@ -9,15 +9,14 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 
 from db_config.storage_config import engine, async_session
 
-from options_select.opt_slc import for_id
-
 from account.views import auth
+from channel.models import GroupChat
 
+from options_select.opt_slc import for_id
 from auth_privileged.opt_slc import get_privileged_user
 
-from channel.opt_slc import person_participant, all_true, all_false, stop_double
-
 from .models import PersonParticipant
+from .opt_slc import person_participant, all_true, all_false, stop_double
 
 
 templates = Jinja2Templates(directory="templates")
@@ -38,12 +37,12 @@ async def participant_create(request):
             # ..
             if prv:
                 double = await stop_double(
-                    session, prv.id, id
+                    session, PersonParticipant, prv.id, id
                 )
             # ..
             if request.cookies.get("visited"):
                 double = await stop_double(
-                    session, request.user.user_id, id
+                    session, PersonParticipant, request.user.user_id, id
                 )
             # ...
             if not double:
@@ -65,23 +64,22 @@ async def participant_create(request):
             if request.cookies.get("visited"):
                 owner = request.user.user_id
             # ..
-            group_participant = id
+            community = id
             explanatory_note = form["explanatory_note"]
             # ..
             new = PersonParticipant()
             new.owner = owner
-            new.group_participant = group_participant
+            new.community = community
             new.explanatory_note = explanatory_note
             new.created_at = datetime.now()
-
+            # ..
             session.add(new)
             await session.commit()
-
-            response = RedirectResponse(
+            # ..
+            return RedirectResponse(
                 f"/chat/group/{id}",
                 status_code=302,
             )
-            return response
     await engine.dispose()
 
 
@@ -100,13 +98,13 @@ async def participant_list(request):
         context = {"request": request}
         # ..
         if prv:
-            obj_prv = await person_participant(session, prv.id)
+            obj_prv = await person_participant(session, GroupChat, prv.id)
             if obj_prv:
                 context["in_true"] = in_true
                 context["in_false"] = in_false
         # ..
         if request.cookies.get("visited"):
-            obj_user = await person_participant(session, request.user.user_id)
+            obj_user = await person_participant(session, GroupChat, request.user.user_id)
             if obj_user:
                 context["in_true"] = in_true
                 context["in_false"] = in_false
@@ -125,21 +123,21 @@ async def participant_add(request):
         prv = await get_privileged_user(request, session)
         # ..
         if prv:
-            obj_prv = await person_participant(session, prv.id)
+            obj_prv = await person_participant(session, GroupChat, prv.id)
         # ..
         if request.cookies.get("visited"):
-            obj_user = await person_participant(session, request.user.user_id)
+            obj_user = await person_participant(session, GroupChat, request.user.user_id)
+        #...
         if obj_prv or obj_user:
             i = await for_id(session, PersonParticipant, id)
             # ..
             i.permission = True
             await session.commit()
             # ..
-            response = RedirectResponse(
+            return RedirectResponse(
                 "/chat/group/list",
                 status_code=302,
             )
-            return response
     await engine.dispose()
 
 
@@ -154,10 +152,10 @@ async def participant_delete(request):
         prv = await get_privileged_user(request, session)
         # ..
         if prv:
-            obj_prv = await person_participant(session, prv.id)
+            obj_prv = await person_participant(session, GroupChat, prv.id)
         # ..
         if request.cookies.get("visited"):
-            obj_user = await person_participant(session, request.user.user_id)
+            obj_user = await person_participant(session, GroupChat, request.user.user_id)
         if obj_prv or obj_user:
             # ..
             query = delete(PersonParticipant).where(PersonParticipant.id == id)

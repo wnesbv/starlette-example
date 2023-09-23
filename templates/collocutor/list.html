@@ -1,0 +1,115 @@
+
+{% extends "base.html" %}
+{% block title %} list collocutor {% endblock %}
+
+{% block content %}
+
+<h1 class="lead my-3">list collocutor..</h1>
+
+<div class="flex_start">
+
+{% if i_false %}
+{% for i in i_false %}
+<div class="card mt-2 me-1">
+    <div class="card-header">
+        <h6 class="lead">person collocutor permission false</h6>
+    </div>
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">id:</sup>
+            {{ i.id }}
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">owner:</sup>
+            <p>{{ i.owner }}</p>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">explanatory note:</sup>
+            <p>
+            {{ i.explanatory_note | striptags() | truncate(190, True, '...', 5) | safe }}
+            </p>
+        </li>
+    </ul>
+    <ul class="card-footer list-group list-group-flush">
+        {% include "created_modified.html" %}
+    </ul>
+
+    {% if request.user.user_id == i.community or prv.id == i.community %}
+    <div class="card-footer">
+    <a class="btn btn-outline-success btn-sm" href="/collocutor/add/{{ i.id }}" role="button">
+        add collocutor &raquo;
+    </a>
+    </div>
+    {% endif %}
+    
+    <div class="card-footer">
+    <a class="btn btn-outline-danger btn-sm" href="/collocutor/delete/{{ i.id }}" role="button">
+        delete collocutor &raquo;
+    </a>
+    </div>
+
+</div>
+{% endfor %}
+
+    {% else %}
+    <span class="mt-2">no collocutor</span>
+{% endif %}
+
+</div>
+
+
+{# #}
+
+<div class="flex_start">
+
+{% if i_true %}
+{% for i in i_true %}
+<div class="card mt-2 me-1">
+    <div class="card-header">
+        <h6 class="lead">person collocutor permission true</h6>
+    </div>
+    <ul class="card-body list-group list-group-flush">
+        <li class="list-group-item">
+            <sup class="float-start">id:</sup>
+            {{ i.id }}
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">owner & community</sup>
+            <p>
+                {{ i.owner }}.. <small>to..</small> {{ i.community }}
+            </p>
+        </li>
+        <li class="list-group-item pt-3">
+            <sup class="float-start">explanatory note:</sup>
+            <p>
+            {{ i.explanatory_note | striptags() | truncate(190, True, '...', 5) | safe }}
+            </p>
+        </li>
+    </ul>
+    <ul class="card-footer list-group list-group-flush">
+        {% include "created_modified.html" %}
+    </ul>
+
+    {% if request.user.user_id == i.owner or prv.id == i.owner %}
+    <div class="card-footer">
+    <a class="btn btn-outline-success btn-sm" href="/chat/user/{{ i.ref_num }}" role="button">
+        one to one chat &raquo;
+    </a>
+    </div>
+    {% endif %}
+    <div class="card-footer">
+    <a class="btn btn-outline-danger btn-sm" href="/collocutor/delete/{{ i.id }}" role="button">
+        delete collocutor &raquo;
+    </a>
+    </div>
+
+</div>
+{% endfor %}
+
+    {% else %}
+    <span class="mt-2">no collocutor</span>
+{% endif %}
+
+</div>
+
+{% endblock %}

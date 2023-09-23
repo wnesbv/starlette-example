@@ -1,7 +1,7 @@
 
 from sqlalchemy import update as sqlalchemy_update, delete
+from sqlalchemy.future import select
 
-from starlette.authentication import requires
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
@@ -9,12 +9,38 @@ from db_config.storage_config import engine, async_session
 
 from options_select.opt_slc import and_owner_request
 
-from .models import MessageChat
+from auth_privileged.opt_slc import (
+    get_privileged_user,
+    privileged,
+    owner_prv,
+    get_owner_prv,
+    id_and_owner_prv,
+)
+
+from .models import MessageGroup, OneChat
 
 
 templates = Jinja2Templates(directory="templates")
 
 
+# ..
+async def all_chat(request):
+    # ..
+    template = "/chat/chat.html"
+    # ..
+    if request.method == "GET":
+        async with async_session() as session:
+            prv = await get_privileged_user(request, session)
+            stmt = await session.execute(select(OneChat))
+            result = stmt.scalars().all()
+        await engine.dispose()
+
+        context = {
+            "request": request,
+            "result": result,
+            "prv": prv,
+        }
+        return templates.TemplateResponse(template, context)
 
 # ..
 async def chat_update(request):
@@ -24,7 +50,7 @@ async def chat_update(request):
 
     async with async_session() as session:
         #..
-        detail = await and_owner_request(request, session, MessageChat, id)
+        detail = await and_owner_request(request, session, MessageGroup, id)
         context = {
             "request": request,
             "detail": detail,
@@ -42,8 +68,8 @@ async def chat_update(request):
             message = form["message"]
             # ..
             query = (
-                sqlalchemy_update(MessageChat)
-                .where(MessageChat.id == id)
+                sqlalchemy_update(MessageGroup)
+                .where(MessageGroup.id == id)
                 .values(message=message)
                 .execution_options(synchronize_session="fetch")
             )
@@ -68,7 +94,7 @@ async def chat_delete(request):
     async with async_session() as session:
         # ..
         if request.method == "GET":
-            detail = await and_owner_request(request, session, MessageChat, id)
+            detail = await and_owner_request(request, session, MessageGroup, id)
             if detail:
                 return templates.TemplateResponse(
                     template,
@@ -81,7 +107,7 @@ async def chat_delete(request):
 
         if request.method == "POST":
             # ..
-            query = delete(MessageChat).where(MessageChat.id == id)
+            query = delete(MessageGroup).where(MessageGroup.id == id)
             await session.execute(query)
             await session.commit()
             # ..
