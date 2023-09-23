@@ -165,8 +165,12 @@ async def one_one_select(session, ref_num, obj):
     stmt = await session.execute(
         select(OneOneChat)
         .join(PersonCollocutor.collocutor_one)
-        .where(PersonCollocutor.ref_num == ref_num)
-        .where(or_(PersonCollocutor.owner == obj, PersonCollocutor.community == obj))
+        .where(
+            and_(
+                or_(PersonCollocutor.owner == obj, PersonCollocutor.community == obj),
+                PersonCollocutor.ref_num == ref_num,
+            )
+        )
     )
     result = stmt.scalars().first()
     return result

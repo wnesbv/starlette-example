@@ -40,6 +40,7 @@ async def user_details(request):
                     # ..
                     context["user"] = user
                     context["obj_list"] = obj_list
+                    return templates.TemplateResponse(template, context)
                 return RedirectResponse("/")
             # ..
             if request.cookies.get("visited"):
@@ -49,7 +50,6 @@ async def user_details(request):
                     # ..
                     context["user"] = user
                     context["obj_list"] = obj_list
+                    return templates.TemplateResponse(template, context)
                 return RedirectResponse("/")
-                # ..
-            return templates.TemplateResponse(template, context)
         await engine.dispose()
