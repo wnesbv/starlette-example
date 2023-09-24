@@ -15,7 +15,7 @@ from db_config.settings import settings
 from db_config.storage_config import engine, async_session
 
 from options_select.opt_slc import (
-    and_owner_request,
+    id_and_owner,
     owner_request,
     period_item,
     period_rent,
@@ -191,7 +191,7 @@ async def reserve_list_rent(request):
 
     async with async_session() as session:
         # ..
-        obj_list = await owner_request(request, session, ReserveRentFor)
+        obj_list = await owner_request(session, ReserveRentFor, request.user.user_id)
         # ..
         if obj_list:
             context = {
@@ -214,7 +214,7 @@ async def reserve_detail_rent(request):
 
     async with async_session() as session:
         # ..
-        i = await and_owner_request(request, session, ReserveRentFor, id)
+        i = await id_and_owner(session, ReserveRentFor, request.user.user_id, id)
         if i:
             context = {
                 "request": request,
@@ -236,7 +236,7 @@ async def reserve_update_rent(request):
 
     async with async_session() as session:
         # ..
-        i = await and_owner_request(request, session, ReserveRentFor, id)
+        i = await id_and_owner(session, ReserveRentFor, request.user.user_id, id)
         # ..
         rsv_period = await period_reserve(i.time_start, i.time_end)
         # ..
@@ -293,7 +293,7 @@ async def delete(request):
         # ...
         if request.method == "GET":
             # ..
-            i = await and_owner_request(request, session, ReserveRentFor, id)
+            i = await id_and_owner(session, ReserveRentFor, request.user.user_id, id)
             if i:
                 return templates.TemplateResponse(
                     template,

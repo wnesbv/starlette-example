@@ -1,6 +1,6 @@
 
 {% extends "base.html" %}
-{% block title %} update {% endblock%}
+{% block title %} update MessageGroup {% endblock%}
 
 {% block content %}
 
@@ -9,7 +9,7 @@
 <form class="card" method="POST" enctype="multipart/form-data">
 
     <div class="card-body">
-    <textarea class="shadow-sm form-control" id="message" name="message" maxlength="333" spellcheck>{{ detail.message }}</textarea>
+    <textarea class="shadow-sm form-control" id="message" name="message" maxlength="333" spellcheck>{{ i.message }}</textarea>
     </div>
 
     <div class="card-footer">

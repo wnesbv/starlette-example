@@ -16,8 +16,7 @@ from account.models import User
 from options_select.opt_slc import (
     for_id,
     item_comment,
-    and_owner_request,
-    owner_request,
+    id_and_owner,
 )
 
 from options_select.csv_import import import_csv
@@ -27,8 +26,6 @@ from auth_privileged.opt_slc import (
     get_privileged_user,
     privileged,
     owner_prv,
-    get_owner_prv,
-    id_and_owner_prv,
 )
 
 from .models import Item, Service, Rent
@@ -118,7 +115,7 @@ async def item_delete(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            i = await and_owner_request(request, session, Item, id)
+            i = await id_and_owner(session, Item, request.user.user_id, id)
             if i:
                 return templates.TemplateResponse(
                     template,
@@ -131,7 +128,9 @@ async def item_delete(request):
         # ...
         if request.method == "POST":
             # ..
-            i = await and_owner_request(request, session, Item, id)
+            i = await id_and_owner(
+                session, Item, request.user.user_id, id
+            )
             email = await for_id(session, User, i.owner)
             # ..
             await img.del_tm(email.email, i.id)

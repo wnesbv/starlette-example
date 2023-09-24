@@ -1,31 +1,21 @@
 
 {% extends "base.html" %}
-{% block title %} update {{ detail.title }} {% endblock%}
+{% block title %} update message ({{ i.id }}) {% endblock%}
 
 {% block content %}
 
-<h1 class="lead my-3">update group</h1>
+<h1 class="lead my-3">update one one chat message: ({{ i.id }})</h1>
 
 <form class="card" method="POST" enctype="multipart/form-data">
     
     <div class="card-body">
         <div class="mb-3">
-            <sup>title</sup>
+            <sup>message</sup>
             <input
                 type="text"
-                name="title"
-                value="{{ detail.title }}"
+                name="message"
                 class="form-control"
-            />
-        </div>
-
-        <div class="mb-3">
-            <sup>description</sup>
-            <input
-                type="text"
-                name="description"
-                class="form-control"
-                value="{{ detail.description }}"
+                value="{{ i.message }}"
             />
         </div>
     </div>
@@ -35,6 +25,7 @@
         submit
     </button>
     </div>
+
 </form>
 
 {% endblock %}

@@ -7,7 +7,7 @@ from .views import (
     ChannelTwo,
 )
 
-from .one_one import one_one_details
+from .one_one import one_one_details, one_one_update, one_one_delete
 from .chat import all_chat, chat_update, chat_delete
 from .group import group_list, group_details, group_create, group_update, group_delete
 
@@ -22,10 +22,12 @@ routes = [
     # ..
     Route("/all", all_chat, methods=["GET", "POST"]),
     #...
-    Route("/update/{id:int}", chat_update, methods=["GET", "POST"]),
+    Route("/update/{id_group:int}/{id:int}", chat_update, methods=["GET", "POST"]),
     Route("/delete/{id:int}", chat_delete, methods=["GET", "POST"]),
     #...
     Route("/user/{ref_num:str}", one_one_details),
+    Route("/user/update/{ref_num:str}/{id:int}", one_one_update, methods=["GET", "POST"]),
+    Route("/user/delete/{id:int}", one_one_delete, methods=["GET", "POST"]),
     #...
     Route("/group/list", group_list),
     Route("/group/{id:int}", group_details),

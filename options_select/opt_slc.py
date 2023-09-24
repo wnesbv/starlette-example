@@ -31,13 +31,12 @@ async def for_id(session, model, id):
     result = stmt.scalars().first()
     return result
 
-
-async def and_owner_request(request, session, model, id):
+async def id_and_owner(session, model, obj, id):
     stmt = await session.execute(
         select(model).where(
             and_(
                 model.id == id,
-                model.owner == request.user.user_id,
+                model.owner == obj,
             )
         )
     )
@@ -45,23 +44,9 @@ async def and_owner_request(request, session, model, id):
     return result
 
 
-async def owner_request(request, session, model):
+async def owner_request(session, model, obj):
     stmt = await session.execute(
-        select(model).where(model.owner == request.user.user_id)
-    )
-    result = stmt.scalars().all()
-    return result
-
-
-async def in_user_accepted(request, session, id):
-    stmt = await session.execute(
-        select(PersonParticipant).where(
-            and_(
-                PersonParticipant.id == id,
-                PersonParticipant.owner == request.user.user_id,
-                PersonParticipant.permission, true(),
-            )
-        )
+        select(model).where(model.owner == obj)
     )
     result = stmt.scalars().all()
     return result

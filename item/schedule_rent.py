@@ -14,9 +14,6 @@ from db_config.storage_config import engine, async_session
 
 from mail.send import send_mail
 
-from options_select.opt_slc import (
-    and_owner_request,
-)
 from auth_privileged.opt_slc import (
     privileged,
     get_owner_prv,

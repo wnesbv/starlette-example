@@ -18,7 +18,7 @@ from starlette.responses import (
 from config.settings import BASE_DIR
 
 from db_config.storage_config import engine, async_session
-from options_select.opt_slc import for_id, and_owner_request
+from options_select.opt_slc import for_id, id_and_owner
 
 from auth_privileged.opt_slc import (
     privileged,
@@ -142,7 +142,7 @@ async def delete_user_csv(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            detail = await and_owner_request(request, session, DumpService, id)
+            detail = await id_and_owner(session, DumpService, request.user.user_id, id)
             # ..
             if detail:
                 context = {"request": request}

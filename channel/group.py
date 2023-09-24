@@ -6,15 +6,9 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 
 from db_config.storage_config import engine, async_session
 
-from options_select.opt_slc import for_id, and_owner_request, in_user_accepted
+from options_select.opt_slc import for_id, id_and_owner
 
-from auth_privileged.opt_slc import (
-    get_privileged_user,
-    privileged,
-    owner_prv,
-    get_owner_prv,
-    id_and_owner_prv,
-)
+from auth_privileged.opt_slc import get_privileged_user
 from account.views import auth
 
 from .models import MessageGroup, GroupChat
@@ -146,7 +140,7 @@ async def group_update(request):
 
     async with async_session() as session:
         # ..
-        detail = await and_owner_request(request, session, GroupChat, id)
+        detail = await id_and_owner(session, GroupChat, request.user.user_id, id)
         context = {
             "request": request,
             "detail": detail,
@@ -191,7 +185,7 @@ async def group_delete(request):
         # ...
         if request.method == "GET":
             # ..
-            detail = await and_owner_request(request, session, GroupChat, id)
+            detail = await id_and_owner(session, GroupChat, request.user.user_id, id)
             if detail:
                 return templates.TemplateResponse(
                     template,

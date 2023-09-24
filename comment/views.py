@@ -15,7 +15,7 @@ from account.models import User
 from account.views import auth
 
 from auth_privileged.opt_slc import get_privileged_user
-from options_select.opt_slc import for_id, and_owner_request
+from options_select.opt_slc import for_id, id_and_owner
 
 from .models import Comment
 
@@ -237,7 +237,7 @@ async def cmt_delete(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            detail = await and_owner_request(request, session, Comment, id)
+            detail = await id_and_owner(session, Comment, request.user.user_id, id)
             # ..
             if detail:
                 return templates.TemplateResponse(

@@ -21,7 +21,7 @@ from .models import Item, Service, ScheduleService
 from options_select.opt_slc import (
     for_id,
     service_comment,
-    and_owner_request,
+    id_and_owner,
 )
 from auth_privileged.opt_slc import get_privileged_user, privileged, owner_prv
 
@@ -69,7 +69,7 @@ async def service_delete(request):
 
         if request.method == "GET":
             # ..
-            i = await and_owner_request(request, session, Service, id)
+            i = await id_and_owner(session, Service, request.user.user_id, id)
             if i:
                 return templates.TemplateResponse(
                     template,
@@ -82,7 +82,7 @@ async def service_delete(request):
         # ...
         if request.method == "POST":
             # ..
-            i = await and_owner_request(request, session, Service, id)
+            i = await id_and_owner(session, Service, request.user.user_id, id)
             email = await for_id(session, User, i.owner)
             # ..
             await img.del_service(

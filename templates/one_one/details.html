@@ -37,14 +37,14 @@
         {% if request.user.user_id == i.owner or prv.id == i.owner %}
         <a
             class="btn btn-outline-primary btn-sm me-2"
-            href="/chat/update/{{ i.id }}"
+            href="/chat/user/update/{{ ref_num }}/{{ i.id }}"
             role="button"
         >
             <i class="bi bi-pencil"></i> &raquo;
         </a>
         <a
             class="btn btn-outline-danger btn-sm"
-            href="/chat/delete/{{ i.id }}"
+            href="/chat/user/delete/{{ i.id }}"
             role="button"
         >
             <i class="bi bi-trash3"></i> &raquo;
@@ -63,14 +63,14 @@
         {% if request.user.user_id == i.owner or prv.id == i.owner %}
         <a
             class="btn btn-outline-primary btn-sm me-2"
-            href="/chat/update/{{ i.id }}"
+            href="/chat/user/update/{{ ref_num }}/{{ i.id }}"
             role="button"
         >
             <i class="bi bi-pencil"></i> &raquo;
         </a>
         <a
             class="btn btn-outline-danger btn-sm"
-            href="/chat/delete/{{ i.id }}"
+            href="/chat/user/delete/{{ i.id }}"
             role="button"
         >
             <i class="bi bi-trash3"></i> &raquo;

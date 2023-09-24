@@ -11,7 +11,7 @@ from db_config.storage_config import engine, async_session
 
 from mail.send import send_mail
 
-from options_select.opt_slc import for_id, and_owner_request, owner_request
+from options_select.opt_slc import for_id, id_and_owner, owner_request
 
 from item.models import Service, ScheduleService
 from .models import ReserveServicerFor
@@ -87,7 +87,7 @@ async def reserve_list_service(request):
     template = "make_an_appointment/list_service.html"
     async with async_session() as session:
         # ..
-        obj_list = await owner_request(request, session, ReserveServicerFor)
+        obj_list = await owner_request(session, ReserveServicerFor, request.user.user_id)
         # ..
         if obj_list:
             context = {
@@ -108,8 +108,8 @@ async def reserve_detail_service(request):
 
     async with async_session() as session:
         # ..
-        i = await and_owner_request(
-            request, session, ReserveServicerFor, id
+        i = await id_and_owner(
+            session, ReserveServicerFor, request.user.user_id, id
         )
         if i:
             context = {
@@ -130,8 +130,8 @@ async def reserve_update_service(request):
 
     async with async_session() as session:
         # ..
-        i = await and_owner_request(
-            request, session, ReserveServicerFor, id
+        i = await id_and_owner(
+            session, ReserveServicerFor, request.user.user_id, id
         )
         context = {
             "request": request,
@@ -178,8 +178,8 @@ async def delete_rsf(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            i = await and_owner_request(
-                request, session, ReserveServicerFor, id
+            i = await id_and_owner(
+                session, ReserveServicerFor, request.user.user_id, id
             )
             if i:
                 return templates.TemplateResponse(

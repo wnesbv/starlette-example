@@ -18,7 +18,6 @@ from mail.send import send_mail
 from options_select.opt_slc import (
     for_id,
     all_total,
-    and_owner_request,
 )
 
 from auth_privileged.opt_slc import (

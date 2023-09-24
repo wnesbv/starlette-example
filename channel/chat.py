@@ -7,15 +7,11 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 
 from db_config.storage_config import engine, async_session
 
-from options_select.opt_slc import and_owner_request
+from account.views import auth
 
-from auth_privileged.opt_slc import (
-    get_privileged_user,
-    privileged,
-    owner_prv,
-    get_owner_prv,
-    id_and_owner_prv,
-)
+from options_select.opt_slc import id_and_owner
+
+from auth_privileged.opt_slc import get_privileged_user
 
 from .models import MessageGroup, OneChat
 
@@ -23,7 +19,8 @@ from .models import MessageGroup, OneChat
 templates = Jinja2Templates(directory="templates")
 
 
-# ..
+@auth()
+#...
 async def all_chat(request):
     # ..
     template = "/chat/chat.html"
@@ -42,22 +39,32 @@ async def all_chat(request):
         }
         return templates.TemplateResponse(template, context)
 
-# ..
+
+@auth()
+#...
 async def chat_update(request):
     # ..
     id = request.path_params["id"]
+    id_group = request.path_params["id_group"]
     template = "/chat/update.html"
 
     async with async_session() as session:
-        #..
-        detail = await and_owner_request(request, session, MessageGroup, id)
+        # ..
+        prv = await get_privileged_user(request, session)
+        # ..
         context = {
             "request": request,
-            "detail": detail,
         }
-        # ...
+        #...
         if request.method == "GET":
-            if detail:
+            if prv:
+                i = await id_and_owner(session, MessageGroup, prv.id, id)
+                context["i"] = i
+                return templates.TemplateResponse(template, context)
+            # ..
+            if request.cookies.get("visited"):
+                i = await id_and_owner(session, MessageGroup, request.user.user_id, id)
+                context["i"] = i
                 return templates.TemplateResponse(template, context)
             return PlainTextResponse("this is not your message..!")
         # ...
@@ -77,15 +84,15 @@ async def chat_update(request):
             await session.commit()
             # ..
             response = RedirectResponse(
-                f"/chat/group/{ detail.id_group }",
+                f"/chat/group/{ id_group }",
                 status_code=302,
             )
             return response
     await engine.dispose()
 
 
-
-# ..
+@auth()
+#...
 async def chat_delete(request):
 
     id = request.path_params["id"]
@@ -93,18 +100,24 @@ async def chat_delete(request):
 
     async with async_session() as session:
         # ..
+        prv = await get_privileged_user(request, session)
+        # ..
+        context = {
+            "request": request,
+        }
+        #...
         if request.method == "GET":
-            detail = await and_owner_request(request, session, MessageGroup, id)
-            if detail:
-                return templates.TemplateResponse(
-                    template,
-                    {
-                        "request": request,
-                        "detail": detail,
-                    },
-                )
+            if prv:
+                i = await id_and_owner(session, MessageGroup, prv.id, id)
+                context["i"] = i
+                return templates.TemplateResponse(template, context)
+            # ..
+            if request.cookies.get("visited"):
+                i = await id_and_owner(session, MessageGroup, request.user.user_id, id)
+                context["i"] = i
+                return templates.TemplateResponse(template, context)
             return PlainTextResponse("this is not your message..!")
-
+        # ...
         if request.method == "POST":
             # ..
             query = delete(MessageGroup).where(MessageGroup.id == id)

@@ -21,7 +21,7 @@ from account.models import User
 
 from db_config.storage_config import engine, async_session
 from item.models import Item, Rent, Service, ScheduleRent, ScheduleService
-from options_select.opt_slc import for_id, item_comment, and_owner_request
+from options_select.opt_slc import for_id, item_comment, id_and_owner
 
 from .schemas import FormCreate, FormUpdate, ListItem, DBItem
 
@@ -114,7 +114,7 @@ async def item_update(request):
 
     async with async_session() as session:
         # ..
-        i = await and_owner_request(request, session, Item, id)
+        i = await id_and_owner(session, Item, request.user.user_id, id)
         # ..
         context = {
             "request": request,

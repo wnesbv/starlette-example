@@ -76,7 +76,7 @@
         <li class="list-group-item pt-3">
             <sup class="float-start">owner & community</sup>
             <p>
-                {{ i.owner }}.. <small>to..</small> {{ i.community }}
+                owner: {{ i.owner }}.. <small>to..</small> community: {{ i.community }}
             </p>
         </li>
         <li class="list-group-item pt-3">
@@ -90,7 +90,7 @@
         {% include "created_modified.html" %}
     </ul>
 
-    {% if request.user.user_id == i.owner or prv.id == i.owner %}
+    {% if request.user.user_id == i.owner or prv.id == i.owner or request.user.user_id == i.community or prv.id == i.community %}
     <div class="card-footer">
     <a class="btn btn-outline-primary btn-sm" href="/chat/user/{{ i.ref_num }}" role="button">
         one to one chat &raquo;
