@@ -13,7 +13,7 @@ async def stop_double(session, obj):
     stmt = await session.execute(
         select(User.id)
         .join(
-            PersonCollocutor.call_user,
+            PersonCollocutor.call_community,
         )
         .where(
             PersonCollocutor.owner == obj,

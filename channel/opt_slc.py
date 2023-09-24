@@ -167,7 +167,10 @@ async def one_one_select(session, ref_num, obj):
         .join(PersonCollocutor.collocutor_one)
         .where(
             and_(
-                or_(PersonCollocutor.owner == obj, PersonCollocutor.community == obj),
+                or_(
+                    PersonCollocutor.owner == obj,
+                    PersonCollocutor.community == obj
+                ),
                 PersonCollocutor.ref_num == ref_num,
             )
         )

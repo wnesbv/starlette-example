@@ -11,6 +11,7 @@ from db_config.storage_config import engine, async_session
 from options_select.opt_slc import for_id
 
 from account.views import auth
+from channel.models import OneOneChat
 
 from auth_privileged.opt_slc import get_random_string, get_privileged_user
 
@@ -92,22 +93,52 @@ async def collocutor_add(request):
         # ..
         if prv:
             obj_prv = await person_collocutor(session, prv.id, id)
-        # ..
+            # ...
+            if obj_prv:
+                # ..
+                i = await for_id(session, PersonCollocutor, id)
+                i.permission = True
+                i.ref_num = await get_random_string()
+                # ..
+                await session.commit()
+                # ..
+                new = OneOneChat()
+                new.owner = prv.id
+                new.one_one = i.id
+                new.message = "message"
+                new.created_at = datetime.now()
+                # ..
+                session.add(new)
+                await session.commit()
+                # ..
+                return RedirectResponse(
+                    f"/chat/user/{ i.ref_num }",
+                    status_code=302,
+                )
         if request.cookies.get("visited"):
             obj_user = await person_collocutor(session, request.user.user_id, id)
-        # ...
-        if obj_prv or obj_user:
-            # ..
-            i = await for_id(session, PersonCollocutor, id)
-            i.permission = True
-            i.ref_num = await get_random_string()
-            # ..
-            await session.commit()
-            # ..
-            return RedirectResponse(
-                "/collocutor/to-user-list",
-                status_code=302,
-            )
+            # ...
+            if obj_user:
+                # ..
+                i = await for_id(session, PersonCollocutor, id)
+                i.permission = True
+                i.ref_num = await get_random_string()
+                # ..
+                await session.commit()
+                # ..
+                new = OneOneChat()
+                new.owner = request.user.user_id
+                new.one_one = i.id
+                new.message = "message"
+                new.created_at = datetime.now()
+                # ..
+                session.add(new)
+                await session.commit()
+                # ..
+                return RedirectResponse(
+                    f"/chat/user/{ i.ref_num }",
+                    status_code=302,
+                )
     await engine.dispose()
 
 

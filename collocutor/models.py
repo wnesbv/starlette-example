@@ -29,7 +29,7 @@ class PersonCollocutor(Base):
     call_owner: Mapped[list["User"]] = relationship(
         foreign_keys=[owner]
     )
-    call_user: Mapped[list["User"]] = relationship(
+    call_community: Mapped[list["User"]] = relationship(
         foreign_keys=[community]
     )
     collocutor_one: Mapped[list["OneOneChat"]] = relationship(

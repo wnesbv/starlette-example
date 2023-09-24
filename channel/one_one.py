@@ -17,7 +17,7 @@ templates = Jinja2Templates(directory="templates")
 
 @auth()
 #...
-async def user_details(request):
+async def one_one_details(request):
     # ..
     ref_num = request.path_params["ref_num"]
     template = "/one_one/details.html"

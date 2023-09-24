@@ -24,7 +24,7 @@
     {% for i in obj_list %}
 
     <li class="list-group-item">
-    <span {% if i.owner == request.user.user_id %}class="w-75 float-end"{% else %}class="w-75" {% endif %}>
+    <span {% if request.user.user_id == i.owner or prv.id == i.owner %} class="w-75 float-end"{% else %} class="w-75" {% endif %}>
 
         {% if i.file %}
         <figure class="mt-3">
