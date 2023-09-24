@@ -225,16 +225,17 @@ class OneToOneChat(WebSocketEndpoint):
         # ..
         print(" message..", message)
         # ..
-        if websocket["user"].is_authenticated:
-            name = websocket.user.user_id
-            owner = websocket.user.email
-            print(" name..", name)
-        if websocket["prv"].is_authenticated:
-            owner = websocket["prv"].prv_key
-
         async with async_session() as session:
             # ..
+            prv = await get_privileged_user(websocket, session)
             one_one = await group_ref_num(self, session)
+            # ..
+            if websocket["user"].is_authenticated:
+                name = websocket.user.user_id
+                owner = websocket.user.email
+                print(" name..", name)
+            if websocket["prv"].is_authenticated:
+                owner = prv.id
             # ..
             if websocket["prv"].is_authenticated:
                 # ..
@@ -265,7 +266,7 @@ class OneToOneChat(WebSocketEndpoint):
                     session.add(new)
                     await session.commit()
             if file:
-                if obj_true:
+                if obj_owner or obj_community:
                     payload = {
                         "file": file,
                         "owner": owner,
