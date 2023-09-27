@@ -68,66 +68,6 @@ def admin():
 # ..
 
 
-async def all_user(session):
-    stmt = await session.execute(select(User))
-    result = stmt.scalars().all()
-    return result
-
-
-async def all_item(session):
-    stmt = await session.execute(select(Item))
-    result = stmt.scalars().all()
-    return result
-
-
-async def all_service(session):
-    stmt = await session.execute(select(Service))
-    result = stmt.scalars().all()
-    return result
-
-
-async def all_rent(session):
-    stmt = await session.execute(select(Rent))
-    result = stmt.scalars().all()
-    return result
-
-
-async def all_schedule(session):
-    stmt = await session.execute(select(ScheduleService))
-    result = stmt.scalars().all()
-    return result
-
-
-async def in_item(session, id):
-    stmt = await session.execute(
-        select(Item).where(
-            Item.id == id,
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
-async def in_service(session, id):
-    stmt = await session.execute(
-        select(Service).where(
-            Service.id == id,
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
-async def in_rent(session, id):
-    stmt = await session.execute(
-        select(Rent).where(
-            Rent.id == id,
-        )
-    )
-    result = stmt.scalars().first()
-    return result
-
-
 async def details_schedule_service(session, service):
     stmt = await session.execute(
         select(ScheduleService)

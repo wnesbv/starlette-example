@@ -17,16 +17,13 @@ from db_config.settings import settings
 from db_config.storage_config import engine, async_session
 
 from account.models import User
-from item.models import Service, ScheduleService, MyEnum
+from item.models import Rent, Service, ScheduleService, MyEnum
 
-from options_select.opt_slc import for_id
+from options_select.opt_slc import for_id, for_in
 
 from .opt_slc import (
     admin,
     get_admin_user,
-    all_service,
-    all_rent,
-    all_schedule,
     details_schedule_service,
 )
 
@@ -46,7 +43,7 @@ async def sch_list(request):
         # ..
         if obj:
             # ..
-            obj_list = await all_schedule(session)
+            obj_list = await for_in(session, ScheduleService)
             context = {
                 "request": request,
                 "obj_list": obj_list,
@@ -241,8 +238,8 @@ async def sch_create(request):
         if request.method == "GET":
             # ..
             obj = await get_admin_user(request, session)
-            obj_service = await all_service(session)
-            obj_rent = await all_rent(session)
+            obj_service = await for_in(session, Service)
+            obj_rent = await for_in(session, Rent)
             objects = list(MyEnum)
             # ..
             if obj:

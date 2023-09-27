@@ -16,13 +16,11 @@ from config.settings import BASE_DIR
 from db_config.settings import settings
 from db_config.storage_config import engine, async_session
 
-from item.models import ScheduleRent, ScheduleService
-from options_select.opt_slc import for_id
+from item.models import Rent, ScheduleRent
+from options_select.opt_slc import for_id, for_in
 from .opt_slc import (
     admin,
     get_admin_user,
-    all_service,
-    all_rent,
 )
 
 
@@ -100,7 +98,7 @@ async def rent_create(request):
         if request.method == "GET":
             # ..
             prv = await get_admin_user(request, session)
-            obj_rent = await all_rent(session)
+            obj_rent = await for_in(session, Rent)
             # ..
             if prv:
                 return templates.TemplateResponse(

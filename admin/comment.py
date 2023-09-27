@@ -22,8 +22,8 @@ from db_config.storage_config import engine, async_session
 from comment.models import Comment
 from account.models import User
 
-from options_select.opt_slc import for_id
-from .opt_slc import admin, all_user, get_admin_user
+from options_select.opt_slc import for_id, for_in
+from .opt_slc import admin, get_admin_user
 
 
 templates = Jinja2Templates(directory="templates")
@@ -35,7 +35,7 @@ async def cmt_child_create(request, new, id, item):
 
     async with async_session() as session:
         # ..
-        owner_all = await all_user(session)
+        owner_all = await for_in(session, User)
         # ..
         obj = await get_admin_user(request, session)
         # ...

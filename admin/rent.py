@@ -1,6 +1,6 @@
 
 from pathlib import Path
-from datetime import datetime, date
+from datetime import datetime
 
 import json
 
@@ -12,16 +12,13 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 from account.models import User
 
 from db_config.storage_config import engine, async_session
-from options_select.opt_slc import all_total, for_id
+from options_select.opt_slc import all_total, for_id, for_in
 
-from item.models import Rent, ScheduleRent
+from item.models import Item, Rent, ScheduleRent
 from .opt_slc import (
     admin,
     get_admin_user,
-    all_user,
-    all_item,
     rent_comment,
-    in_rent,
 )
 from . import img
 
@@ -71,7 +68,7 @@ async def i_details(request):
             # ..
             cmt_list = await rent_comment(session, id)
             # ..
-            i = await in_rent(session, id)
+            i = await for_id(session, Rent, id)
             # ..
             stmt = await session.execute(
                 select(ScheduleRent)
@@ -112,8 +109,8 @@ async def i_create(request):
         if request.method == "GET":
             # ..
             obj = await get_admin_user(request, session)
-            owner_all = await all_user(session)
-            obj_item = await all_item(session)
+            owner_all = await for_in(session, User)
+            obj_item = await for_in(session, Item)
             # ..
             if obj:
                 return templates.TemplateResponse(
@@ -186,7 +183,7 @@ async def i_update(request):
     async with async_session() as session:
         # ..
         obj = await get_admin_user(request, session)
-        i = await in_rent(session, id)
+        i = await for_id(session, Rent, id)
         # ..
         context = {
             "request": request,
@@ -279,7 +276,7 @@ async def i_delete(request):
         if request.method == "GET":
             # ..
             obj = await get_admin_user(request, session)
-            i = await in_rent(session, id)
+            i = await for_id(session, Rent, id)
             # ..
             if obj:
                 return templates.TemplateResponse(
@@ -293,7 +290,7 @@ async def i_delete(request):
         # ...
         if request.method == "POST":
             # ..
-            i = await in_rent(session, id)
+            i = await for_id(session, Rent, id)
             email = await for_id(session, User, i.owner)
             # ..
             await img.del_rent(email.email, i.rent_belongs, id)
