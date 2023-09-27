@@ -13,7 +13,7 @@ from starlette.responses import (
     RedirectResponse,
     PlainTextResponse,
 )
-from starlette.authentication import requires
+
 from sqlalchemy import update as sqlalchemy_update, delete
 
 from admin import img
@@ -21,13 +21,12 @@ from account.models import User
 
 from db_config.storage_config import engine, async_session
 from item.models import Item, Rent, Service, ScheduleRent, ScheduleService
-from options_select.opt_slc import for_id, item_comment, id_and_owner
+from options_select.opt_slc import for_id, id_and_owner
 
-from .schemas import FormCreate, FormUpdate, ListItem, DBItem
+from .schemas import FormCreate, FormUpdate, ListItem
 
 
 templates = Jinja2Templates(directory="templates")
-
 
 
 # ...

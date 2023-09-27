@@ -1,121 +1,85 @@
+{% extends "slider.html" %}
 
-{% extends "base.html" %}
+{% block slder %}
 
-{% block content %}
 
-    <h1 class="h6">
-        Hello, world..!
-        {% if obj %}
-            privileged: {{ obj.email }}
-        {% endif %}
-        {% if request.user.email %}
-            user: {{ request.user.email }}
-        {% endif %}
-    </h1>
+<h1 class="container h6">
+    Hello, world..! {% if prv %} privileged: {{ prv.email }} {% endif %} {% if
+    request.user.email %} user: {{ request.user.email }} {% endif %}
+</h1>
 
-    <a class="float-end mx-1 btn btn-light" href="#">Learn more &raquo;</a>
-    <div class="p-1 bg-light">
-        <h2 class="lead">Hello!</h2>
-        <p>New..! Item 03..! mail: one@example.com..! Lorem ipsum dolor sit amet, </p>
-    </div>
+<div class="container">
+<a class="float-end mx-1 btn btn-light" href="#">Learn more &raquo;</a>
+<div class="p-1 bg-light">
+    <h2 class="lead">Hello!</h2>
+    <p>
+        New..! Item 03..! mail: one@example.com..! Lorem ipsum dolor sit amet,
+    </p>
+</div>
+</div>
 
-    <link rel="stylesheet" href="/static/slider/slider.css">
-
-    <section class="promo_slider">
-        <div class="sl_content">
-
+<main class="container">
+<section class="promo_slider">
+    <div class="sl_content">
         {% for i in obj_sl %}
-        <div id="item-{{ i.id }}" class="card_item">
-
+        <div id="item-{{ i.id }}" class="card_i">
             {% if i.file %}
-                <style>
-                    #item-{{ i.id }}.card_item .content::before,
-                    #item-{{ i.id }}.card_item .content .inner::after{
-                        background-image: url('{{ i.file }}')
-                    }
-                </style>
-                    {% else %}
-                    <style>
-                        #item-{{ i.id }}.card_item .content::before,
-                        #item-{{ i.id }}.card_item .content .inner::after{
-                            background-image: url('/static/slider/publisher_photo.jpg')
-                        }
-                    </style>
+            <style>
+                #item-{{ i.id }}.card_i .content::before,
+                #item-{{ i.id }}.card_i .content .inner::after{
+                    background-image: url('{{ i.file }}')
+                }
+            </style>
+            {% else %}
+            <style>
+                #item-{{ i.id }}.card_i .content::before,
+                #item-{{ i.id }}.card_i .content .inner::after{
+                    background-image: url('/static/slider/photo.png')
+                }
+            </style>
             {% endif %}
 
             <div class="content">
-
                 <span class="item_name">
-                    <span>
-                        {{ i.title }}
-                    </span>
+                    <span> {{ i.title }} </span>
                 </span>
-                <span class="number" data-text="{{ i.id }}">
-                    {{ i.id }}
-                </span>
+                <span class="number" data-text="{{ i.id }}"> {{ i.id }} </span>
 
                 <div class="content_text">
-                    {% if i.description %}
-                        {{ i.description | truncate(180, True, '...', 5) }}
-                            {% else %}
-                            not description
-                    {% endif %}
-                    <hr>
+                    {% if i.description %} {{ i.description | truncate(180,
+                    True, '...', 5) }} {% else %} not description {% endif %}
+                    <hr />
                     <a class="btn btn-outline-primary btn-sm" href="">
                         {{ i.title }}
                     </a>
                 </div>
-
+                {% if i.created_at %}
                 <span class="publish_date">
-                    {% if i.created_at %}
                     <time>
-                    <sub>
-                    {{ i.created_at.strftime("%d-%m-%y %H:%M") }}
-                    </sub>
+                        <sub>
+                            {{ i.created_at.strftime("%d-%m-%y %H:%M") }}
+                        </sub>
                     </time>
-                    {% endif %}
                 </span>
+                {% endif %}
 
                 <div class="inner"></div>
                 <div class="inner_shadow"></div>
-
             </div>
-
         </div>
         {% endfor %}
-
-        </div>
-        <div class="sld_trigger"></div>
-    </section>
-
-
-    <div class="my-3">
-        <div class="row">
-            {% if obj_list %}
-            {% for obj in obj_list %}
-            <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-8 col-sm-10 mr-auto card p-3 mb-5">
-                <ul class="card-body list-group list-group-flush">
-                    <li class="list-group-item">{{ obj.id }}</li>
-                    <li class="list-group-item">{{ obj.name }}</li>
-                    <li class="list-group-item">{{ obj.email }}</li>
-                </ul>
-                <p class="card-footer">
-                    <a class="btn btn-outline-primary btn-sm" href="/details/{{ obj.id }}" role="button">View details &raquo;</a>
-                </p>
-            </div>
-            {% endfor %}
-
-                {% else %}
-                <span class="mt-5">no information available</span>
-            {% endif %}
-
-        </div>
-        <hr>
     </div>
+    <div class="sld_trigger"></div>
+</section>
+</main>
 
 {% endblock %}
 
 
-{% block slider %}
+{% block slider_css %}
+<link rel="stylesheet" href="/static/slider/slider.css" />
+{% endblock %}
+
+{% block slider_js %}
 <script src="/static/slider/slider.js"></script>
 {% endblock %}

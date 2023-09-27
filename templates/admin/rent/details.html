@@ -9,11 +9,13 @@
 
 {% block content %}
 
-<h1 class="lead my-2">admin detail rent...</h1>
+<div class="row card mt-2">
+    <div class="card-header">
+    <h1 class="lead">admin detail rent...</h1>
+    </div>
 
-<div class="row">
+    <div class="row">
     <div class="col-md-5 card">
-
     <ul class="card-header list-group list-group-horizontal">
         <li class="list-group-item pt-3">
             <sup class="float-start">id:</sup>
@@ -36,7 +38,7 @@
             <sup class="float-start">title:</sup>
             {{ i.title }}
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">description:</sup>
             {{ i.description | safe }}
         </li>
@@ -54,7 +56,9 @@
         <figcaption class="card-footer"></figcaption>
     </figure>
     {% endif %}
+    </div>
 </div>
+
 
 <h2 class="container lead my-2">schedule</h2>
 <ul class="card-body list-group list-group-flush">

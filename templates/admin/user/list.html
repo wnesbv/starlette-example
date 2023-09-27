@@ -4,64 +4,69 @@
 
 {% block content %}
 
-<h1 class="lead my-3">admin list user..</h1>
-
-<div class="card">
-    <p class="card-header">user count {{ obj_count | max }}</p>
-</div>
-
-<div class="flex_start">
-    {% if obj_list %}
-    {% for i in obj_list %}
-    <div class="card mt-2 me-1">
-
-        <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item pt-3">
-                <sup class="float-start">id:</sup>
-                <span class="me-3">{{ i.id }}</span>
-            </li>
-            <li class="list-group-item pt-3">
-                <sup class="float-start">name:</sup>
-                <span>{{ i.name }}</span>
-            </li>
-            <li class="list-group-item pt-3">
-                <sup class="float-start">email:</sup>
-                <span>{{ i.email }}</span>
-            </li>
-        </ul>
-
-        <ul class="card-body list-group list-group-horizontal">
-            <li class="list-group-item pt-3">
-                <sup class="float-start">email verified:</sup>
-                <span>{{ i.email_verified }}</span>
-            </li>
-            <li class="list-group-item pt-3">
-                <sup class="float-start">active:</sup>
-                <span>{{ i.is_active }}</span>
-            </li>
-            <li class="list-group-item pt-3">
-                <sup class="float-start">admin:</sup>
-                <span>{{ i.is_admin }}</span>
-            </li>
-        </ul>
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item pt-3">
-                <sup class="float-start">last_login_date:</sup>
-                <span>{{ i.last_login_date }}</span>
-            </li>
-            {% include "created_modified.html" %}
-        </ul>
-
-        <div class="card-footer">
-        <a class="btn btn-outline-primary btn-sm" href="/admin/user/details/{{ i.id }}" role="button">View details &raquo;</a>
-        </div>
-
+<div class="card mt-2">
+    <div class="card-header">
+    <h1 class="lead">admin list user..</h1>
     </div>
-    {% endfor %}
+    <p class="card-header">user count {{ obj_count | max }}</p>
 
-        {% else %}
-        <span class="mt-5">no information available</span>
+    <div class="flex_start">
+        {% if obj_list %}
+        {% for i in obj_list %}
+        <div class="card mt-2 me-1">
 
-    {% endif %}
+            <ul class="card-header list-group list-group-horizontal">
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">id:</sup>
+                    <span class="me-3">{{ i.id }}</span>
+                </li>
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">name:</sup>
+                    <span>{{ i.name }}</span>
+                </li>
+            </ul>
+            <ul class="card-header list-group list-group-horizontal">
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">email:</sup>
+                    <span>{{ i.email }}</span>
+                </li>
+            </ul>
+
+            <ul class="card-body list-group list-group-horizontal">
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">email verified:</sup>
+                    <span>{{ i.email_verified }}</span>
+                </li>
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">active:</sup>
+                    <span>{{ i.is_active }}</span>
+                </li>
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">admin:</sup>
+                    <span>{{ i.is_admin }}</span>
+                </li>
+            </ul>
+
+            <ul class="card-body list-group list-group-flush">
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">last_login_date:</sup>
+                    <span>{{ i.last_login_date }}</span>
+                </li>
+                {% include "created_modified.html" %}
+            </ul>
+
+            <div class="card-footer">
+            <a class="btn btn-outline-primary btn-sm" href="/admin/user/details/{{ i.id }}" role="button">View details &raquo;</a>
+            </div>
+
+        </div>
+        {% endfor %}
+
+            {% else %}
+            <span class="mt-5">no information available</span>
+
+        {% endif %}
+    </div>
+
 </div>
 {% endblock %}

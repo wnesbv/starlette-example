@@ -1,58 +1,61 @@
 
 {% extends "admin/base.html" %}
-{% block title %} admin item {% endblock %}
+{% block title %} adm item list {% endblock %}
 
 {% block content %}
 
-<h1 class="lead my-3">list item..</h1>
-
-<div class="card">
-    <p class="card-header">item count {{ obj_count | max }}</p>
-</div>
-
-<div class="flex_start">
-    {% if obj_list %}
-    {% for i in obj_list %}
-    <div class="card mt-2 me-1">
-
-    <ul class="card-header list-group list-group-horizontal">
-        <li class="list-group-item pt-3">
-            <sup class="float-start">id:</sup>
-            {{ i.id }}
-        </li>
-        <li class="list-group-item pt-3">
-            <sup class="float-start">owner:</sup>
-            {{ i.owner }}
-        </li>
-    </ul>
+<div class="card mt-2">
     
-    <div class="card-body">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">title:</sup>
-                {{ i.title }}
+    <div class="card-header">
+    <h1 class="lead">admin item list...</h1>
+    </div>
+    <p class="card-header">item count {{ obj_count | max }}</p>
+
+    <div class="flex_start">
+        {% if obj_list %}
+        {% for i in obj_list %}
+        <div class="card mt-2 me-1">
+
+        <ul class="card-header list-group list-group-horizontal">
+            <li class="list-group-item pt-3">
+                <sup class="float-start">id:</sup>
+                {{ i.id }}
             </li>
-            <li class="list-group-item">
-                <sup class="float-start">description:</sup>
-                {{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}
+            <li class="list-group-item pt-3">
+                <sup class="float-start">owner:</sup>
+                {{ i.owner }}
             </li>
         </ul>
+        
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <sup class="float-start">title:</sup>
+                    {{ i.title }}
+                </li>
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">description:</sup>
+                    {{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}
+                </li>
+            </ul>
 
-        <ul class="list-group list-group-horizontal">
-            {% include "created_modified.html" %}
-        </ul>
+            <ul class="list-group list-group-horizontal">
+                {% include "created_modified.html" %}
+            </ul>
+
+        </div>
+
+        <div class="card-footer">
+            <a class="btn btn-outline-primary btn-sm" href="/admin/item/details/{{ i.id }}" role="button">View details &raquo;</a>
+        </div>
+        </div>
+        {% endfor %}
+
+            {% else %}
+            <span class="mt-5">no information available</span>
+        {% endif %}
 
     </div>
-
-    <div class="card-footer">
-        <a class="btn btn-outline-primary btn-sm" href="/admin/item/details/{{ i.id }}" role="button">View details &raquo;</a>
-    </div>
-    </div>
-    {% endfor %}
-
-        {% else %}
-        <span class="mt-5">no information available</span>
-    {% endif %}
 
 </div>
 

@@ -2,7 +2,9 @@
 from datetime import datetime, timedelta
 from pathlib import Path
 
-import os, jwt, functools
+import os, jwt, functools, time
+
+from pydantic import BaseModel
 
 from sqlalchemy import update as sqlalchemy_update, delete, false, true, and_
 
@@ -283,6 +285,12 @@ async def user_delete(request):
     await engine.dispose()
 
 
+class CrtPayload(BaseModel):
+    user_id: int
+    name: str
+    email: str
+
+
 async def user_login(request):
     # ..
     template = "/auth/login.html"
@@ -315,19 +323,11 @@ async def user_login(request):
                     session.add(user)
                     await session.commit()
                     # ..
-                    payload = {
-                        "user_id": user.id,
-                        "name": user.name,
-                        "email": user.email,
-                    }
-                    token = jwt.encode(payload, key, algorithm)
+                    payload = CrtPayload(user_id=user.id, name=user.name, email=user.email)
+                    token = jwt.encode(payload.dict(), key, algorithm)
+                    # ..
                     response = RedirectResponse("/", status_code=302)
-                    response.set_cookie(
-                        "visited",
-                        token,
-                        path="/",
-                        httponly=True,
-                    )
+                    response.set_cookie(key="visited", value=token, path="/", httponly=True)
                     # ..
                     return response
 

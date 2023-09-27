@@ -7,8 +7,6 @@ from starlette.authentication import (
     BaseUser,
 )
 
-from db_config.settings import settings
-
 
 class JwtUser(BaseUser):
     def __init__(

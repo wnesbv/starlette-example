@@ -1,14 +1,16 @@
 
 {% extends "admin/base.html" %}
-{% block title %} admin item {{ i.title }} {% endblock %}
+{% block title %} adm item {{ i.title }} {% endblock %}
 
 {% block content %}
 
-<h1 class="lead my-3">admin detail item</h1>
+<div class="row card mt-2">
+    <div class="card-header">
+    <h1 class="lead">admin detail item</h1>
+    </div>
 
-<div class="row">
+    <div class="row">
     <div class="col-md-5 card">
-
     <ul class="card-header list-group list-group-horizontal">
         <li class="list-group-item pt-3">
             <sup class="float-start">id:</sup>
@@ -32,13 +34,12 @@
         {% include "created_modified.html" %}
     </ul>
 
-    <ul class="card-footer list-group list-group-horizontal">
-
+    <ul class="card-footer list-group list-group-flush">
         <li class="list-group-item pt-3">
             <sup class="float-start">service:</sup>
             {% for i in all_service %}
             <a href="/admin/service/details/{{ i.id }}">
-                <sub>{{ i.title }},</sub>
+                <sub>{{ i.title }}, </sub>
             </a>
             {% endfor %}
         </li>
@@ -46,7 +47,7 @@
             <sup class="float-start">rent:</sup>
             {% for i in all_rent %}
             <a href="/admin/rent/details/{{ i.id }}">
-                <sub>{{ i.title }},</sub>
+                <sub>{{ i.title }}, </sub>
             </a>
             {% endfor %}
         </li>
@@ -61,7 +62,7 @@
     <figcaption class="card-footer"></figcaption>
     </figure>
     {% endif %}
-
+    </div>
 </div>
 
 <div class="card">

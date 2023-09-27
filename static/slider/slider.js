@@ -1,25 +1,24 @@
-    $('.card_item:first-of-type').addClass('plug_time');
+    $('.card_i:first-of-type').addClass('run');
     $(() => {
         $('.sld_trigger').click(() => {
             setTimeout(() => {
-                $('.card_item').removeClass('plug_time');
+                $('.card_i').removeClass('run');
             }, 0);
         });
         $('.sld_trigger').click(() => {
             setTimeout(() => {
-                $('.card_item').removeClass('active');
+                $('.card_i').removeClass('active');
             }, 0);
         });
-
         $('.sld_trigger').click(() => {
             setTimeout(() => {
-                $('.sl_content').append($('.card_item:first'));
+                $('.sl_content').append($('.card_i:first'));
             }, 800);
         });
 
         $('.sld_trigger').click(() => {
             setTimeout(() => {
-                $('.card_item:first-of-type').addClass('active');
+                $('.card_i:first-of-type').addClass('active');
             }, 800);
         });
     });

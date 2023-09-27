@@ -1,6 +1,4 @@
 
-from datetime import datetime, timedelta
-
 import os, csv
 from config.settings import BASE_DIR
 

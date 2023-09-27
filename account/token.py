@@ -1,4 +1,3 @@
-
 from datetime import datetime, timedelta
 
 from sqlalchemy.future import select
@@ -18,9 +17,7 @@ algorithm = settings.JWT_ALGORITHM
 EMAIL_TOKEN_EXPIRY_MINUTES = settings.EMAIL_TOKEN_EXPIRY_MINUTES
 
 
-async def verify_decode(
-    request
-):
+async def verify_decode(request):
     payload = request.query_params["token"]
 
     try:
@@ -37,44 +34,32 @@ async def verify_decode(
         raise HTTPException(401, "Invalid scope for token")
 
     except jwt.ExpiredSignatureError as exc:
-        raise HTTPException(
-            401, "Email token expired"
-        ) from exc
+        raise HTTPException(401, "Email token expired") from exc
     except jwt.InvalidTokenError:
-        raise HTTPException(
-            401, "Invalid email token"
-        ) from exc
+        raise HTTPException(401, "Invalid email token") from exc
 
 
-async def mail_verify(
-    request
-):
+async def mail_verify(request):
     async with async_session() as session:
-
         email = await verify_decode(request)
         # ..
-        result = await session.execute(
-            select(User).where(User.email == email)
-        )
+        result = await session.execute(select(User).where(User.email == email))
         user = result.scalars().first()
         # ..
         if not user:
             raise HTTPException(
-                401, "Недействительный пользователь..! Пожалуйста, создайте учетную запись"
+                401,
+                "Недействительный пользователь..! Пожалуйста, создайте учетную запись",
             )
 
         if user.email_verified:
-            raise HTTPException(
-                304, "Электронная почта пользователя уже подтверждена!"
-            )
+            raise HTTPException(304, "Электронная почта пользователя уже подтверждена!")
 
         user.email_verified = True
         user.is_active = True
         await session.commit()
 
-        response = RedirectResponse(
-            "/", status_code=302
-        )
+        response = RedirectResponse("/", status_code=302)
         return response
         # return {"msg": "Электронная почта успешно подтверждена"}
     await engine.dispose()
@@ -82,8 +67,8 @@ async def mail_verify(
 
 # ...
 
-async def encode_reset_password(email):
 
+async def encode_reset_password(email):
     payload = {
         "email": email,
         "exp": datetime.utcnow()
@@ -91,17 +76,11 @@ async def encode_reset_password(email):
         "iat": datetime.utcnow(),
         "scope": "reset_password",
     }
-    token = jwt.encode(
-        payload,
-        key,
-        algorithm
-    )
+    token = jwt.encode(payload, key, algorithm)
     return token
 
 
-async def decode_reset_password(
-    request
-):
+async def decode_reset_password(request):
     token = request.query_params["token"]
 
     try:
@@ -118,10 +97,6 @@ async def decode_reset_password(
         raise HTTPException(401, "Invalid scope for token")
 
     except jwt.ExpiredSignatureError as exc:
-        raise HTTPException(
-            401, "Email token expired"
-        ) from exc
+        raise HTTPException(401, "Email token expired") from exc
     except jwt.InvalidTokenError as exc:
-        raise HTTPException(
-            401, "Invalid email token"
-        ) from exc
+        raise HTTPException(401, "Invalid email token") from exc

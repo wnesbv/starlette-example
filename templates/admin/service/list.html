@@ -4,56 +4,59 @@
 
 {% block content %}
 
-<h1 class="lead my-3">admin list service..</h1>
+<div class="card mt-2">
 
-<div class="card">
+    <div class="card-header">
+    <h1 class="lead">admin list service..</h1>
+    </div>
     <p class="card-header">service count {{ obj_count | max }}</p>
-</div>
 
-<div class="flex_start">
-    {% if obj_list %}
-    {% for i in obj_list %}
-    <div class="card mt-2 me-1">
+    <div class="flex_start">
+        {% if obj_list %}
+        {% for i in obj_list %}
+        <div class="card mt-2 me-1">
 
-        <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item pt-3">
-                <sup class="float-start">id:</sup>
-                <span>{{ i.id }}</span>
-            </li>
-            <li class="list-group-item pt-3">
-                <sup class="float-start">service owner:</sup>
-                <span>{{ i.owner }}</span>
-            </li>
-            <li class="list-group-item pt-3">
-                <sup class="float-start">service belongs:</sup>
-                <span>{{ i.service_belongs }}</span>
-            </li>
-        </ul>
+            <ul class="card-header list-group list-group-horizontal">
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">id:</sup>
+                    <span>{{ i.id }}</span>
+                </li>
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">service owner:</sup>
+                    <span>{{ i.owner }}</span>
+                </li>
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">service belongs:</sup>
+                    <span>{{ i.service_belongs }}</span>
+                </li>
+            </ul>
 
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">title:</sup>
-                <p>{{ i.title }}</p>
-            </li>
-            <li class="list-group-item">
-                <sup class="float-start">description:</sup>
-                <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
-            </li>
-            {% include "created_modified.html" %}
-        </ul>
+            <ul class="card-body list-group list-group-flush">
+                <li class="list-group-item">
+                    <sup class="float-start">title:</sup>
+                    <p>{{ i.title }}</p>
+                </li>
+                <li class="list-group-item">
+                    <sup class="float-start">description:</sup>
+                    <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+                </li>
+                {% include "created_modified.html" %}
+            </ul>
 
-        <div class="card-footer">
-            <a class="btn btn-outline-primary btn-sm" href="/admin/service/details/{{ i.id }}" role="button">View details &raquo;</a>
+            <div class="card-footer">
+                <a class="btn btn-outline-primary btn-sm" href="/admin/service/details/{{ i.id }}" role="button">View details &raquo;</a>
+            </div>
+
         </div>
 
+        {% endfor %}
+
+            {% else %}
+            <span class="mt-5">no information available</span>
+
+        {% endif %}
     </div>
 
-    {% endfor %}
-
-        {% else %}
-        <span class="mt-5">no information available</span>
-
-    {% endif %}
 </div>
 
 {% endblock %}

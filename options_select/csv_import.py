@@ -1,7 +1,8 @@
+
 from datetime import datetime
 from pathlib import Path
 
-import tempfile, csv, uuid
+import tempfile, csv
 
 
 async def import_csv(request, session, model, prv):

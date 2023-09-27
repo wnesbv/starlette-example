@@ -4,55 +4,56 @@
 
 {% block content %}
 
-<h1 class="lead my-3">admin list rent..</h1>
+<div class="card mt-2">
 
-<div class="card">
-    <p class="card-header">rent count {{ obj_count | max }}</p>
-</div>
-
-<div class="flex_start">
-    {% if obj_list %}
-    {% for i in obj_list %}
-    <div class="card mt-2 me-1">
-
-        <ul class="card-header list-group list-group-horizontal">
-            <li class="list-group-item pt-3">
-                <sup class="float-start">id:</sup>
-                <span class="me-3">{{ i.id }}</span>
-            </li>
-            <li class="list-group-item pt-3">
-                <sup class="float-start">owner:</sup>
-                <span>{{ i.owner }}</span>
-            </li>
-            <li class="list-group-item pt-3">
-                <sup class="float-start">rent belongs:</sup>
-                <span>{{ i.rent_belongs }}</span>
-            </li>
-        </ul>
-        
-        <ul class="card-body list-group list-group-flush">
-            <li class="list-group-item">
-                <sup class="float-start">title:</sup>
-                <p>{{ i.title }}</p>
-            </li>
-            <li class="list-group-item">
-                <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
-            </li>
-            {% include "created_modified.html" %}
-        </ul>
-
-        <div class="card-footer">
-        <a class="btn btn-outline-primary btn-sm" href="/admin/rent/details/{{ i.id }}" role="button">View details &raquo;</a>
-        </div>
-
+    <div class="card-header">
+    <h1 class="lead">admin list rent..</h1>
     </div>
+    <p class="card-header">rent count {{ obj_count | max }}</p>
 
-    {% endfor %}
+    <div class="flex_start">
+        {% if obj_list %}
+        {% for i in obj_list %}
+        <div class="card mt-2 me-1">
 
+            <ul class="card-header list-group list-group-horizontal">
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">id:</sup>
+                    <span class="me-3">{{ i.id }}</span>
+                </li>
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">owner:</sup>
+                    <span>{{ i.owner }}</span>
+                </li>
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">rent belongs:</sup>
+                    <span>{{ i.rent_belongs }}</span>
+                </li>
+            </ul>
+            
+            <ul class="card-body list-group list-group-flush">
+                <li class="list-group-item">
+                    <sup class="float-start">title:</sup>
+                    <p>{{ i.title }}</p>
+                </li>
+                <li class="list-group-item pt-3">
+                    <sup class="float-start">description:</sup>
+                    <p>{{ i.description | striptags() | truncate(190, True, '...', 5) | safe }}</p>
+                </li>
+                {% include "created_modified.html" %}
+            </ul>
+
+            <div class="card-footer">
+            <a class="btn btn-outline-primary btn-sm" href="/admin/rent/details/{{ i.id }}" role="button">View details &raquo;</a>
+            </div>
+
+        </div>
+        {% endfor %}
         {% else %}
         <span class="mt-5">no information available</span>
 
-    {% endif %}
+        {% endif %}
+    </div>
 
 </div>
 

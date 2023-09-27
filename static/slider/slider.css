@@ -1,14 +1,17 @@
 
 /*  */
+    .bufer{
+        margin-top: 12.5vh;
+    }
     .promo_slider{
         width: 100%;
-        height: 75vh;
+        height: 66vh;
         margin: .5em auto 0 auto;
         position: relative;
         overflow: hidden;
         box-shadow: .4em .4em .4em rgb(0 0 0 / 20%);
     }
-    .card_item{
+    .card_i{
         width: 100%;
         height: 100%;
         top: 0;
@@ -17,7 +20,7 @@
         pointer-events: all;
         background-color: #f8f9fa;
     }
-    .card_item .content{
+    .card_i .content{
         width: 100%;
         height: 100%;
         top: 0;
@@ -26,7 +29,7 @@
         z-index: 1;
         overflow: hidden;
     }
-    .card_item .content::before{
+    .card_i .content::before{
         content: '';
         width: 70%;
         height: 100%;
@@ -50,23 +53,23 @@
         box-shadow: .4em .4em .4em #00000000;
         transition: box-shadow .4s;
     }
-    .card_item.active .content .inner_shadow,
-    .card_item.plug_time .content .inner_shadow{
+    .card_i.active .content .inner_shadow,
+    .card_i.run .content .inner_shadow{
         box-shadow: .3em .3em .3em #00000033;
         transition: box-shadow .8s linear 3s;
     }
 
 /* first-of-type */
 
-    .card_item:first-of-type{
+    .card_i:first-of-type{
         z-index: 3;
     }
-    .card_item:first-of-type .content::before{
+    .card_i:first-of-type .content::before{
         animation: translateX_70_0 .8s ease-in 1 forwards, unopen_polygon .8s ease 1 forwards 1s;
 
         will-change: transform;
     }
-    .card_item:first-of-type .content .inner{
+    .card_i:first-of-type .content .inner{
         animation: scaleX_0_1 .4s linear 1 forwards 1.8s;
 
         will-change: transform;
@@ -77,12 +80,12 @@
 
 /* .inner first-of-type before after */
 
-    .card_item:first-of-type .content .inner::before{
+    .card_i:first-of-type .content .inner::before{
         animation: scaleX_1_0 .8s ease 1 forwards 2.4s;
 
         will-change: transform;
     }
-    .card_item:first-of-type .content .inner::after{
+    .card_i:first-of-type .content .inner::after{
         animation: scale_15_1 .8s linear 1 forwards 3s;
 
         will-change: transform;
@@ -90,23 +93,23 @@
 
 /* nth-of-type(2) */
 
-    .card_item:nth-of-type(2){
+    .card_i:nth-of-type(2){
         left: 0;
         z-index: 3;
         animation: translateX_100_70 .8s ease 1 forwards;
     }
-    .card_item:nth-of-type(2) .content .inner,
-    .card_item:nth-of-type(2) .content .inner::before,
-    .card_item:nth-of-type(2) .content .inner::after{
+    .card_i:nth-of-type(2) .content .inner,
+    .card_i:nth-of-type(2) .content .inner::before,
+    .card_i:nth-of-type(2) .content .inner::after{
         display: none;
     }
 
 /* text number */
 
-    .card_item:nth-of-type(2) .content .number{
+    .card_i:nth-of-type(2) .content .number{
         box-shadow: none;
     }
-    .card_item .content .number{
+    .card_i .content .number{
         height: 6vh;
         top: 0;
         right: 1.44rem;
@@ -119,7 +122,7 @@
         background-color: #f5f9fc33;
         box-shadow: .2em .2em .2em #00000033;;
     }
-    .card_item .content .number::before{
+    .card_i .content .number::before{
         content: attr(data-text);
         top: 0;
         left: 0;
@@ -131,21 +134,21 @@
         transition: .8s linear;
         transform: translate3d(100%,0,0);;
     }
-    .card_item.plug_time .content .number::before{
+    .card_i.run .content .number::before{
         transition: .8s linear 2.4s;
         transform: translate3d(0,0,0)
     }
-    .card_item.active .content .number::before{
+    .card_i.active .content .number::before{
         transition: .8s linear 2.4s;
         transform: translate3d(0,0,0)
     }
-    .card_item:nth-of-type(2) .content .number::before{
+    .card_i:nth-of-type(2) .content .number::before{
         transform: translate3d(-100%,0,0);;
     }
 
 /* .inner */
 
-    .card_item .content .inner{
+    .card_i .content .inner{
         width: calc(34% - 1em);
         height: calc(90% - 1em);
         top: auto;
@@ -157,7 +160,7 @@
         transform: scale3d(0,1,1);
         transform-origin: 0 100%;
     }
-    .card_item .content .inner::before{
+    .card_i .content .inner::before{
         content: '';
         width: 100%;
         height: 100%;
@@ -169,7 +172,7 @@
         transform: scale3d(1,1,1);
         transform-origin: 100% 0%;
     }
-    .card_item .content .inner::after{
+    .card_i .content .inner::after{
         content: '';
         width: 100%;
         height: 100%;
@@ -180,8 +183,8 @@
         transform: scale3d(1.5,1.5,1.5);
         transform-origin: 50% 50%;
     }
-    .card_item.active .content .inner,
-    .card_item.plug_time .content .inner{
+    .card_i.active .content .inner,
+    .card_i.run .content .inner{
         right: 1em;
     }
 
@@ -195,7 +198,7 @@
         border: thin solid;
         text-transform: capitalize;
     }
-    .card_item .content .item_name{
+    .card_i .content .item_name{
         top: 0;
         padding: 1em 1em 1em 0;
         margin: 1vh 0 0 0;
@@ -203,21 +206,21 @@
         font-size: 2rem;
         font-weight: lighter;
     }
-    .card_item .content .content_text{
+    .card_i .content .content_text{
         width: calc(36% - 1.8em);
         top: 27.5%;
     }
-    .card_item .content .publish_date{
+    .card_i .content .publish_date{
         top: 75%;
         margin: 0;
     }
-    .card_item .content .content_text,
-    .card_item .content .publish_date{
+    .card_i .content .content_text,
+    .card_i .content .publish_date{
         padding: 0 1em 1em 0;
     }
-    .card_item .content .item_name,
-    .card_item .content .content_text,
-    .card_item .content .publish_date{
+    .card_i .content .item_name,
+    .card_i .content .content_text,
+    .card_i .content .publish_date{
         left: calc(30% + 1em);
         position: absolute;
         overflow: hidden;
@@ -233,9 +236,34 @@
     .item_name span::before{
         margin: 0 0 0 2em;
     }
-    .card_item .content .item_name::before,
-    .card_item .content .content_text::before,
-    .card_item .content .publish_date::before{
+    
+/* run */
+
+    @keyframes zero{
+        from{
+            width: 0;
+        }
+        to{
+            width: 100%;
+        }
+    }
+
+    .card_i.active .content .item_name::before,
+    .card_i.active .content .content_text::before,
+    .card_i.active .content .publish_date::before{
+        width: 0;
+        background-color: #fff;
+        transition: width .8s linear 3s, background-color .4s linear 3s;
+    }
+    .card_i.run .content .item_name::before,
+    .card_i.run .content .content_text::before,
+    .card_i.run .content .publish_date::before{
+        background-color: #ffffff;
+        animation: unopen_polygon .8s linear 1 forwards 3s;
+    }
+    .card_i .content .item_name::before,
+    .card_i .content .content_text::before,
+    .card_i .content .publish_date::before{
         content: '';
         width: 100%;
         height: 100%;
@@ -245,29 +273,14 @@
         position: absolute;
         background-color: #f8f9fa;
         transition: width .8s linear, background-color .4s linear 3s;
-    }
-    .card_item.active .content .item_name::before,
-    .card_item.active .content .content_text::before,
-    .card_item.active .content .publish_date::before{
-        width: 0;
-        background-color: #fff;
-        transition: width .8s linear 3s, background-color .4s linear 3s;
-    }
-
-/* plug_time */
-
-    .card_item.plug_time .content .item_name::before,
-    .card_item.plug_time .content .content_text::before,
-    .card_item.plug_time .content .publish_date::before{
-        background-color: #ffffff;
-        animation: unopen_polygon .8s linear 1 forwards 3s;
+        animation: zero .8s;
     }
 
 /* after */
 
-    .card_item .content .item_name::after,
-    .card_item .content .content_text::after,
-    .card_item .content .publish_date::after{
+    .card_i .content .item_name::after,
+    .card_i .content .content_text::after,
+    .card_i .content .publish_date::after{
         content: '';
         width: 0;
         height: 100%;
@@ -277,9 +290,9 @@
         position: absolute;
         background-color: #FFDC65;
     }
-    .card_item.plug_time .content .item_name::after,
-    .card_item.plug_time .content .content_text::after,
-    .card_item.plug_time .content .publish_date::after{
+    .card_i.run .content .item_name::after,
+    .card_i.run .content .content_text::after,
+    .card_i.run .content .publish_date::after{
         animation: left_right 1.6s ease 1 forwards 2s;
     }
 
@@ -318,16 +331,16 @@
 
 /* background-image */
 
-    .card_item:nth-of-type(2) .content::before{
+    .card_i:nth-of-type(2) .content::before{
         background-repeat: no-repeat;
-        background-position: center right -12vw;
-        background-size: cover;
+        background-position: center right;
+        background-size: contain;
     }
-    .card_item:first-of-type .content::before,
-    .card_item:first-of-type .content .inner::after{
+    .card_i:first-of-type .content::before,
+    .card_i:first-of-type .content .inner::after{
         background-repeat: no-repeat;
         background-position: center center;
-        background-size: cover;
+        background-size: contain;
     }
 
 /* @keyframes */
@@ -408,37 +421,37 @@
         top: 0;
         position: relative;
     }
-    .card_item {
+    .card_i {
         position: relative;
     }
-    .card_item:first-of-type{
+    .card_i:first-of-type{
         float: right;
         height: 56%;
         top: 44%;
     }
 
 /*  */
-    .card_item.active .content,
-    .card_item.plug_time .content{
+    .card_i.active .content,
+    .card_i.run .content{
         width: 100%;
         height: 100%;
         top: 0;
     }
-    .card_item .content::before{
+    .card_i .content::before{
         width: 100%;
         left: 0;
     }
 
 /*  */
-    .card_item .content .inner{
+    .card_i .content .inner{
         width: 100%;
         height: 100%;
         top: 0;
         bottom: 0;
         right: -100%;
     }
-    .card_item.active .content .inner,
-    .card_item.plug_time .content .inner{
+    .card_i.active .content .inner,
+    .card_i.run .content .inner{
         width: 100%;
         height: 100%;
         top: 0;
@@ -446,54 +459,54 @@
     }
 
 /*  */
-    .card_item .content .content_text{
+    .card_i .content .content_text{
         width: 80%;
         top: 33%;
     }
-    .card_item .content .publish_date{
+    .card_i .content .publish_date{
         top: 90%;
     }
 
 /*  */
-    .card_item:nth-of-type(2) .content::before{
+    .card_i:nth-of-type(2) .content::before{
         background-position: center center;
     }
-    .card_item:nth-of-type(2){
+    .card_i:nth-of-type(2){
         height: 44%;
         top: 0;
         left: 0;
         animation: translateX_100 .8s ease 1 forwards;
     }
-    .card_item:nth-of-type(2) .content .number{
+    .card_i:nth-of-type(2) .content .number{
         box-shadow: none;
     }
-    .card_item:nth-of-type(2) .content .item_name,
-    .card_item:nth-of-type(2) .content .content_text,
-    .card_item:nth-of-type(2) .content .publish_date{
+    .card_i:nth-of-type(2) .content .item_name,
+    .card_i:nth-of-type(2) .content .content_text,
+    .card_i:nth-of-type(2) .content .publish_date{
         display: none;;
     }
-    .card_item:first-of-type .content::before{
+    .card_i:first-of-type .content::before{
         animation: translateX_100 .8s ease-in 1 forwards, unopen_polygon .8s ease 1 forwards 1s;
         will-change: transform;
     }
 
 /*  */
-    .card_item .content .item_name,
-    .card_item .content .content_text,
-    .card_item .content .publish_date{
+    .card_i .content .item_name,
+    .card_i .content .content_text,
+    .card_i .content .publish_date{
         left: 0;
         padding: 1em;
         background-color: #fff;
         animation: translateX_100 .8s linear 1 both 2s
     }
-    .card_item .content .item_name::before,
-    .card_item .content .content_text::before,
-    .card_item .content .publish_date::before{
+    .card_i .content .item_name::before,
+    .card_i .content .content_text::before,
+    .card_i .content .publish_date::before{
         transition: none;
     }
-    .card_item.active .content .item_name::before,
-    .card_item.active .content .content_text::before,
-    .card_item.active .content .publish_date::before{
+    .card_i.active .content .item_name::before,
+    .card_i.active .content .content_text::before,
+    .card_i.active .content .publish_date::before{
         width: 100%;
         transition: none;
         background-color: #f8f9fa;
@@ -501,12 +514,12 @@
     }
 
 /*  */
-    .card_item:first-of-type .content .inner::before{
+    .card_i:first-of-type .content .inner::before{
         animation: scaleX_1_0 .8s linear 1 forwards 2s;
     }
-    .card_item.plug_time .content .item_name::after,
-    .card_item.plug_time .content .content_text::after,
-    .card_item.plug_time .content .publish_date::after{
+    .card_i.run .content .item_name::after,
+    .card_i.run .content .content_text::after,
+    .card_i.run .content .publish_date::after{
         animation: left_right 1.6s linear 1 forwards 2.4s;
     }
 

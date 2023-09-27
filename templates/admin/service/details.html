@@ -1,6 +1,6 @@
 
 {% extends "admin/base.html" %}
-{% block title %} admin service {{ i.title }} {% endblock %}
+{% block title %} adm service {{ i.title }} {% endblock %}
 
 {% block calendar_css %}
 <link href="{{ url_for('static', path='/evo-calendar/css/evo-calendar.css') }}" rel="stylesheet">
@@ -8,9 +8,12 @@
 
 {% block content %}
 
-<h1 class="lead my-4">admin service detail...</h1>
+<div class="card mt-2">
+    <div class="card-header">
+    <h1 class="lead">admin detail service...</h1>
+    </div>
 
-<div class="row">
+    <div class="row">
     <div class="col-md-5 card">
     <ul class="card-header list-group list-group-horizontal">
         <li class="list-group-item pt-3">
@@ -43,7 +46,7 @@
         {% endif %}
     </ul>
 
-    <ul class="card-footer">
+    <ul class="card-footer list-group list-group-flush">
         {% include "created_modified.html" %}
     </ul>
     </div>
@@ -54,6 +57,7 @@
         <figcaption class="card-footer"></figcaption>
     </figure>
     {% endif %}
+    </div>
 </div>
 
 <div id="calendar" class="card mt-3"></div>

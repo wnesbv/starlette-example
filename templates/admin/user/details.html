@@ -1,24 +1,24 @@
 
 {% extends "admin/base.html" %}
-{% block title %} admin user {{ i.name }} {% endblock %}
+{% block title %} adm user {{ i.name }} {% endblock %}
 
 {% block content %}
 
-<h1 class="lead my-2">admin detail user...</h1>
+<div class="card mt-2">
+    <div class="card-header">
+    <h1 class="lead">admin detail user...</h1>
+    </div>
 
-<div class="row">
+    <div class="row">
     <div class="col-md-5 card">
-
     <ul class="card-header list-group list-group-horizontal">
         <li class="list-group-item pt-3">
             <sup class="float-start">id:</sup>
-            {{ i.id }}...
+            <span>{{ i.id }}...</span>
         </li>
         <li class="list-group-item pt-3">
             <sup class="float-start">name:</sup>
-            <span class="me-3">
-                {{ i.name }}
-            </span>
+            <span>{{ i.name }}</span>
         </li>
         <li class="list-group-item pt-3">
             <sup class="float-start">email:</sup>
@@ -29,11 +29,8 @@
     <ul class="card-body list-group list-group-flush">
         <li class="list-group-item">
             <sup class="float-start">password:</sup>
-            {{ i.password }}
+           <span>{{ i.password }}</span>
         </li>
-    </ul>
-
-    <ul class="card-footer list-group list-group-horizontal">
         <li class="list-group-item pt-3">
             <sup class="float-start">all item:</sup>
             {% for i in all_item %}
@@ -57,20 +54,20 @@
     <ul class="card-footer list-group list-group-horizontal">
         <li class="list-group-item pt-3">
             <sup class="float-start">email_verified:</sup>
-            {{ i.email_verified }}
+            <span>{{ i.email_verified }}</span>
         </li>
         <li class="list-group-item pt-3">
             <sup class="float-start">is_active:</sup>
-            {{ i.is_active }}
+            <span>{{ i.is_active }}</span>
         </li>
         <li class="list-group-item pt-3">
             <sup class="float-start">is_admin:</sup>
-            {{ i.is_admin }}
+            <span>{{ i.is_admin }}</span>
         </li>
     </ul>
     
     <ul class="card-footer list-group list-group-flush">
-        <li class="list-group-item">
+        <li class="list-group-item pt-3">
             <sup class="float-start">last_login_date:</sup>
             <time>{{ i.last_login_date }}</time>
         </li>
@@ -85,10 +82,11 @@
         <figcaption class="card-footer"></figcaption>
     </figure>
     {% endif %}
+    </div>
 
 </div>
 
-<div class="card my-2">
+<div class="card mt-2">
     <div class="card-header">
         <a class="btn btn-outline-primary btn-sm me-2" href="/admin/user/update/{{ i.id }}" role="button">
             <i class="bi bi-pencil"></i> &raquo;
