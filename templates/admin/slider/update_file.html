@@ -1,29 +1,18 @@
 
 {% extends "base.html" %}
-{% block title %} sl file update {{ i.title }} {% endblock %}
+{% block title %} adm sl file update {{ i.title }} {% endblock %}
 
 {% block content %}
 
-<h1 class="lead my-3">detail file slider</h1>
-
-<div class="card p-3">
-
-    <ul class="card-header list-group list-group-horizontal">
-        <li class="list-group-item pt-3">
-            <sup class="float-start">id:</sup>
-            {{ i.id }}
-        </li>
-        <li class="list-group-item pt-3">
-            <sup class="float-start">title:</sup>
-            <p>{{ i.title }}</p>
-        </li>
-        {% include "created_modified.html" %}
-    </ul>
+<div class="card mt-2">
+    <div class="card-header">
+        <h3 class="lead">detail file slider</h3>
+    </div>
 
     <div>
     {% if i.file %}
     <figure class="card">
-    <img class="shadow-sm my-3" src="{{ i.file }}" alt="">
+    <img class="shadow m-3" src="{{ i.file }}" alt="">
     <figcaption>
         <span class="m-2"><sub>{{ i.file }}</sub></span>
         <div class="bg-light m-2">
@@ -38,7 +27,7 @@
 
 </div>
 
-<form class="card mt-2"  method="POST" enctype="multipart/form-data">
+<form class="card mt-2 mb-5" method="POST" enctype="multipart/form-data">
     <div class="card-footer">
         <input
             type="file"

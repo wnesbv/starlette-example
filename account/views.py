@@ -1,10 +1,7 @@
-
 from datetime import datetime, timedelta
 from pathlib import Path
 
-import os, jwt, functools, time
-
-from pydantic import BaseModel
+import os, jwt, functools
 
 from sqlalchemy import update as sqlalchemy_update, delete, false, true, and_
 
@@ -49,10 +46,7 @@ async def get_token_visited(request):
 
 async def get_visited(request, session):
     email = await get_token_visited(request)
-    stmt = await session.execute(
-        select(User)
-        .where(User.email == email)
-    )
+    stmt = await session.execute(select(User).where(User.email == email))
     result = stmt.scalars().first()
     return result
 
@@ -62,10 +56,7 @@ async def get_visited_user(request, session):
         user = await get_visited(request, session)
         if not user:
             break
-        stmt = await session.execute(
-            select(User)
-            .where(User.email == user.email)
-        )
+        stmt = await session.execute(select(User).where(User.email == user.email))
         result = stmt.scalars().first()
         return result
 
@@ -80,7 +71,9 @@ def visited():
             if user:
                 return await func(request, *a, **ka)
             return RedirectResponse("/account/login")
+
         return wrapper
+
     return decorator
 
 
@@ -97,8 +90,12 @@ def auth():
                     return await func(request, *a, **ka)
                 return RedirectResponse("/")
             await engine.dispose()
+
         return wrapper
+
     return decorator
+
+
 # ..
 
 
@@ -159,6 +156,66 @@ async def user_register(request):
     await engine.dispose()
 
 
+async def user_login(request):
+    # ..
+    if request.method == "GET":
+        template = "/auth/login.html"
+        return templates.TemplateResponse(template, {"request": request})
+    #...
+    if request.method == "POST":
+        async with async_session() as session:
+            # ..
+            form = await request.form()
+            # ..
+            email = form["email"]
+            password = form["password"]
+            # ..
+            stmt = await session.execute(
+                select(User).where(
+                    and_(User.email == email, User.privileged == false())
+                )
+            )
+            user = stmt.scalars().first()
+            # ..
+            if user:
+                if not user.email_verified:
+                    raise HTTPException(
+                        401,
+                        "Электронная почта не подтверждена. Проверьте свою почту, чтобы узнать, как пройти верификацию.",
+                    )
+
+                if pbkdf2_sha1.verify(password, user.password):
+                    # ..
+                    user.last_login_date = datetime.now()
+                    # ..
+                    session.add(user)
+                    await session.commit()
+                    # ..
+                    payload = {
+                        "user_id": user.id,
+                        "name": user.name,
+                        "email": email,
+                    }
+                    token = jwt.encode(payload, key, algorithm)
+                    # ..
+                    response = RedirectResponse("/", status_code=302)
+                    response.set_cookie(
+                        key="visited", value=token, path="/", httponly=True
+                    )
+                    # ..
+                    return response
+
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail="Invalid password",
+                )
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST, detail="Invalid login"
+            )
+
+        await engine.dispose()
+
+
 @visited()
 # ...
 async def user_update(request):
@@ -194,11 +251,7 @@ async def user_update(request):
                 query = (
                     sqlalchemy_update(User)
                     .where(User.id == id)
-                    .values(
-                        name=name,
-                        file=i.file,
-                        modified_at=datetime.now()
-                    )
+                    .values(name=name, file=i.file, modified_at=datetime.now())
                     .execution_options(synchronize_session="fetch")
                 )
                 await session.execute(query)
@@ -211,10 +264,7 @@ async def user_update(request):
                     fle_not = (
                         sqlalchemy_update(User)
                         .where(User.id == id)
-                        .values(
-                            file=None,
-                            modified_at=datetime.now()
-                        )
+                        .values(file=None, modified_at=datetime.now())
                         .execution_options(synchronize_session="fetch")
                     )
                     await session.execute(fle_not)
@@ -263,9 +313,7 @@ async def user_delete(request):
         if request.method == "GET":
             # ..
             if request.user.user_id == id:
-                return templates.TemplateResponse(
-                    template, {"request": request}
-                )
+                return templates.TemplateResponse(template, {"request": request})
             return PlainTextResponse("You are banned - this is not your account..!")
 
         # ...
@@ -282,63 +330,6 @@ async def user_delete(request):
                 status_code=302,
             )
             return response
-    await engine.dispose()
-
-
-class CrtPayload(BaseModel):
-    user_id: int
-    name: str
-    email: str
-
-
-async def user_login(request):
-    # ..
-    template = "/auth/login.html"
-
-    async with async_session() as session:
-        if request.method == "POST":
-            form = await request.form()
-            email = form["email"]
-            password = form["password"]
-            # ..
-            stmt = await session.execute(
-                select(User)
-                .where(
-                    and_(User.email == email, User.privileged == false())
-                )
-            )
-            user = stmt.scalars().first()
-            # ..
-            if user:
-                if not user.email_verified:
-                    raise HTTPException(
-                        401,
-                        "Электронная почта не подтверждена. Проверьте свою почту, чтобы узнать, как пройти верификацию.",
-                    )
-
-                if pbkdf2_sha1.verify(password, user.password):
-                    # ..
-                    user.last_login_date = datetime.now()
-                    # ..
-                    session.add(user)
-                    await session.commit()
-                    # ..
-                    payload = CrtPayload(user_id=user.id, name=user.name, email=user.email)
-                    token = jwt.encode(payload.dict(), key, algorithm)
-                    # ..
-                    response = RedirectResponse("/", status_code=302)
-                    response.set_cookie(key="visited", value=token, path="/", httponly=True)
-                    # ..
-                    return response
-
-                raise HTTPException(
-                    status_code=HTTP_400_BAD_REQUEST,
-                    detail="Invalid password",
-                )
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST, detail="Invalid login"
-            )
-        return templates.TemplateResponse(template, {"request": request})
     await engine.dispose()
 
 

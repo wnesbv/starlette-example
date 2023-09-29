@@ -3,28 +3,25 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import String, Text, ForeignKey, Date, DateTime
+from sqlalchemy import Text, ForeignKey, Date, DateTime
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from db_config.storage_config import Base
+from db_config.storage_config import Base, intpk, points, user_fk
 
 
 class ReserveRentFor(Base):
     __tablename__ = "rsv_rrf"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[intpk]
     description: Mapped[str] = mapped_column(Text(200), nullable=True)
     time_start: Mapped[datetime] = mapped_column(Date, nullable=True)
     time_end: Mapped[datetime] = mapped_column(Date, nullable=True)
     # ...
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-
+    created_at: Mapped[points]
+    modified_at: Mapped[points]
     # ...
-    owner: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=True
-    )
+    owner: Mapped[user_fk]
     rrf_item_id: Mapped[int] = mapped_column(
         ForeignKey("item_tm.id", ondelete="CASCADE"), nullable=True
     )
@@ -34,7 +31,6 @@ class ReserveRentFor(Base):
     rrf_sch_r_id: Mapped[int] = mapped_column(
         ForeignKey("sch_r.id", ondelete="CASCADE"), nullable=True
     )
-
     # ...
     rrf_user: Mapped[list["User"]] = relationship(
         back_populates="user_rrf",
@@ -53,16 +49,13 @@ class ReserveRentFor(Base):
 class ReserveServicerFor(Base):
     __tablename__ = "rsv_rsf"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[intpk]
     description: Mapped[str] = mapped_column(Text(200), nullable=True)
     reserve_time: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-
     # ...
-    owner: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE")
-    )
+    owner: Mapped[user_fk]
     rsf_service_id: Mapped[int] = mapped_column(
         ForeignKey("service_tm.id", ondelete="CASCADE")
     )
@@ -70,7 +63,6 @@ class ReserveServicerFor(Base):
         ForeignKey("sch_s.id", ondelete="CASCADE")
     )
     # ...
-
     rsf_user: Mapped[list["User"]] = relationship(
         "User",
         back_populates="user_rsf",

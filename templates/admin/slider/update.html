@@ -1,24 +1,30 @@
 
 {% extends "base.html" %}
-{% block title %} admin update slider {{ detail.title }} {% endblock%}
+{% block title %} adm update slider {{ i.title }} {% endblock%}
 
 {% block content %}
 
-    <h1 class="lead my-3">update slider</h1>
+<div class="card mt-2">
+    <div class="card-header">
+        <h3 class="lead">admin update slider</h3>
+    </div>
 
-    <form class="card p-3" method="POST" enctype="multipart/form-data">
-        <div class="m-2">
-            <sup class="float-start">title</sup>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="card-body">
+        <div class="mb-3">
+            <sup>title</sup>
             <input
                 type="text"
                 required
                 name="title"
-                value="{{ detail.title }}"
+                value="{{ i.title }}"
                 class="form-control my-2"
             />
         </div>
-        <div class="m-2">
-        <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ detail.description }}</textarea>
+        <div class="mb-3">
+        <sup>description</sup>
+        <textarea class="form-control" name="description" maxlength="333" spellcheck>{{ i.description }}</textarea>
+        </div>
         </div>
 
         <div class="card-footer">
@@ -27,6 +33,8 @@
         </button>
         </div>
     </form>
+
+</div>
 
 {% endblock %}
 

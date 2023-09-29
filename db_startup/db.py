@@ -1,6 +1,10 @@
+
+from __future__ import annotations
+
 from datetime import datetime, date, timedelta
 
-import json, string, secrets
+import json, string, secrets, time
+
 from passlib.hash import pbkdf2_sha1
 
 from account.models import User
@@ -32,12 +36,24 @@ def get_random_string():
 
 
 async def on_app_startup() -> None:
-    async with engine.begin() as connection:
-        await connection.run_sync(Base.metadata.create_all)
+    async with engine.begin() as conn:
+        # ..
+        start = time.time()
+        print(" start..")
+        # ..
+        await conn.run_sync(Base.metadata.create_all)
+        # ..
+        end = time.time()
+        print(" end..", end - start)
 
     async with async_session() as session:
         async with session.begin():
+            # ..
             password_hash = pbkdf2_sha1.hash("password")
+            # ..
+            start = time.time()
+            print(" start add_all..")
+            # ..
             session.add_all(
                 [
                     User(
@@ -261,12 +277,11 @@ async def on_app_startup() -> None:
             )
             await session.flush()
         await session.commit()
+        end = time.time()
+        print(" end add_all..", end - start)
     await engine.dispose()
 
 
 async def on_app_shutdown() -> None:
     async with engine.begin() as connection:
         await connection.run_sync(Base.metadata.drop_all)
-
-
-# (event|holiday|birthday)

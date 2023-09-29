@@ -38,10 +38,12 @@ templates = Jinja2Templates(directory="templates")
 # ...
 async def prv_login(request):
     # ..
-    template = "/auth/login.html"
-
-    async with async_session() as session:
-        if request.method == "POST":
+    if request.method == "GET":
+        template = "/auth/login.html"
+        return templates.TemplateResponse(template, {"request": request})
+    #...
+    if request.method == "POST":
+        async with async_session() as session:
             # ..
             form = await request.form()
             # ..
@@ -111,8 +113,7 @@ async def prv_login(request):
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST, detail="Invalid login"
             )
-        return templates.TemplateResponse(template, {"request": request})
-    await engine.dispose()
+        await engine.dispose()
 
 
 @privileged()

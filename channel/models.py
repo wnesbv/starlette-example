@@ -1,29 +1,25 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-
-from sqlalchemy import String, Text, ForeignKey, DateTime
+from sqlalchemy import Text, ForeignKey
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from db_config.storage_config import Base
+from db_config.storage_config import Base, intpk, chapter, affair, pictures, points, user_fk
 
 
 class GroupChat(Base):
 
     __tablename__ = "groups_ch"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    title: Mapped[str] = mapped_column(String(30), unique=True, index=True)
-    description: Mapped[str] = mapped_column(String(200), nullable=True)
-    file: Mapped[str] = mapped_column(String(100), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    id: Mapped[intpk]
+    title: Mapped[chapter]
+    description: Mapped[affair]
+    file: Mapped[pictures]
+    created_at: Mapped[points]
+    modified_at: Mapped[points]
     # ...
-    owner: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    owner: Mapped[user_fk]
     # ...
     group_admin: Mapped[list["User"]] = relationship(
         back_populates="user_group",
@@ -45,15 +41,13 @@ class MessageGroup(Base):
 
     __tablename__ = "message_ch"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[intpk]
     message: Mapped[str] = mapped_column(Text, nullable=True)
-    file: Mapped[str] = mapped_column(String(100), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    file: Mapped[pictures]
+    created_at: Mapped[points]
+    modified_at: Mapped[points]
     # ...
-    owner: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    owner: Mapped[user_fk]
     id_group: Mapped[int] = mapped_column(
         ForeignKey("groups_ch.id", ondelete="CASCADE"), nullable=False
     )
@@ -73,15 +67,13 @@ class OneChat(Base):
 
     __tablename__ = "one_ch"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[intpk]
     message: Mapped[str] = mapped_column(Text, nullable=True)
-    file: Mapped[str] = mapped_column(String(100), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    file: Mapped[pictures]
+    created_at: Mapped[points]
+    modified_at: Mapped[points]
     # ...
-    owner: Mapped[int] = mapped_column(
-        ForeignKey("users.id"), nullable=True
-    )
+    owner: Mapped[user_fk]
     # ...
     chat_one: Mapped[list["User"]] = relationship(
         back_populates="one_chat",
@@ -95,15 +87,13 @@ class OneOneChat(Base):
 
     __tablename__ = "one_one_ch"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[intpk]
     message: Mapped[str] = mapped_column(Text, nullable=True)
-    file: Mapped[str] = mapped_column(String(100), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    file: Mapped[pictures]
+    created_at: Mapped[points]
+    modified_at: Mapped[points]
     #...
-    owner: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    owner: Mapped[user_fk]
     one_one: Mapped[int] = mapped_column(
         ForeignKey("collocutor.id", ondelete="CASCADE"), nullable=False
     )

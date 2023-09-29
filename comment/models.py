@@ -1,31 +1,23 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-
-from sqlalchemy import String, Text, ForeignKey, DateTime, JSON
+from sqlalchemy import Text, ForeignKey, JSON
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from db_config.storage_config import Base
+from db_config.storage_config import Base, intpk, points, user_fk
 
 
 class Comment(Base):
     __tablename__ = "comment_cmt"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[intpk]
     opinion: Mapped[str] = mapped_column(Text(200), nullable=False)
     user_on: Mapped[dict|list] = mapped_column(JSON, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-
+    created_at: Mapped[points]
+    modified_at: Mapped[points]
     # ...
-    owner: Mapped[int] = mapped_column(
-        ForeignKey(
-            "users.id",
-            ondelete="CASCADE"
-        ), nullable=True
-    )
+    owner: Mapped[user_fk]
     # ...
     cmt_item_id: Mapped[int] = mapped_column(
         ForeignKey(

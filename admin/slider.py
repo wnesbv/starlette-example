@@ -124,11 +124,11 @@ async def slider_update(request):
     async with async_session() as session:
         # ..
         obj = await get_admin_user(request, session)
-        detail = await in_slider(session, id)
+        i = await in_slider(session, id)
         # ..
         context = {
             "request": request,
-            "detail": detail,
+            "i": i,
         }
         # ...
         if request.method == "GET":

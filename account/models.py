@@ -7,13 +7,13 @@ from sqlalchemy import Boolean, String, DateTime
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from db_config.storage_config import Base
+from db_config.storage_config import Base, intpk, points
 
 
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[intpk]
     name: Mapped[str] = mapped_column(String(30), unique=True)
     email: Mapped[str] = mapped_column(
         String(120), nullable=False, unique=True, index=True
@@ -25,8 +25,8 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=False)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     # ..
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[points]
+    modified_at: Mapped[points]
     last_login_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # ...

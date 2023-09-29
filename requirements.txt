@@ -1,6 +1,6 @@
 starlette[full]
 uvicorn
-SQLAlchemy
+sqlalchemy[asyncio]
 aiosqlite
 pydantic
 aiofiles
