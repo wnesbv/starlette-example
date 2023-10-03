@@ -22,6 +22,7 @@ from options_select.opt_slc import for_id
 from admin import img
 
 from account.models import User
+from account.views import user_email
 
 from mail.verify import verify_mail
 from .token import mail_verify
@@ -277,17 +278,15 @@ async def resend_email(request):
         if request.method == "POST":
             form = await request.form()
             email = form["email"]
-
-            result = await session.execute(select(User).where(User.email == email))
-            user = result.scalars().first()
-
+            # ..
+            user = await user_email(session, email)
+            # ..
             if not user:
                 raise HTTPException(
                     401, "Пользователь с таким адресом электронной почты не существует!"
                 )
             if user.email_verified:
                 raise HTTPException(400, "Электронная почта уже проверена!")
-
             # ..
             payload = {
                 "email": email,

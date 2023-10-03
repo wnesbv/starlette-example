@@ -1,14 +1,13 @@
 
 from datetime import datetime, timedelta
 
-from sqlalchemy.future import select
-
 import jwt
 
 from starlette.exceptions import HTTPException
 from starlette.responses import RedirectResponse
 
-from account.models import User
+
+from account.views import user_email
 from db_config.storage_config import engine, async_session
 from db_config.settings import settings
 
@@ -53,10 +52,7 @@ async def mail_verify(
 
         email = await verify_decode(request)
         # ..
-        result = await session.execute(
-            select(User).where(User.email == email)
-        )
-        user = result.scalars().first()
+        user = await user_email(session, email)
         # ..
         if not user:
             raise HTTPException(

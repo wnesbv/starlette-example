@@ -7,14 +7,23 @@ import jwt
 from starlette.exceptions import HTTPException
 from starlette.responses import RedirectResponse
 
-from account.models import User
 from db_config.storage_config import engine, async_session
 from db_config.settings import settings
+
+from .models import User
 
 
 key = settings.SECRET_KEY
 algorithm = settings.JWT_ALGORITHM
 EMAIL_TOKEN_EXPIRY_MINUTES = settings.EMAIL_TOKEN_EXPIRY_MINUTES
+
+
+async def user_email(session, email):
+    stmt = await session.execute(
+        select(User).where(User.email == email)
+    )
+    result = stmt.scalars().first()
+    return result
 
 
 async def verify_decode(request):
@@ -41,10 +50,10 @@ async def verify_decode(request):
 
 async def mail_verify(request):
     async with async_session() as session:
+        # ..
         email = await verify_decode(request)
         # ..
-        result = await session.execute(select(User).where(User.email == email))
-        user = result.scalars().first()
+        user = await user_email(session, email)
         # ..
         if not user:
             raise HTTPException(

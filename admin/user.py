@@ -11,13 +11,14 @@ from starlette.status import HTTP_400_BAD_REQUEST
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
-from passlib.hash import pbkdf2_sha1
-
 from strtobool import strtobool
 
-from db_config.storage_config import engine, async_session
+from passlib.hash import pbkdf2_sha1
 
+from account.views import user_email, user_name
 from account.models import User
+
+from db_config.storage_config import engine, async_session
 from item.models import Item, Service, Rent
 from options_select.opt_slc import all_total, for_id
 
@@ -115,10 +116,8 @@ async def i_create(request):
             is_active = form["is_active"]
             is_admin = form["is_admin"]
             # ..
-            stmt_name = await session.execute(select(User).where(User.name == name))
-            name_exist = stmt_name.scalars().first()
-            stmt_email = await session.execute(select(User).where(User.email == email))
-            email_exist = stmt_email.scalars().first()
+            name_exist = await user_name(session, name)
+            email_exist = await user_email(session, email)
             # ..
 
             if name_exist:

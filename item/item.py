@@ -115,7 +115,9 @@ async def item_delete(request):
     async with async_session() as session:
         if request.method == "GET":
             # ..
-            i = await id_and_owner(session, Item, request.user.user_id, id)
+            prv = await get_privileged_user(request, session)
+            # ..
+            i = await id_and_owner(session, Item, prv.id, id)
             if i:
                 return templates.TemplateResponse(
                     template,
@@ -128,8 +130,10 @@ async def item_delete(request):
         # ...
         if request.method == "POST":
             # ..
+            prv = await get_privileged_user(request, session)
+            # ..
             i = await id_and_owner(
-                session, Item, request.user.user_id, id
+                session, Item, prv.id, id
             )
             email = await for_id(session, User, i.owner)
             # ..

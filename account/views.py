@@ -25,13 +25,21 @@ from mail.verify import verify_mail
 
 from auth_privileged.opt_slc import get_privileged_user
 
-from .token import mail_verify
+from .token import mail_verify, user_email
 
 key = settings.SECRET_KEY
 algorithm = settings.JWT_ALGORITHM
 EMAIL_TOKEN_EXPIRY_MINUTES = settings.EMAIL_TOKEN_EXPIRY_MINUTES
 
 templates = Jinja2Templates(directory="templates")
+
+
+async def user_name(session, name):
+    stmt = await session.execute(
+        select(User).where(User.name == name)
+    )
+    result = stmt.scalars().first()
+    return result
 
 
 # ..
@@ -46,8 +54,7 @@ async def get_token_visited(request):
 
 async def get_visited(request, session):
     email = await get_token_visited(request)
-    stmt = await session.execute(select(User).where(User.email == email))
-    result = stmt.scalars().first()
+    result = await user_email(session, email)
     return result
 
 
@@ -56,8 +63,7 @@ async def get_visited_user(request, session):
         user = await get_visited(request, session)
         if not user:
             break
-        stmt = await session.execute(select(User).where(User.email == user.email))
-        result = stmt.scalars().first()
+        result = await user_email(session, user.email)
         return result
 
 
@@ -110,10 +116,8 @@ async def user_register(request):
             email = form["email"]
             password = form["password"]
             # ..
-            stmt_name = await session.execute(select(User).where(User.name == name))
-            name_exist = stmt_name.scalars().first()
-            stmt_email = await session.execute(select(User).where(User.email == email))
-            email_exist = stmt_email.scalars().first()
+            name_exist = await user_name(session, name)
+            email_exist = await user_email(session, email)
             # ..
             if name_exist:
                 raise HTTPException(
@@ -362,17 +366,15 @@ async def resend_email(request):
         if request.method == "POST":
             form = await request.form()
             email = form["email"]
-
-            result = await session.execute(select(User).where(User.email == email))
-            user = result.scalars().first()
-
+            # ..
+            user = await user_email(session, email)
+            # ..
             if not user:
                 raise HTTPException(
                     401, "Пользователь с таким адресом электронной почты не существует!"
                 )
             if user.email_verified:
                 raise HTTPException(400, "Электронная почта уже проверена!")
-
             # ..
             payload = {
                 "email": email,
