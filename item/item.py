@@ -45,15 +45,9 @@ async def export_item_csv(request):
         # ..
         if request.method == "GET":
             # ..
-            prv = await get_privileged_user(request, session)
-            result = await owner_prv(session, Item, prv)
+            obj = await export_csv(request, session)
             # ..
-            await export_csv(result, prv)
-            # ..
-            user = prv.email
-            directory = BASE_DIR / f"static/csv/{user}/export_csv.csv"
-            if Path(directory).exists():
-                return RedirectResponse(f"/static/csv/{user}/export_csv.csv")
+            return obj
             # ..
     await engine.dispose()
 

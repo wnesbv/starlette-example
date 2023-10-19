@@ -4,7 +4,8 @@ from datetime import datetime
 
 import random, shutil
 
-from sqlalchemy import select, update as sqlalchemy_update, delete
+from sqlalchemy import update as sqlalchemy_update
+from sqlalchemy.future import select
 
 from starlette.exceptions import HTTPException
 from starlette.status import HTTP_400_BAD_REQUEST
@@ -15,12 +16,13 @@ from strtobool import strtobool
 
 from passlib.hash import pbkdf2_sha1
 
-from account.views import user_email, user_name
 from account.models import User
 
 from db_config.storage_config import engine, async_session
 from item.models import Item, Service, Rent
+
 from options_select.opt_slc import all_total, for_id
+from options_select.opt_slc import left_right_first
 
 from .opt_slc import admin, get_admin_user
 from . import img
@@ -116,8 +118,8 @@ async def i_create(request):
             is_active = form["is_active"]
             is_admin = form["is_admin"]
             # ..
-            name_exist = await user_name(session, name)
-            email_exist = await user_email(session, email)
+            name_exist = await left_right_first(session, User, User.name, name)
+            email_exist = await left_right_first(session, User, User.email, email)
             # ..
 
             if name_exist:

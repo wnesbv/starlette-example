@@ -1,16 +1,16 @@
 from datetime import datetime
 
-from sqlalchemy import delete, and_, or_, not_, true, false
-from sqlalchemy.future import select
+from sqlalchemy import delete
 
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 
+from account.opt_slc import auth
+
 from db_config.storage_config import engine, async_session
 
-from options_select.opt_slc import for_id
+from options_select.opt_slc import left_right_first
 
-from account.views import auth
 from channel.models import OneOneChat
 
 from auth_privileged.opt_slc import get_random_string, get_privileged_user
@@ -96,7 +96,7 @@ async def collocutor_add(request):
             # ...
             if obj_prv:
                 # ..
-                i = await for_id(session, PersonCollocutor, id)
+                i = await left_right_first(session, PersonCollocutor, PersonCollocutor.id, id)
                 i.permission = True
                 i.ref_num = await get_random_string()
                 # ..
@@ -120,7 +120,7 @@ async def collocutor_add(request):
             # ...
             if obj_user:
                 # ..
-                i = await for_id(session, PersonCollocutor, id)
+                i = await left_right_first(session, PersonCollocutor, PersonCollocutor.id, id)
                 i.permission = True
                 i.ref_num = await get_random_string()
                 # ..

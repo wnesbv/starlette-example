@@ -6,10 +6,12 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 
 from db_config.storage_config import engine, async_session
 
-from account.views import auth
+from account.opt_slc import auth
+
 from auth_privileged.opt_slc import get_privileged_user
 
 from options_select.opt_slc import id_and_owner
+
 from .models import OneOneChat
 from .opt_slc import one_one_select, one_one_group
 

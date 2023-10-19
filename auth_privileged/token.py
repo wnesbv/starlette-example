@@ -7,9 +7,12 @@ from starlette.exceptions import HTTPException
 from starlette.responses import RedirectResponse
 
 
-from account.views import user_email
+from account.models import User
+
 from db_config.storage_config import engine, async_session
 from db_config.settings import settings
+
+from options_select.opt_slc import left_right_first
 
 
 key = settings.SECRET_KEY
@@ -52,7 +55,7 @@ async def mail_verify(
 
         email = await verify_decode(request)
         # ..
-        user = await user_email(session, email)
+        user = await left_right_first(session, User, User.email, email)
         # ..
         if not user:
             raise HTTPException(

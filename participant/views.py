@@ -2,15 +2,14 @@
 from datetime import datetime
 
 from sqlalchemy import delete
-from sqlalchemy.future import select
 
 from starlette.templating import Jinja2Templates
-from starlette.responses import RedirectResponse, PlainTextResponse
+from starlette.responses import RedirectResponse
+
+from account.opt_slc import auth
+from channel.models import GroupChat
 
 from db_config.storage_config import engine, async_session
-
-from account.views import auth
-from channel.models import GroupChat
 
 from options_select.opt_slc import for_id
 from auth_privileged.opt_slc import get_privileged_user

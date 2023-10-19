@@ -14,20 +14,19 @@ from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 from starlette.status import HTTP_400_BAD_REQUEST
 
+from admin import img
+from account.models import User
+from mail.verify import verify_mail
+
 from db_config.settings import settings
 from db_config.storage_config import engine, async_session
 
-from options_select.opt_slc import for_id
+from options_select.opt_slc import left_right_first
 
-from admin import img
-
-from account.models import User
-from account.views import user_email
-
-from mail.verify import verify_mail
 from .token import mail_verify
 from .models import Privileged
 from .opt_slc import get_random_string, privileged, get_token_privileged, get_privileged_user
+
 
 key = settings.SECRET_KEY
 algorithm = settings.JWT_ALGORITHM
@@ -157,7 +156,7 @@ async def prv_update(request):
 
     async with async_session() as session:
         # ..
-        i = await for_id(session, User, id)
+        i = await left_right_first(session, User, User.id, id)
         prv = await get_privileged_user(request, session)
         # ..
         if request.method == "GET":
@@ -252,7 +251,7 @@ async def prv_delete(request):
         # ...
         if request.method == "POST":
             # ..
-            i = await for_id(session, User, id)
+            i = await left_right_first(session, User, User.id, id)
             await img.del_user(i.email)
             # ..
             await session.delete(i)
@@ -279,7 +278,7 @@ async def resend_email(request):
             form = await request.form()
             email = form["email"]
             # ..
-            user = await user_email(session, email)
+            user = await left_right_first(session, User, User.email, email)
             # ..
             if not user:
                 raise HTTPException(
@@ -334,7 +333,7 @@ async def prv_detail(request):
 
     async with async_session() as session:
         # ..
-        i = await for_id(session, User, id)
+        i = await left_right_first(session, User, User.id, id)
         prv = await get_privileged_user(request, session)
         # ..
         if request.method == "GET":

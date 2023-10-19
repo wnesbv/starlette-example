@@ -1,18 +1,17 @@
 
 from datetime import datetime
 
-from sqlalchemy import update as sqlalchemy_update, delete, func, asc, desc, and_
+from sqlalchemy import update as sqlalchemy_update, delete
 from sqlalchemy.future import select
 
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
-from db_config.storage_config import engine, async_session
-
 from mail.send import send_mail
-
 from account.models import User
-from account.views import auth
+from account.opt_slc import auth
+
+from db_config.storage_config import engine, async_session
 
 from auth_privileged.opt_slc import get_privileged_user
 from options_select.opt_slc import for_id, id_and_owner

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import os, jwt, functools
 
-from sqlalchemy import update as sqlalchemy_update, delete, false, true, and_
+from sqlalchemy import update as sqlalchemy_update, false, and_
 
 from sqlalchemy.future import select
 
@@ -14,95 +14,26 @@ from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 from starlette.status import HTTP_400_BAD_REQUEST
 
-from db_config.settings import settings
-from db_config.storage_config import engine, async_session
-
-from options_select.opt_slc import for_id
-
 from admin import img
 from account.models import User
 from mail.verify import verify_mail
 
+from db_config.settings import settings
+from db_config.storage_config import engine, async_session
+
+from options_select.opt_slc import left_right_first
+
 from auth_privileged.opt_slc import get_privileged_user
 
-from .token import mail_verify, user_email
+from .token import mail_verify
+from .opt_slc import visited
+
 
 key = settings.SECRET_KEY
 algorithm = settings.JWT_ALGORITHM
 EMAIL_TOKEN_EXPIRY_MINUTES = settings.EMAIL_TOKEN_EXPIRY_MINUTES
 
 templates = Jinja2Templates(directory="templates")
-
-
-async def user_name(session, name):
-    stmt = await session.execute(
-        select(User).where(User.name == name)
-    )
-    result = stmt.scalars().first()
-    return result
-
-
-# ..
-async def get_token_visited(request):
-    if request.cookies.get("visited"):
-        token = request.cookies.get("visited")
-        if token:
-            payload = jwt.decode(token, key, algorithm)
-            email = payload["email"]
-            return email
-
-
-async def get_visited(request, session):
-    email = await get_token_visited(request)
-    result = await user_email(session, email)
-    return result
-
-
-async def get_visited_user(request, session):
-    while True:
-        user = await get_visited(request, session)
-        if not user:
-            break
-        result = await user_email(session, user.email)
-        return result
-
-
-def visited():
-    def decorator(func):
-        @functools.wraps(func)
-        async def wrapper(request, *a, **ka):
-            async with async_session() as session:
-                user = await get_visited_user(request, session)
-            await engine.dispose()
-            if user:
-                return await func(request, *a, **ka)
-            return RedirectResponse("/account/login")
-
-        return wrapper
-
-    return decorator
-
-
-def auth():
-    def decorator(func):
-        @functools.wraps(func)
-        async def wrapper(request, *a, **ka):
-            async with async_session() as session:
-                user = await get_visited_user(request, session)
-                if user:
-                    return await func(request, *a, **ka)
-                prv = await get_privileged_user(request, session)
-                if prv:
-                    return await func(request, *a, **ka)
-                return RedirectResponse("/")
-            await engine.dispose()
-
-        return wrapper
-
-    return decorator
-
-
-# ..
 
 
 async def user_register(request):
@@ -116,8 +47,8 @@ async def user_register(request):
             email = form["email"]
             password = form["password"]
             # ..
-            name_exist = await user_name(session, name)
-            email_exist = await user_email(session, email)
+            name_exist = await left_right_first(session, User, User.name, name)
+            email_exist = await left_right_first(session, User, User.email, email)
             # ..
             if name_exist:
                 raise HTTPException(
@@ -230,7 +161,7 @@ async def user_update(request):
 
     async with async_session() as session:
         # ..
-        i = await for_id(session, User, id)
+        i = await left_right_first(session, User, User.id, id)
         # ..
         if request.method == "GET":
             if request.user.user_id == i.id:
@@ -323,7 +254,7 @@ async def user_delete(request):
         # ...
         if request.method == "POST":
             # ..
-            i = await for_id(session, User, id)
+            i = await left_right_first(session, User, User.id, id)
             await img.del_user(i.email)
             # ..
             await session.delete(i)
@@ -367,7 +298,7 @@ async def resend_email(request):
             form = await request.form()
             email = form["email"]
             # ..
-            user = await user_email(session, email)
+            user = await left_right_first(session, User, User.email, email)
             # ..
             if not user:
                 raise HTTPException(
@@ -419,7 +350,7 @@ async def user_detail(request):
 
     async with async_session() as session:
         # ..
-        i = await for_id(session, User, id)
+        i = await left_right_first(session, User, User.id, id)
         prv = await get_privileged_user(request, session)
         # ..
         if request.method == "GET":

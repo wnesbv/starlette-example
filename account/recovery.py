@@ -8,12 +8,12 @@ from starlette.exceptions import HTTPException
 from starlette.templating import Jinja2Templates
 from starlette.responses import Response, RedirectResponse
 
-from db_config.storage_config import engine, async_session
-
-from account.views import user_email
-
 from mail.verify import verify_mail
 
+from db_config.storage_config import engine, async_session
+from options_select.opt_slc import left_right_first
+
+from .models import User
 from .token import encode_reset_password, decode_reset_password
 
 
@@ -29,7 +29,7 @@ async def reset_password(request):
             form = await request.form()
             email = form["email"]
             # ..
-            user = await user_email(session, email)
+            user = await left_right_first(session, User, User.email, email)
             # ..
             if not user:
                 raise HTTPException(
@@ -54,7 +54,7 @@ async def reset_password_verification(request):
     async with async_session() as session:
         email = await decode_reset_password(request)
         # ..
-        user = await user_email(session, email)
+        user = await left_right_first(session, User, User.email, email)
         # ..
         if not user:
             raise HTTPException(

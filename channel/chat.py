@@ -7,9 +7,9 @@ from starlette.responses import RedirectResponse, PlainTextResponse
 
 from db_config.storage_config import engine, async_session
 
-from account.views import auth
+from account.opt_slc import auth
 
-from options_select.opt_slc import id_and_owner
+from options_select.opt_slc import for_in, id_and_owner
 
 from auth_privileged.opt_slc import get_privileged_user
 
@@ -28,8 +28,7 @@ async def all_chat(request):
     if request.method == "GET":
         async with async_session() as session:
             prv = await get_privileged_user(request, session)
-            stmt = await session.execute(select(OneChat))
-            result = stmt.scalars().all()
+            result = await for_in(session, OneChat)
         await engine.dispose()
 
         context = {

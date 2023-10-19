@@ -3,8 +3,6 @@ from datetime import datetime
 
 import json, time
 
-from pydantic import parse_obj_as
-
 from sqlalchemy.future import select
 from starlette.templating import Jinja2Templates
 from starlette.responses import (
@@ -21,7 +19,7 @@ from account.models import User
 
 from db_config.storage_config import engine, async_session
 from item.models import Item, Rent, Service, ScheduleRent, ScheduleService
-from options_select.opt_slc import for_id, id_and_owner
+from options_select.opt_slc import in_all, left_right_first, id_and_owner
 
 from .schemas import FormCreate, FormUpdate, ListItem
 
@@ -62,16 +60,16 @@ async def item_create(request):
             # ..
             if file.filename == "":
                 # ..
-                obj = FormCreate(
+                obj_in = FormCreate(
                     title=title,
                     description=description,
                     created_at=created_at,
                     owner=owner,
                 )
                 new = Item(
-                    **obj.dict(),
+                    **obj_in.model_dump(),
                 )
-                print(str(FormCreate.model_dump(obj)))
+                print(str(FormCreate.model_dump(obj_in)))
                 # ..
                 session.add(new)
                 await session.commit()
@@ -81,14 +79,14 @@ async def item_create(request):
                     status_code=302,
                 )
             # ..
-            email = await for_id(session, User, owner)
-            obj = FormCreate(
+            email = await left_right_first(session, User, User.id, owner)
+            obj_in = FormCreate(
                 title=title,
                 description=description,
                 created_at=created_at,
                 owner=owner,
             )
-            new = Item(**obj.dict())
+            new = Item(**obj_in.model_dump())
             # ..
             session.add(new)
             await session.flush()
@@ -136,16 +134,16 @@ async def item_update(request):
             del_obj = form.get("del_bool")
             # ..
             if file.filename == "":
-                obj = FormUpdate(
+                obj_in = FormUpdate(
                     title=title,
                     description=description,
                     modified_at=modified_at,
                 )
-                print(str(FormUpdate.model_dump(obj)))
+                print(str(FormUpdate.model_dump(obj_in)))
                 query = (
                     sqlalchemy_update(Item)
                     .where(Item.id == id)
-                    .values( obj.__dict__)
+                    .values( obj_in.__dict__)
                     .execution_options(synchronize_session="fetch")
                 )
                 await session.execute(query)
@@ -173,8 +171,8 @@ async def item_update(request):
                     status_code=302,
                 )
             # ..
-            email = await for_id(session, User, i.owner)
-            obj = FormUpdate(
+            email = await left_right_first(session, User, User.id, i.owner)
+            obj_in = FormUpdate(
                 title=title,
                 description=description,
                 modified_at=modified_at,
@@ -183,7 +181,7 @@ async def item_update(request):
                 sqlalchemy_update(Item)
                 .where(Item.id == id)
                 .values(
-                    obj.__dict__,
+                    obj_in.__dict__,
                 )
                 .values(
                     file=await img.item_img_creat(file, email.email, id, basewidth),
@@ -194,7 +192,7 @@ async def item_update(request):
             await session.execute(file_query)
             await session.commit()
             # ..
-            print(str(FormUpdate.model_dump(obj)))
+            print(str(FormUpdate.model_dump(obj_in)))
             return RedirectResponse(
                 f"/item/item/details/{id}",
                 status_code=302,
@@ -211,8 +209,8 @@ async def item_list(request):
     async with async_session() as session:
         # ..
         if request.method == "GET":
-            stmt = await session.execute(select(Item))
-            result = stmt.scalars().all()
+            # ..
+            result = in_all(session, Item)
             # ..
             obj = [
                 {
@@ -226,8 +224,8 @@ async def item_list(request):
                 }
                 for i in result
             ]
-            obj_list = ListItem(each_item=obj)
-            return JSONResponse(str(obj_list.model_dump()))
+            obj_in = ListItem(each_item=obj)
+            return JSONResponse(str(obj_in.model_dump()))
     await engine.dispose()
 
 
@@ -294,7 +292,7 @@ async def item_details(request):
     # ..
     async with async_session() as session:
         # ..
-        i = await for_id(session, Item, id)
+        i = await left_right_first(session, Item, Item.id, id)
         # ..
         obj = ListItem(
             id=i.id,

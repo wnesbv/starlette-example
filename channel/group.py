@@ -1,15 +1,16 @@
 
-from sqlalchemy import select, insert, update as sqlalchemy_update, delete
+from sqlalchemy import insert, update as sqlalchemy_update, delete
 
 from starlette.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, PlainTextResponse
 
+from account.opt_slc import auth
+
 from db_config.storage_config import engine, async_session
 
-from options_select.opt_slc import for_id, id_and_owner
+from options_select.opt_slc import for_in, left_right_all, for_id, id_and_owner
 
 from auth_privileged.opt_slc import get_privileged_user
-from account.views import auth
 
 from .models import MessageGroup, GroupChat
 from .opt_slc import in_obj_participant, in_obj_accepted
@@ -23,11 +24,10 @@ async def group_list(request):
     template = "/group/list.html"
 
     async with async_session() as session:
-        result = await session.execute(select(GroupChat).order_by(GroupChat.id))
-        obj_list = result.scalars().all()
+        result = await for_in(session, GroupChat)
         context = {
             "request": request,
-            "obj_list": obj_list,
+            "result": result,
         }
 
         return templates.TemplateResponse(template, context)
@@ -46,10 +46,7 @@ async def group_details(request):
             # ..
             i = await for_id(session, GroupChat, id)
             prv = await get_privileged_user(request, session)
-            stmt_chat = await session.execute(
-                select(MessageGroup).where(MessageGroup.id_group == id)
-            )
-            group_chat = stmt_chat.scalars().all()
+            group_chat = await left_right_all(session, MessageGroup, MessageGroup.id_group, id)
             # ..
             context = {
                 "request": request,
